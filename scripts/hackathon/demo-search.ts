@@ -1,8 +1,8 @@
-//!/usr/bin/env ts-node
+#!/usr/bin/env -S ts-node --esm
 /* -------------------------------------------------------------------------- */
 /*                         H A C K A T H O N   D E M O                        */
 /* -------------------------------------------------------------------------- */
-/*  Usage:  pnpm ts-node scripts/hackathon/demo-search.ts "prompt text"       */
+/*  Usage:  pnpm ts-node --esm scripts/hackathon/demo-search.ts "prompt text" */
 /*  Prints the top-10 candidate names with their OCY similarity scores.       */
 /* -------------------------------------------------------------------------- */
 
