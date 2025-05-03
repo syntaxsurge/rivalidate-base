@@ -1,8 +1,8 @@
-#!/usr/bin/env -S ts-node --esm
+#!/usr/bin/env -S tsx
 /* -------------------------------------------------------------------------- */
 /*                         H A C K A T H O N   D E M O                        */
 /* -------------------------------------------------------------------------- */
-/*  Usage:  pnpm ts-node --esm scripts/hackathon/demo-search.ts "prompt text" */
+/*  Usage:  pnpm tsx scripts/hackathon/demo-search.ts "prompt text"           */
 /*  Prints the top-10 candidate names with their OCY similarity scores.       */
 /* -------------------------------------------------------------------------- */
 
@@ -18,7 +18,7 @@ async function main(): Promise<void> {
   /* ------------------------- CLI argument parsing ------------------------ */
   const prompt = (argv[2] ?? '').trim()
   if (!prompt) {
-    console.error('Usage: pnpm ts-node scripts/hackathon/demo-search.ts "prompt text"')
+    console.error('Usage: pnpm tsx scripts/hackathon/demo-search.ts "prompt text"')
     exit(1)
   }
 
