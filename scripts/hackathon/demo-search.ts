@@ -55,11 +55,13 @@ async function main(): Promise<void> {
 
   /* ----------------------------- DB lookup ------------------------------ */
   const rows = await db
-    .select({ id: candidates.id, name: candidates.name })
+    .select()
     .from(candidates)
     .where(inArray(candidates.id, topMatches.map((t) => t.id)))
 
-  const nameMap = new Map(rows.map((r) => [r.id, r.name || 'Unnamed']))
+  const nameMap = new Map(
+    rows.map((r: any) => [r.id, (r.name ?? r.fullName ?? r.displayName ?? 'Unnamed') as string]),
+  )
 
   /* ---------------------------- Pretty print ---------------------------- */
   console.log(`\nTop ${topMatches.length} matches for "${prompt}":\n`)
