@@ -2,22 +2,14 @@
 
 import { motion } from 'framer-motion'
 
-/* -------------------------------------------------------------------------- */
-/*                                    DATA                                    */
-/* -------------------------------------------------------------------------- */
-
 const STEPS = [
   'Create account & workspace',
   'Vectorise résumé via OCY',
-  'Upload & verify credentials',
-  'Pass AI skill quizzes',
-  'Get discovered by recruiters',
-  'Land your dream job',
+  'Request issuer verifications',
+  'Mint proof NFTs on Base',
+  'Get discovered via semantic search',
+  'Land your next opportunity',
 ] as const
-
-/* -------------------------------------------------------------------------- */
-/*                                COMPONENT                                   */
-/* -------------------------------------------------------------------------- */
 
 export default function WorkflowSection() {
   return (
@@ -26,7 +18,6 @@ export default function WorkflowSection() {
       className='bg-muted/40 relative isolate py-28'
       aria-label='Journey to proof timeline'
     >
-      {/* Subtle radial backdrop */}
       <div className='pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(0,255,190,0.12)_0%,transparent_70%)] dark:bg-[radial-gradient(circle_at_top,rgba(0,255,190,0.06)_0%,transparent_70%)]' />
 
       <div className='mx-auto max-w-6xl px-4 sm:px-6'>
@@ -35,7 +26,7 @@ export default function WorkflowSection() {
             Journey&nbsp;to&nbsp;Proof
           </h2>
           <p className='text-muted-foreground mx-auto mt-4 max-w-2xl'>
-            Five&nbsp;simple&nbsp;steps to take you from claim to unimpeachable&nbsp;evidence.
+            Six&nbsp;simple&nbsp;steps to transform claims into immutable,&nbsp;searchable evidence.
           </p>
         </header>
 
@@ -50,14 +41,12 @@ export default function WorkflowSection() {
               className='group'
             >
               <div className='relative rounded-3xl p-[2px]'>
-                {/* Gradient outline */}
                 <div className='bg-rivalidate-gradient pointer-events-none absolute inset-0 -z-10 rounded-[inherit] opacity-20 blur-sm transition-opacity duration-300 group-hover:opacity-40' />
-
                 <div className='bg-background/70 border-border/60 rounded-[inherit] border p-8 shadow-sm backdrop-blur transition-shadow group-hover:shadow-xl'>
                   <span className='border-primary text-primary mb-6 flex size-12 items-center justify-center rounded-full border-2 font-semibold'>
                     {i + 1}
                   </span>
-                  <h3 className='text-lg font-semibold'>{step}</h3>
+                  <h3 className='text-lg font-semibold text-balance'>{step}</h3>
                 </div>
               </div>
             </motion.li>

@@ -19,7 +19,7 @@ export default function CTASection() {
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className='bg-gradient-to-r from-white via-neutral-200 to-white bg-clip-text text-4xl font-extrabold tracking-tight text-balance text-transparent sm:text-5xl md:text-6xl'
         >
-          Bring&nbsp;Verifiable&nbsp;Trust&nbsp;to&nbsp;Hiring&nbsp;Today
+          Bring&nbsp;Provable&nbsp;Trust&nbsp;to&nbsp;Hiring
         </motion.h2>
 
         <motion.p
@@ -29,8 +29,7 @@ export default function CTASection() {
           transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
           className='mx-auto mt-6 max-w-xl text-lg/relaxed text-white/90'
         >
-           Launch your workspace, mint a did:rlz and start issuing proofs in minutes—no solidity knowledge required.
-          knowledge required.
+          Launch your workspace, vectorise your résumé and let on-chain proofs speak on your behalf—no blockchain expertise required.
         </motion.p>
 
         <motion.div
@@ -60,9 +59,7 @@ export default function CTASection() {
 function Backdrop() {
   return (
     <div className='pointer-events-none absolute inset-0 -z-10'>
-      {/* Gradient waves */}
       <div className='bg-rivalidate-gradient animate-slow-pan absolute -inset-20 opacity-60 blur-3xl' />
-      {/* Grid overlay */}
       <div className='absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:64px_64px] opacity-10' />
 
       <style jsx global>{`

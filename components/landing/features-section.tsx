@@ -1,30 +1,28 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { CheckCircle2, Wallet, ShieldCheck, Key } from 'lucide-react'
+import { Layers3, Stamp, Search, BadgeCheck } from 'lucide-react'
 
-const features = [
+const FEATURES = [
   {
-    icon: Wallet,
-    title: 'Native ETH Payments',
-    description: 'Pay and settle subscriptions in Base’s native asset—no bridges.',
+    icon: Layers3,
+    title: 'Vectorized Résumés',
+    description: 'OCY transforms every résumé into high-dimension embeddings for lightning-fast similarity search.',
   },
   {
-    icon: ShieldCheck,
-    title: 'Untamperable Anchors',
-    description: 'Credential hashes live on-chain forever under Base security budget.',
+    icon: Stamp,
+    title: 'Issuer Signatures',
+    description: 'Employers and schools verify once; signed credentials travel everywhere you apply.',
   },
   {
-    icon: Key,
-    title: 'Base DIDs',
-    description:
-      'Deterministic on-chain identities that bind verifiable credentials to teams and issuers.',
+    icon: Search,
+    title: 'Semantic Talent Search',
+    description: 'Recruiters query skills in natural language and instantly surface proof-backed matches.',
   },
   {
-    icon: CheckCircle2,
-    title: 'Credential NFTs',
-    description:
-      'Each verified credential mints an ERC-721 token providing immutable provenance and transferability.',
+    icon: BadgeCheck,
+    title: 'Proof NFTs on Base',
+    description: 'Each verified credential mints a non-fungible proof anchored to Base’s security and liquidity.',
   },
 ]
 
@@ -33,11 +31,11 @@ export default function FeaturesSection() {
     <section id='features' className='bg-background py-24'>
       <div className='mx-auto max-w-6xl px-4 text-center'>
         <h2 className='text-foreground text-3xl font-extrabold tracking-tight sm:text-4xl'>
-          Built&nbsp;Different
+          Built&nbsp;for&nbsp;Proof
         </h2>
 
         <div className='mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4'>
-          {features.map(({ icon: Icon, title, description }, i) => (
+          {FEATURES.map(({ icon: Icon, title, description }, i) => (
             <motion.div
               key={title}
               initial={{ opacity: 0, y: 24 }}
@@ -52,7 +50,7 @@ export default function FeaturesSection() {
                 <div className='bg-rivalidate-gradient mb-4 inline-flex size-12 items-center justify-center rounded-full text-white shadow-lg'>
                   <Icon className='h-6 w-6' />
                 </div>
-                <h3 className='text-foreground text-lg font-semibold'>{title}</h3>
+                <h3 className='text-foreground text-lg font-semibold text-balance'>{title}</h3>
                 <p className='text-muted-foreground mt-2 text-sm leading-relaxed'>{description}</p>
               </div>
             </motion.div>

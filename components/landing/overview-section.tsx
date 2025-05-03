@@ -1,30 +1,30 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Cpu, Layers3, Rocket, Globe } from 'lucide-react'
+import { Layers3, ShieldCheck, Sparkles, Globe } from 'lucide-react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const FEATURES = [
   {
-    icon: Rocket,
-    title: 'One-Tap Issuance',
-    desc: 'Mint verifiable credentials in seconds—zero crypto setup required.',
-  },
-  {
     icon: Layers3,
-    title: 'Data-Layer Agnostic',
-     desc: 'Self-host or BYO database while Base L2 anchors the proofs.',
+    title: 'Vectorized Proof Layers',
+    desc: 'Generate résumé embeddings with OCY and anchor them to immutable on-chain proofs.',
   },
   {
-    icon: Cpu,
-    title: 'AI-Driven Scoring',
-    desc: 'GPT-powered evaluations grade skills with deterministic validators.',
+    icon: ShieldCheck,
+    title: 'Issuer-Gated Verification',
+    desc: 'Employers and universities attest once—trust propagates everywhere without manual checks.',
+  },
+  {
+    icon: Sparkles,
+    title: 'AI Matchmaking',
+    desc: 'GPT copilots grade skills and surface the best-fit roles or candidates in seconds.',
   },
   {
     icon: Globe,
     title: 'Borderless Trust',
-     desc: 'did:rlz identifiers resolve instantly across any wallet or marketplace.',
+    desc: 'did:rlz identifiers resolve instantly across any wallet, marketplace or chain.',
   },
 ] as const
 
@@ -40,10 +40,10 @@ export default function OverviewSection() {
       <div className='mx-auto max-w-6xl px-4'>
         <header className='mb-20 text-center'>
           <h2 className='text-foreground text-3xl font-extrabold tracking-tight text-balance sm:text-4xl'>
-             Why&nbsp;Rivalidate?
+            Why&nbsp;Rivalidate?
           </h2>
           <p className='text-muted-foreground mx-auto mt-4 max-w-2xl text-lg/relaxed'>
-            Every primitive you need to graduate from hopeful claims to bullet-proof proofs.
+            Everything you need to graduate from hopeful claims to bullet-proof proofs.
           </p>
         </header>
 

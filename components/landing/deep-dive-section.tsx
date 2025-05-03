@@ -9,20 +9,20 @@ const ROLES = [
   {
     icon: UserCheck,
     title: 'Candidates',
-    intro: 'Own your narrative.',
-    bullets: ['Immutable résumé', 'AI SkillPass', 'Portable wallet bio'],
+    intro: 'Let proofs speak for you.',
+    bullets: ['Vectorized résumé', 'Issuer-signed credentials', 'AI SkillPass insights'],
   },
   {
     icon: Search,
     title: 'Recruiters',
-    intro: 'Trust at first sight.',
-    bullets: ['Proof-based search', 'Kanban pipelines', 'Fit GPT summaries'],
+    intro: 'Discover proof-backed talent.',
+    bullets: ['Semantic search', 'GPT fit summaries', 'Verifiable filtering'],
   },
   {
     icon: Building2,
     title: 'Issuers',
     intro: 'Verify once, trust everywhere.',
-    bullets: ['Domain attestations', 'Batch signatures', 'Real-time revocation'],
+    bullets: ['One-click attestations', 'Batch signatures', 'Revocation dashboard'],
   },
 ] as const
 
@@ -35,7 +35,7 @@ export default function DeepDiveSection() {
             Tailored&nbsp;Value
           </h2>
           <p className='text-muted-foreground mx-auto mt-4 max-w-2xl'>
-            Three personas, one shared ledger of&nbsp;truth.
+            Three personas, one shared ledger&nbsp;of&nbsp;truth.
           </p>
         </header>
 
