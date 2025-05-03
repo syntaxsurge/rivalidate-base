@@ -17,6 +17,7 @@ import {
   Shield,
   Menu,
   Tag,
+  FileText,
   User,
   Star,
 } from 'lucide-react'
@@ -47,6 +48,7 @@ function roleNav(role?: string, counts?: PendingCounts): SidebarNavItem[] {
         { href: '/candidate/profile', icon: User, label: 'Profile' },
         { href: '/candidate/highlights', icon: Star, label: 'Profile Highlight' },
         { href: '/candidate/credentials', icon: BookOpen, label: 'Credentials' },
+        { href: '/candidate/resume', icon: FileText, label: 'Résumé' },
         { href: '/candidate/skill-check', icon: Award, label: 'Skill Quiz' },
         { href: '/candidate/create-did', icon: Key, label: 'Create DID' },
       ]
