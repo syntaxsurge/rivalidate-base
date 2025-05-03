@@ -7,12 +7,21 @@ import { validatedActionWithUser } from '@/lib/auth/middleware'
 import { db } from '@/lib/db/drizzle'
 import { candidates } from '@/lib/db/schema/candidate'
 import { users } from '@/lib/db/schema/core'
+import { vectorizeResume } from '@/lib/ocy/vectorize-resume'
+
+/* -------------------------------------------------------------------------- */
+/*                              V A L I D A T I O N                           */
+/* -------------------------------------------------------------------------- */
 
 const urlField = z
   .string()
   .url('Invalid URL')
   .max(255)
   .or(z.literal('').transform(() => undefined))
+
+/* -------------------------------------------------------------------------- */
+/*                      U P D A T E   P R O F I L E                           */
+/* -------------------------------------------------------------------------- */
 
 export const updateCandidateProfile = validatedActionWithUser(
   z.object({
@@ -27,10 +36,10 @@ export const updateCandidateProfile = validatedActionWithUser(
   async (data, _, user) => {
     const { name, bio, twitterUrl, githubUrl, linkedinUrl, websiteUrl } = data
 
-    /* Update basic user profile */
+    /* ----------------------- update core user row ------------------------ */
     await db.update(users).set({ name }).where(eq(users.id, user.id))
 
-    /* Upsert candidate row */
+    /* --------------------------- upsert candidate ------------------------ */
     let [candidate] = await db
       .select()
       .from(candidates)
@@ -38,14 +47,18 @@ export const updateCandidateProfile = validatedActionWithUser(
       .limit(1)
 
     if (!candidate) {
-      await db.insert(candidates).values({
-        userId: user.id,
-        bio: bio ?? '',
-        twitterUrl,
-        githubUrl,
-        linkedinUrl,
-        websiteUrl,
-      })
+      const [created] = await db
+        .insert(candidates)
+        .values({
+          userId: user.id,
+          bio: bio ?? '',
+          twitterUrl,
+          githubUrl,
+          linkedinUrl,
+          websiteUrl,
+        })
+        .returning()
+      candidate = created
     } else {
       await db
         .update(candidates)
@@ -59,6 +72,13 @@ export const updateCandidateProfile = validatedActionWithUser(
         .where(eq(candidates.id, candidate.id))
     }
 
-    return { success: 'Profile updated successfully.' }
+    /* -------------------- synchronous résumé vectorise ------------------- */
+    try {
+      await vectorizeResume(candidate.id)
+    } catch (err) {
+      console.error('vectorizeResume error:', err)
+    }
+
+    return { success: 'Profile updated successfully.', vectorizing: true }
   },
 )

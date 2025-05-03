@@ -11,6 +11,7 @@ import {
   CredentialCategory,
   candidates,
 } from '@/lib/db/schema/candidate'
+import { vectorizeResume } from '@/lib/ocy/vectorize-resume'
 
 /* -------------------------------------------------------------------------- */
 /*                         V A L I D A T I O N                                */
@@ -78,8 +79,7 @@ export const saveHighlightsAction = validatedActionWithUser(
     /* ----------------------- rebuild highlights rows --------------------- */
     await db.delete(candidateHighlights).where(eq(candidateHighlights.candidateId, cand.id))
 
-    /* Ensure a single, continuous sortOrder across all highlights so that
-       ordering is unambiguous and unique per candidate. */
+    /* Ensure single continuous sortOrder across both sections */
     const expInserts = parsed.experience.map((id, idx) => ({
       candidateId: cand.id,
       credentialId: id,
@@ -93,9 +93,11 @@ export const saveHighlightsAction = validatedActionWithUser(
     }))
 
     const inserts = [...expInserts, ...projInserts]
-
     if (inserts.length) await db.insert(candidateHighlights).values(inserts)
 
-    return { success: 'Highlights updated.' }
+    /* ------------------ fire-and-forget vectorization -------------------- */
+    vectorizeResume(cand.id).catch((err) => console.error('vectorizeResume error:', err))
+
+    return { success: 'Highlights updated.', vectorizing: true }
   },
 )

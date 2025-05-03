@@ -13,12 +13,13 @@ import {
 } from '@/lib/db/schema/candidate'
 import { teams, teamMembers } from '@/lib/db/schema/core'
 import { issuers, IssuerStatus } from '@/lib/db/schema/issuer'
+import { vectorizeResume } from '@/lib/ocy/vectorize-resume'
 
 /* -------------------------------------------------------------------------- */
 /*                               A D D  C R E D                               */
 /* -------------------------------------------------------------------------- */
 
-/** Enum wrapper keeps schema strongly typed. */
+/** Enum wrapper keeps schema strictly typed. */
 const CategoryEnum = z.nativeEnum(CredentialCategory)
 
 /** Core payload schema – no proof fields required. */
@@ -75,8 +76,8 @@ export const addCredential = validatedActionWithUser(
       .limit(1)
 
     if (!candidate) {
-      const [newCand] = await db.insert(candidates).values({ userId: user.id, bio: '' }).returning()
-      candidate = newCand
+      const [created] = await db.insert(candidates).values({ userId: user.id, bio: '' }).returning()
+      candidate = created
     }
 
     /* -------------------------- insert record --------------------------- */
@@ -90,7 +91,9 @@ export const addCredential = validatedActionWithUser(
       status,
     })
 
-    /* --------------------------- response ------------------------------- */
-    return { success: 'Credential added.' }
+    /* ------------------ fire-and-forget vectorization ------------------- */
+    vectorizeResume(candidate.id).catch((err) => console.error('vectorizeResume error:', err))
+
+    return { success: 'Credential added.', vectorizing: true }
   },
 )
