@@ -34,7 +34,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ candida
     const client = getOcyClient()
     const tmpPath = path.join(os.tmpdir(), `${Date.now()}_${fileName}`)
     await fs.writeFile(tmpPath, Buffer.from(pdfBytes))
-    await client.createRagKnowledgeBase(tmpPath, `resume_${candidateId}`)
+    let created = await client.createRagKnowledgeBase(tmpPath, `resume_${candidateId}`)
+    console.log(created)
     await fs.unlink(tmpPath).catch(() => {})
   } catch (err) {
     // Do not block the user if OCY is temporarily unavailable

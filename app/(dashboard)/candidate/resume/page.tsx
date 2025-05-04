@@ -38,7 +38,7 @@ export default async function ResumePage() {
   let status: string | null = null
   try {
     const client = getOcyClient()
-    const bases = await client.getKnowledgeBases()
+    const bases = await client.getKnowledgeBases(1, 100)
     const kb =
       Array.isArray(bases) && bases.length
         ? (bases as Array<{ name?: string; status?: string }>).find(

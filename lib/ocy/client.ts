@@ -5,30 +5,57 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-/**
- * Rivalz SDK is published as an ESM-only package whose compiled output
- * occasionally ships either a default export *or* a named class depending on
- * the bundler that consumed it. The dynamic resolution below guarantees we
- * always retrieve the actual constructor, eliminating the "is not a constructor”
- * runtime failure observed when the default import is an ES module namespace
- * object instead of the expected class.
- */
 import _RivalzClient from 'rivalz-client'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const RivalzClientCtor: any =
-  // ESM transpilation – class lives under `.default`
+  // ESM build – class exported on `.default`
   (_RivalzClient as unknown as { default?: unknown }).default ??
-  // CommonJS transpilation – the require() result **is** the class
+  // CJS build – the require() result **is** the class
   _RivalzClient
 
 type RivalzClientInstance = InstanceType<typeof RivalzClientCtor>
 
+/* -------------------------------------------------------------------------- */
+/*                         I N T E R N A L   U T I L S                        */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Creates a Proxy that logs every method invocation (name, args) and the
+ * eventual response or error.  This surfaces all OCY/Rivalz traffic in the
+ * server console, making it easier to diagnose vector-store issues in prod.
+ */
+function createLoggingProxy<T extends object>(client: T): T {
+  return new Proxy(client, {
+    get(target, prop, receiver) {
+      const original = Reflect.get(target, prop, receiver)
+      if (typeof original === 'function') {
+        return async (...args: unknown[]) => {
+          // eslint-disable-next-line no-console
+          console.log(`[Rivalz API] → ${String(prop)}(`, ...args, ')')
+          try {
+            // eslint-disable-next-line @typescript-eslint/return-await
+            const result = await (original as (...a: unknown[]) => unknown).apply(target, args)
+            // eslint-disable-next-line no-console
+            console.log(`[Rivalz API] ← ${String(prop)} OK`, result)
+            return result
+          } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error(`[Rivalz API] ← ${String(prop)} ERROR`, err)
+            throw err
+          }
+        }
+      }
+      return original
+    },
+  }) as T
+}
+
 let clientSingleton: RivalzClientInstance | null = null
 
 /**
- * Lazily initialise and return the singleton OCY client.
- * Reads the secret key from the environment on first demand.
+ * Lazily initialises the Rivalz client, wraps it in the logging proxy above,
+ * and returns a singleton so all callers share the same instrumented instance.
  */
 export function getOcyClient(): RivalzClientInstance {
   if (!clientSingleton) {
@@ -36,7 +63,8 @@ export function getOcyClient(): RivalzClientInstance {
     if (!secret) {
       throw new Error('RIVALZ_API_KEY env variable is missing')
     }
-    clientSingleton = new RivalzClientCtor(secret)
+    const raw = new RivalzClientCtor(secret)
+    clientSingleton = createLoggingProxy(raw)
   }
   return clientSingleton
 }
@@ -46,42 +74,33 @@ export function getOcyClient(): RivalzClientInstance {
 /* -------------------------------------------------------------------------- */
 
 /**
- * Perform a one-shot semantic search across all résumé knowledge bases and
- * return a list of candidate IDs ordered by descending cosine similarity.
- *
- * @param prompt free-text query entered by a recruiter
+ * Perform a semantic search across all résumé knowledge bases and return the
+ * candidate IDs ordered by descending cosine similarity against the prompt.
  */
 export async function queryResumeVectors(prompt: string): Promise<number[]> {
   const ocy = getOcyClient()
 
-  // 1. Fetch all knowledge bases and filter down to résumé KBs
-  const allKBs: Array<{ id: string }> = await ocy.getKnowledgeBases()
+  const allKBs: Array<{ id: string }> = await ocy.getKnowledgeBases(1, 100)
   const resumeKBs = allKBs.filter(({ id }) => id.startsWith('resume_'))
 
-  // 2. Fan-out chat sessions in parallel to obtain similarity scores
   const scored = await Promise.all(
     resumeKBs.map(async ({ id }) => {
       try {
-        // createChatSession returns `{ answer, score }` (score ∈ [0,1])
-        // The exact field name may vary; handle both `score` and `similarity`.
         const res: any = await ocy.createChatSession(id, prompt)
         const similarity: number =
-          typeof res.score === 'number'
+          typeof res?.score === 'number'
             ? res.score
-            : typeof res.similarity === 'number'
+            : typeof res?.similarity === 'number'
               ? res.similarity
               : 0
-
-        const candidateId = Number(id.replace('resume_', ''))
-        return { candidateId, similarity }
+        return { candidateId: Number(id.replace('resume_', '')), similarity }
       } catch {
-        // Network / model failure ⇒ treat as zero relevance
+        // individual failures already logged by proxy
         return null
       }
     }),
   )
 
-  // 3. Sort by similarity and emit the ordered candidate IDs
   return scored
     .filter(Boolean)
     .sort((a, b) => (b!.similarity ?? 0) - (a!.similarity ?? 0))
