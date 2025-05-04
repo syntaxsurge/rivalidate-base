@@ -79,13 +79,13 @@ If `BASESCAN_API_KEY` is set and you deploy to **Base Mainnet** (`8453`) or **Ba
 
 ## 🔗 Core On-Chain Use Cases
 
-| Contract / Feature              | Rivalidate Workflow Example                                                                                                            |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| **Deterministic `did:base` IDs** | A user signs once ➜ `DIDRegistry` derives **`did:base:0x…`** ➜ acts as the anchor for credentials, résumé vectors and wallet auth.      |
-| **Credential NFTs**             | Issuer calls `CredentialNFT.mintCredential()` with VC hash ➜ immutable ERC-721 on Base ➜ recruiters verify instantly via Basescan.     |
-| **ETH-native Subscriptions**    | `SubscriptionManager` settles plan fees in ETH ➜ UI polls on-chain price feed ➜ auto-blocks checkout if quote > 60 min.                |
-| **OCY Résumé Vectors**          | Off-chain but referenced on-chain via Credential NFTs’ `tokenURI` ➜ ensures résumé hash + OCY CID remain tamper-proof.                 |
-| **Future ADCS Oracles**         | Score & salary inference results committed on-chain as `bytes32` via upcoming ADCS adaptor — enables fully transparent hiring metrics. |
+| Contract / Feature               | Rivalidate Workflow Example                                                                                                            |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Deterministic `did:base` IDs** | A user signs once ➜ `DIDRegistry` derives **`did:base:0x…`** ➜ acts as the anchor for credentials, résumé vectors and wallet auth.     |
+| **Credential NFTs**              | Issuer calls `CredentialNFT.mintCredential()` with VC hash ➜ immutable ERC-721 on Base ➜ recruiters verify instantly via Basescan.     |
+| **ETH-native Subscriptions**     | `SubscriptionManager` settles plan fees in ETH ➜ UI polls on-chain price feed ➜ auto-blocks checkout if quote > 60 min.                |
+| **OCY Résumé Vectors**           | Off-chain but referenced on-chain via Credential NFTs’ `tokenURI` ➜ ensures résumé hash + OCY CID remain tamper-proof.                 |
+| **Future ADCS Oracles**          | Score & salary inference results committed on-chain as `bytes32` via upcoming ADCS adaptor — enables fully transparent hiring metrics. |
 
 ---
 

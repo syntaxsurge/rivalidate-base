@@ -1,112 +1,138 @@
-# **Rivalidate — Verifiable Talent Credentials on Base L2**
+# Rivalidate — Trusted Credentials × AI-Powered Hiring
 
-_On-chain credentials, deterministic **did:base** identities and subscription billing — powered by the **Rivalz World Abstraction Layer**._
+Rivalidate is a **Next.js 15 + TypeScript** platform that issues verifiable credentials, builds beautiful PDF résumés on-the-fly, and unlocks **semantic talent discovery** through Rivalz OCY vector storage.
 
 [![Rivalidate Demo](public/images/rivalidate-demo.png)](https://youtu.be/3jSGbr54D1M)
 
 ---
 
-## ✨ Why Rivalidate?
+## ✨ Core Features
 
-- **did:base identities** – every Team and Issuer mints a deterministic `did:base:0x…` through the on-chain **DID Registry**; that DID becomes the subject for all future credentials and profile claims.
-- **Credential NFTs** – hashed W3C Verifiable Credentials are permanently anchored as ERC-721 tokens on **Base** via `CredentialNFT.mintCredential()`, giving recruiters and candidates an immutable audit trail.
-- **ETH-native subscription billing** – `SubscriptionManager` settles plan fees directly in ETH; the UI shows live USD quotes and blocks checkout if the quote is older than one hour.
-- **OCY-powered résumé vectorisation** – CVs are ingested through OCY DePIN, chunked and embedded so recruiters get _semantic_ search across millions of profiles in milliseconds.
-- **All-in-one monorepo** – Next.js 14 (App Router) frontend, Drizzle-backed PostgreSQL, fully-scripted Hardhat workspace and server actions live side-by-side for friction-less DX.
-
----
-
-## 📚 Rivalz-Backed Features in Production Today
-
-| Rivalz Feature                | Rivalidate Implementation                                                     | Benefit                                                                |
-| ----------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| **OCY DePIN – Data Layer**    | Résumé upload ➜ OCY vector store ➜ RAG semantic search in recruiter dashboard | Instant similarity search and AI profile summaries                     |
-| **did:base Deterministic IDs** | `DIDRegistry.createDID()` mints one DID per wallet / issuer                   | Portable, privacy-preserving identity that travels between Web2 & Web3 |
-
-> **Heads-up 🚧** – Modules such as **ADCS** (AI oracles), **ROME** (Swarm protocol) and **VORD** (AI app layer) are on the roadmap but **not** wired to the live platform yet, so they are intentionally omitted here.
+| Domain     | Capability                                                                                                                                                                                                         |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Candidates | • Responsive dashboard for profile, credentials, highlights, résumé, skill quizzes<br>• **Auto-generated PDF résumé** with one-click download<br>• **Automatic vectorization** of every résumé change (OCY RAG KB) |
+| Recruiters | • Applicant tracking with pipelines & boards<br>• Classic filter & sort AND **⌥ Enter semantic search** powered by résumé vectors<br>• Instant fit scoring & credential drill-down                                 |
+| Admin      | • User / issuer / pricing management<br>• Platform DID controls                                                                                                                                                    |
+| API        | • RESTful routes under `/api` with strict auth guards<br>• `POST /api/candidates/:id/resume/vectorize` idempotently (re)vectorizes a résumé                                                                        |
+| DevEx      | • Monorepo-level typed SQL via Drizzle ORM<br>• E2E logging proxy for all Rivalz SDK calls<br>• Edge-safe cron endpoint for nightly re-vectorization                                                               |
 
 ---
 
-## 🔄 How Rivalz Integrates End-to-End
+## 🗺️ High-Level Flow
 
-1. **User on-boards** and signs a single message → `DIDRegistry` deterministically derives and mints `did:base:0x…` (gas-sponsored by the platform).
-2. **Candidate uploads résumé** (PDF, DOCX, plain-text).
-3. A background action pushes the file to **OCY DePIN**; OCY chunks, embeds and stores the vectors.
-4. Recruiters run a **semantic query** → Rivalidate hits OCY’s RAG endpoint → receives the top-k matches (document IDs + cosine score).
-5. Credential verification, plan payments and audit trails live on-chain on **Base** and are browsable on Basescan.
-
-This blending of Ethereum-secured L2 settlement with Rivalz’s data layer yields instant full-text _and_ semantic search while keeping the critical trust anchors (DID, credential hashes, payments) immutable.
-
----
-
-## 🚀 Quick Start
-
-1. **Clone & install**
-
-```bash
-git clone https://github.com/syntaxsurge/rivalidate.git
-cd rivalidate
-pnpm install
-```
-
-2. **Environment files**
-
-```bash
-cp .env.example .env
-cp blockchain/.env.example blockchain/.env
-```
-
-Populate at minimum:
-
-- `POSTGRES_URL`
-- `BASE_SEPOLIA_RPC_URL` (or `BASE_MAINNET_RPC_URL`)
-- Contract addresses returned by the deploy step below
-
-3. **Deploy smart contracts**
-
-All Solidity sources live in **`/blockchain`**.
-
-```bash
-pnpm contracts:deploy             # defaults to Base Sepolia
-pnpm contracts:copy-abis          # sync ABIs into lib/
-```
-
-Copy the printed addresses into `.env`.
-
-4. **Database setup** (optional Docker helper)
-
-```bash
-docker compose up -d postgres
-pnpm db:reset
-```
-
-5. **Launch Rivalidate**
-
-```bash
-pnpm dev
-```
-
-Open <http://localhost:3000> and connect a Base-enabled wallet.
+1. **Profile Edit →** `vectorizeResume(candidateId)` helper<br>
+2. Helper renders PDF, **upserts** `resume_<id>` knowledge-base via OCY, and returns `kbId`.<br>
+3. Candidate résumé page polls KB → shows **processing → ready** badge.<br>
+4. Recruiter **⌥ Enter** searches call `queryResumeVectors(prompt)` which<br>&nbsp;&nbsp;&bull; queries every KB in parallel and returns ranked `candidateIds`.<br>
+5. SQL filter merges the ranked IDs → results keep original pagination & ordering.
 
 ---
 
 ## 🖥 User-Journey Snapshot
 
-| Role          | Key Steps                                                                                                |
-| ------------- | -------------------------------------------------------------------------------------------------------- |
+| Role          | Key Steps                                                                                                 |
+| ------------- | --------------------------------------------------------------------------------------------------------- |
 | **Candidate** | Wallet sign-in → automatic `did:base` mint → credential upload → AI skill quizzes → on-chain verification |
-| **Issuer**    | Self-service profile → admin approval → sign & mint Credential NFTs for pending requests                 |
-| **Recruiter** | Hybrid (keyword + semantic) search, Kanban pipelines, AI fit summaries cached per recruiter×candidate    |
-| **Admin**     | Issuer approvals, plan price updates, credential revocation, platform DID rotation                       |
+| **Issuer**    | Self-service profile → admin approval → sign & mint Credential NFTs for pending requests                  |
+| **Recruiter** | Hybrid (keyword + semantic) search, Kanban pipelines, AI fit summaries cached per recruiter×candidate     |
+| **Admin**     | Issuer approvals, plan price updates, credential revocation, platform DID rotation                        |
 
 ---
 
-## 🧑‍💻 Architecture at a Glance
+## 🚀 Quick Start
 
-- **Frontend** – Next.js 14, React Server/Client Components, TypeScript.
-- **Backend** – PostgreSQL via Drizzle ORM, server actions, Edge-runtime middleware.
-- **Blockchain** – Hardhat workspace, verified on **Basescan** (chain IDs 8453 / 84532).
-- **Rivalz** – OCY DePIN for vector storage; deterministic `did:base` scheme for identity.
+### Prerequisites
+
+- Node 20+, PNPM 8+
+- PostgreSQL 15+
+- **Rivalz API key** (`RIVALZ_API_KEY`) with at least 1 KB credit
+
+### Setup
+
+```bash
+pnpm install
+cp .env.example .env                # add DB_URL + RIVALZ_API_KEY …
+pnpm db:setup && pnpm db:seed       # init & seed database
+pnpm dev                            # runs Next.js 15 (Turbopack) on http://localhost:3000
+```
+
+### Build & Deploy
+
+```bash
+pnpm build
+pnpm start
+```
+
+_Vercel tip:_ add `RIVALZ_API_KEY`, `DATABASE_URL`, and `NEXT_PRIVATE_*` secrets under **Project → Environment Variables**.
+
+---
+
+## 🔑 Environment Variables
+
+| Name                  | Purpose                             |
+| --------------------- | ----------------------------------- |
+| `RIVALZ_API_KEY`      | Secret for OCY vector and chat APIs |
+| `DATABASE_URL`        | Postgres connection string          |
+| `NEXT_PUBLIC_APP_URL` | Absolute URL for emails / redirects |
+
+---
+
+## 📝 Résumé Vectorization Internals
+
+- **Helper:** `lib/ocy/vectorize-resume.ts`
+  • Generates PDF via `buildResumeData → generateResumePdf`
+  • Writes to `fs.mkdtemp()` directory to avoid collisions
+  • Checks `getKnowledgeBases()` for `resume_<id>` KB
+  • Calls `addDocumentToKnowledgeBase` or `createRagKnowledgeBase` accordingly
+  • Returns `kbId` so UI can poll status
+
+- **Trigger Points**
+  • Candidate profile save
+  • Credential add / update / delete
+  • Highlight create / delete
+
+These mutations return `{ vectorizing: true }` for optimistic feedback.
+
+---
+
+## 🔍 Semantic Talent Search
+
+- Press **⌥ Enter** (desktop) or long-press Enter (mobile) in the recruiter talent search bar.
+- The query text is vector-matched against all résumé KBs via `queryResumeVectors()`.
+- The resulting candidate ID list is merged into the SQL `WHERE … IN (…)` clause allowing regular filters (location, tags, etc.) to stack.
+
+---
+
+## ⏰ Nightly Vector Refresh
+
+Add a Vercel Cron or GitHub Actions job:
+
+```bash
+curl -X POST "$APP_URL/api/cron/resume-vectorize"
+```
+
+The route iterates active candidates and hits the idempotent vectorize endpoint to refresh embeddings.
+
+---
+
+## 🛠 Scripts
+
+| Script                                                     | Description                                                                       |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `pnpm ts-node scripts/hackathon/demo-search.ts "<prompt>"` | Prints top-10 candidates with OCY similarity scores — showcase for hack4PH judges |
+| `pnpm db:*`                                                | Setup, migrate, reset helpers                                                     |
+| `pnpm contracts:*`                                         | Hardhat deployment & ABI sync                                                     |
+
+---
+
+## 📚 Tech Stack
+
+- **Next.js 15 App Router** with Partial Prerendering
+- **Tailwind 4** + shadcn/ui + Framer Motion
+- **Drizzle ORM** (typed Postgres)
+- **Wagmi** & **RainbowKit** wallet onboarding
+- **Rivalz OCY** SDK for vector storage & RAG chat
+- **Vercel Edge** for cron & API routes
 
 ---
 
@@ -140,10 +166,15 @@ Stay tuned — and feel free to open an issue or PR!
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Live Demo                  | https://rivalidate-base.vercel.app                                                                                                                                              |
 | Demo Video                 | https://rivalidate-base.vercel.app/demo-video                                                                                                                                   |
-| Demo Video (Mirror)        | https://youtu.be/3jSGbr54D1M                                                                                                                                                        |
+| Demo Video (Mirror)        | https://youtu.be/3jSGbr54D1M                                                                                                                                                    |
 | Presentation Deck          | https://rivalidate-base.vercel.app/pitch-deck                                                                                                                                   |
 | Presentation Deck (Mirror) | https://www.canva.com/design/DAGma8Zzkiw/L6sLnrb9L8qyjxhDGsnSyg/view?utm_content=DAGma8Zzkiw&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h570be312c9 |
 
-## 🙋 Need Help?
+---
 
-Start a discussion or open a GitHub issue. We love feedback and contributors 💙
+## 🤝 Contributing
+
+1. Fork & clone
+2. Create a branch `git checkout -b feat/my-improvement`
+3. Commit with [Conventional Commits](https://www.conventionalcommits.org)
+4. Open a PR — GitHub Actions will lint, test, and type-check
