@@ -3,10 +3,10 @@
 import { NextResponse } from 'next/server'
 import { and, eq } from 'drizzle-orm'
 
-import { requireAuth } from '@/lib/auth/middleware'
 import { db } from '@/lib/db/drizzle'
 import { candidates } from '@/lib/db/schema/candidate'
 import { vectorizeResume } from '@/lib/ocy/vectorize-resume'
+import { requireAuth } from '@/lib/auth/guards'
 
 /**
  * POST /api/candidates/[candidateId]/resume/vectorize
