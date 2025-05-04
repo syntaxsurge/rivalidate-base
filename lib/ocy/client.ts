@@ -1,11 +1,7 @@
-/* -------------------------------------------------------------------------- */
-/*                              OCY CLIENT HELPER                             */
-/* -------------------------------------------------------------------------- */
-
 import dotenv from 'dotenv'
-dotenv.config()
-
 import _RivalzClient from 'rivalz-client'
+
+dotenv.config()
 
 const RivalzClientCtor: any =
   // ESM build – class exported on `.default`

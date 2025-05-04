@@ -17,10 +17,10 @@ This folder is a **stand-alone Hardhat workspace** that compiles, tests and depl
 
 ## 🛠 Prerequisites
 
-~~~bash
+```bash
 pnpm install                 # install dependencies
 cp .env.example .env         # create local env file
-~~~
+```
 
 Edit `.env` and supply at minimum:
 
@@ -29,16 +29,16 @@ Edit `.env` and supply at minimum:
 - `PRIVATE_KEY` &nbsp;— matches `ADMIN_ADDRESS` (used by Hardhat CLI).
 - `SUBSCRIPTION_PRICE_WEI_ETH_BASE` / `PLUS` &nbsp;— plan prices in wei.
 - `BASE_SEPOLIA_RPC_URL` or `BASE_MAINNET_RPC_URL`.
-- *(optional)* `BASESCAN_API_KEY` for explorer verification.
+- _(optional)_ `BASESCAN_API_KEY` for explorer verification.
 
 ---
 
 ## 🔨 Compile & Type Generation
 
-~~~bash
+```bash
 pnpm hardhat compile     # Solidity → bytecode / ABI
 pnpm typechain           # (optional) generate TypeScript typings
-~~~
+```
 
 ---
 
@@ -46,19 +46,19 @@ pnpm typechain           # (optional) generate TypeScript typings
 
 Every script prints the deployed address and appends it to `deployment.log` so you can copy the values into the main `.env`.
 
-| # | Script                         | Purpose                                                          |
-| - | ------------------------------ | ---------------------------------------------------------------- |
-| 1 | `deployDIDRegistry.ts`         | Deploys `DIDRegistry` and optionally pre-mints the platform DID. |
-| 2 | `deployCredentialNFT.ts`       | Deploys `CredentialNFT` and grants initial roles.                |
-| 3 | `deploySubscriptionManager.ts` | Deploys `SubscriptionManager` with plan prices.                  |
+| #   | Script                         | Purpose                                                          |
+| --- | ------------------------------ | ---------------------------------------------------------------- |
+| 1   | `deployDIDRegistry.ts`         | Deploys `DIDRegistry` and optionally pre-mints the platform DID. |
+| 2   | `deployCredentialNFT.ts`       | Deploys `CredentialNFT` and grants initial roles.                |
+| 3   | `deploySubscriptionManager.ts` | Deploys `SubscriptionManager` with plan prices.                  |
 
 Example (Base Sepolia testnet):
 
-~~~bash
+```bash
 pnpm hardhat run scripts/deployDIDRegistry.ts          --network baseSepolia
 pnpm hardhat run scripts/deployCredentialNFT.ts        --network baseSepolia
 pnpm hardhat run scripts/deploySubscriptionManager.ts  --network baseSepolia
-~~~
+```
 
 ### Verification
 
@@ -79,13 +79,13 @@ If `BASESCAN_API_KEY` is set and you deploy to **Base Mainnet** (`8453`) or **Ba
 
 ## 🔗 Core On-Chain Use Cases
 
-| Contract / Feature              | Rivalidate Workflow Example                                                                                                                     |
-| --------------------------------| ------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Deterministic `did:rlz` IDs** | A user signs once ➜ `DIDRegistry` derives **`did:rlz:0x…`** ➜ acts as the anchor for credentials, résumé vectors and wallet auth.             |
-| **Credential NFTs**             | Issuer calls `CredentialNFT.mintCredential()` with VC hash ➜ immutable ERC-721 on Base ➜ recruiters verify instantly via Basescan.              |
-| **ETH-native Subscriptions**    | `SubscriptionManager` settles plan fees in ETH ➜ UI polls on-chain price feed ➜ auto-blocks checkout if quote > 60 min.                     |
-| **OCY Résumé Vectors**          | Off-chain but referenced on-chain via Credential NFTs’ `tokenURI` ➜ ensures résumé hash + OCY CID remain tamper-proof.                          |
-| **Future ADCS Oracles**         | Score & salary inference results committed on-chain as `bytes32` via upcoming ADCS adaptor — enables fully transparent hiring metrics.      |
+| Contract / Feature              | Rivalidate Workflow Example                                                                                                            |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Deterministic `did:rlz` IDs** | A user signs once ➜ `DIDRegistry` derives **`did:rlz:0x…`** ➜ acts as the anchor for credentials, résumé vectors and wallet auth.      |
+| **Credential NFTs**             | Issuer calls `CredentialNFT.mintCredential()` with VC hash ➜ immutable ERC-721 on Base ➜ recruiters verify instantly via Basescan.     |
+| **ETH-native Subscriptions**    | `SubscriptionManager` settles plan fees in ETH ➜ UI polls on-chain price feed ➜ auto-blocks checkout if quote > 60 min.                |
+| **OCY Résumé Vectors**          | Off-chain but referenced on-chain via Credential NFTs’ `tokenURI` ➜ ensures résumé hash + OCY CID remain tamper-proof.                 |
+| **Future ADCS Oracles**         | Score & salary inference results committed on-chain as `bytes32` via upcoming ADCS adaptor — enables fully transparent hiring metrics. |
 
 ---
 
