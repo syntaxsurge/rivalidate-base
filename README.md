@@ -2,7 +2,7 @@
 
 _On-chain credentials, deterministic **did:base** identities and subscription billing — powered by the **Rivalz World Abstraction Layer**._
 
-[![Rivalidate Demo](public/images/homepage.png)](https://youtu.be/3jSGbr54D1M)
+[![Rivalidate Demo](public/images/homepage-demo.png)](https://youtu.be/3jSGbr54D1M)
 
 ---
 
