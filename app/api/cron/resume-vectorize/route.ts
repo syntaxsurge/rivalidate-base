@@ -10,7 +10,7 @@ import { vectorizeResume } from '@/lib/ocy/vectorize-resume'
  * all résumé embeddings each night so recruiter semantic search stays current.
  * The caller must include the header:  X-CRON-KEY: $CRON_SECRET
  */
-export const runtime = 'edge'
+export const runtime = 'nodejs'
 
 export async function GET(req: Request) {
   /* -------------------------- Simple auth guard ------------------------- */
