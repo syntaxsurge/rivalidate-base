@@ -16,7 +16,7 @@ import { requireAuth } from '@/lib/auth/guards'
  */
 export async function POST(
   _req: Request,
-  { params }: { params: { candidateId: string } },
+  { params }: { params: Promise<{ candidateId: string }> },
 ) {
   /* --------------------------- Auth & identity -------------------------- */
   const user = await requireAuth()
@@ -24,7 +24,8 @@ export async function POST(
     return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 })
   }
 
-  const idNum = Number(params.candidateId)
+  const { candidateId } = await params
+  const idNum = Number(candidateId)
   if (Number.isNaN(idNum)) {
     return NextResponse.json({ error: 'Invalid candidate id.' }, { status: 400 })
   }
