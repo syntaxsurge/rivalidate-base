@@ -1,53 +1,89 @@
-import RivalzClient from 'rivalz-client'
+/* -------------------------------------------------------------------------- */
+/*                              OCY CLIENT HELPER                             */
+/* -------------------------------------------------------------------------- */
+
+import dotenv from 'dotenv'
+dotenv.config()
 
 /**
- * Returns a ready-to-use RivalzClient instance.
- * Make sure the environment variable RIVALZ_SECRET_TOKEN is set in production.
+ * Rivalz SDK is published as an ESM-only package whose compiled output
+ * occasionally ships either a default export *or* a named class depending on
+ * the bundler that consumed it. The dynamic resolution below guarantees we
+ * always retrieve the actual constructor, eliminating the "is not a constructor”
+ * runtime failure observed when the default import is an ES module namespace
+ * object instead of the expected class.
  */
-export function getOcyClient(): RivalzClient {
-  const secret = process.env.RIVALZ_SECRET_TOKEN
-  if (!secret) {
-    throw new Error('RIVALZ_SECRET_TOKEN environment variable is not set')
+import _RivalzClient from 'rivalz-client'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const RivalzClientCtor: any =
+  // ESM transpilation – class lives under `.default`
+  (_RivalzClient as unknown as { default?: unknown }).default ??
+  // CommonJS transpilation – the require() result **is** the class
+  _RivalzClient
+
+type RivalzClientInstance = InstanceType<typeof RivalzClientCtor>
+
+let clientSingleton: RivalzClientInstance | null = null
+
+/**
+ * Lazily initialise and return the singleton OCY client.
+ * Reads the secret key from the environment on first demand.
+ */
+export function getOcyClient(): RivalzClientInstance {
+  if (!clientSingleton) {
+    const secret = process.env.RIVALZ_API_KEY
+    if (!secret) {
+      throw new Error('RIVALZ_API_KEY env variable is missing')
+    }
+    clientSingleton = new RivalzClientCtor(secret)
   }
-  return new RivalzClient(secret)
+  return clientSingleton
 }
 
-export async function queryResumeVectors(
-  prompt: string,
-  top: number = 100,
-): Promise<number[]> {
-  const client = getOcyClient()
+/* -------------------------------------------------------------------------- */
+/*                         SEMANTIC RÉSUMÉ SEARCH UTIL                        */
+/* -------------------------------------------------------------------------- */
 
-  // Fetch all knowledge bases and keep only those created for résumés
-  const allKbs = await client.getKnowledgeBases()
-  const resumeKbs = (allKbs as any[]).filter(
-    (kb) => typeof kb.name === 'string' && kb.name.startsWith('resume_'),
-  )
+/**
+ * Perform a one-shot semantic search across all résumé knowledge bases and
+ * return a list of candidate IDs ordered by descending cosine similarity.
+ *
+ * @param prompt free-text query entered by a recruiter
+ */
+export async function queryResumeVectors(prompt: string): Promise<number[]> {
+  const ocy = getOcyClient()
 
-  // Query each KB in parallel and collect similarity scores
+  // 1. Fetch all knowledge bases and filter down to résumé KBs
+  const allKBs: Array<{ id: string }> = await ocy.getKnowledgeBases()
+  const resumeKBs = allKBs.filter(({ id }) => id.startsWith('resume_'))
+
+  // 2. Fan-out chat sessions in parallel to obtain similarity scores
   const scored = await Promise.all(
-    resumeKbs.map(async (kb) => {
+    resumeKBs.map(async ({ id }) => {
       try {
-        // Rivalz returns a similarity / cosine score alongside the answer
-        const res: any = await client.createChatSession(kb.id, prompt)
-        const score: number =
-          res?.score ?? res?.similarity ?? res?.cosine ?? 0
+        // createChatSession returns `{ answer, score }` (score ∈ [0,1])
+        // The exact field name may vary; handle both `score` and `similarity`.
+        const res: any = await ocy.createChatSession(id, prompt)
+        const similarity: number =
+          typeof res.score === 'number'
+            ? res.score
+            : typeof res.similarity === 'number'
+              ? res.similarity
+              : 0
 
-        const idStr = kb.name.replace('resume_', '')
-        const id = Number(idStr)
-        if (Number.isNaN(id)) return null
-
-        return { id, score }
+        const candidateId = Number(id.replace('resume_', ''))
+        return { candidateId, similarity }
       } catch {
+        // Network / model failure ⇒ treat as zero relevance
         return null
       }
     }),
   )
 
-  // Order by descending similarity and return the candidate IDs
+  // 3. Sort by similarity and emit the ordered candidate IDs
   return scored
     .filter(Boolean)
-    .sort((a, b) => (b!.score as number) - (a!.score as number))
-    .slice(0, top)
-    .map((s) => (s as { id: number; score: number }).id)
+    .sort((a, b) => (b!.similarity ?? 0) - (a!.similarity ?? 0))
+    .map((s) => s!.candidateId)
 }
