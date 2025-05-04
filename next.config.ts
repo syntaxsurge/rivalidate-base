@@ -88,7 +88,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/demo-video', // <──  the local path
-        destination: 'https://youtu.be/xxxxxxx', // where to send the user
+        destination: 'https://youtu.be/3jSGbr54D1M', // where to send the user
         permanent: false, // 307 at build-time / 308 in prod if true
       },
       {

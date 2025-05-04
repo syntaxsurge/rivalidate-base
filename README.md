@@ -2,7 +2,7 @@
 
 _On-chain credentials, deterministic **did:base** identities and subscription billing — powered by the **Rivalz World Abstraction Layer**._
 
-[![Rivalidate Demo](public/images/homepage.png)](https://youtu.be/xxxxxxx)
+[![Rivalidate Demo](public/images/homepage.png)](https://youtu.be/3jSGbr54D1M)
 
 ---
 
@@ -140,7 +140,7 @@ Stay tuned — and feel free to open an issue or PR!
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Live Demo                  | https://rivalidate-base.vercel.app                                                                                                                                              |
 | Demo Video                 | https://rivalidate-base.vercel.app/demo-video                                                                                                                                   |
-| Demo Video (Mirror)        | https://youtu.be/xxxxxxx                                                                                                                                                        |
+| Demo Video (Mirror)        | https://youtu.be/3jSGbr54D1M                                                                                                                                                        |
 | Presentation Deck          | https://rivalidate-base.vercel.app/pitch-deck                                                                                                                                   |
 | Presentation Deck (Mirror) | https://www.canva.com/design/DAGma8Zzkiw/L6sLnrb9L8qyjxhDGsnSyg/view?utm_content=DAGma8Zzkiw&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h570be312c9 |
 
