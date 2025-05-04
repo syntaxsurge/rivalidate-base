@@ -2,9 +2,8 @@ import * as fs from 'fs/promises'
 import * as os from 'os'
 import * as path from 'path'
 
-import { buildResumeData, generateResumePdf } from '@/lib/resume/resume-builder'
 import { getOcyClient } from '@/lib/ocy/client'
-import { add } from 'date-fns'
+import { buildResumeData, generateResumePdf } from '@/lib/resume/resume-builder'
 
 /**
  * Generates (or updates) an OCY knowledge base for the candidate’s résumé.
@@ -44,7 +43,7 @@ export async function vectorizeResume(candidateId: number): Promise<string> {
     /* ------------------------------------------------------------------ */
     const client = getOcyClient()
     const existingBases = await client.getKnowledgeBases(1, 100)
-    console.log("Existing: ", existingBases)
+    console.log('Existing: ', existingBases)
     const kbName = `resume_${candidateId}`
     const existing = Array.isArray(existingBases)
       ? existingBases.find((kb: { name?: string }) => kb?.name === kbName)
@@ -53,7 +52,7 @@ export async function vectorizeResume(candidateId: number): Promise<string> {
     let kbId: string
     if (existing?.id) {
       let addD = await client.addDocumentToKnowledgeBase(tmpPath, existing.id)
-      console.log("Add d: " + addD)
+      console.log('Add d: ' + addD)
       kbId = existing.id
     } else {
       const created = await client.createRagKnowledgeBase(tmpPath, kbName)

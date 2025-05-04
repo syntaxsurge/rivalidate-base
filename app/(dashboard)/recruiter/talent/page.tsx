@@ -4,8 +4,8 @@ import TalentFilters from '@/components/dashboard/recruiter/talent-filters'
 import TalentTable from '@/components/dashboard/recruiter/talent-table'
 import PageCard from '@/components/ui/page-card'
 import { TablePagination } from '@/components/ui/tables/table-pagination'
-import { queryResumeVectors } from '@/lib/ocy/client'
 import { getTalentSearchPage } from '@/lib/db/queries/recruiter-talent'
+import { queryResumeVectors } from '@/lib/ocy/client'
 import type { TalentRow } from '@/lib/types/tables'
 import { getTableParams, getParam, resolveSearchParams, type Query } from '@/lib/utils/query'
 
@@ -65,8 +65,7 @@ export default async function TalentSearchPage({
         .sort((a, b) => semanticIds.indexOf(a.id) - semanticIds.indexOf(b.id))
     : candidates
 
-  const hasNextFinal =
-    semanticIds.length === 0 ? hasNext : semanticIds.length > page * pageSize
+  const hasNextFinal = semanticIds.length === 0 ? hasNext : semanticIds.length > page * pageSize
 
   /* ----------------------------- View --------------------------------- */
   const rows: TalentRow[] = ranked.map((c) => ({

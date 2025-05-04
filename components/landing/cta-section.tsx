@@ -29,7 +29,8 @@ export default function CTASection() {
           transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
           className='mx-auto mt-6 max-w-xl text-lg/relaxed text-white/90'
         >
-          Launch your workspace, vectorise your résumé and let on-chain proofs speak on your behalf—no blockchain expertise required.
+          Launch your workspace, vectorise your résumé and let on-chain proofs speak on your
+          behalf—no blockchain expertise required.
         </motion.p>
 
         <motion.div

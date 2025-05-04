@@ -11,12 +11,7 @@ import {
   CREDENTIAL_NFT_ABI,
   SUBSCRIPTION_MANAGER_ABI,
 } from '@/lib/contracts/abis'
-import {
-  provider,
-  didRegistry,
-  credentialNft,
-  subscriptionManager,
-} from '@/lib/contracts/index'
+import { provider, didRegistry, credentialNft, subscriptionManager } from '@/lib/contracts/index'
 import { toBytes32 } from '@/lib/utils/address'
 
 /* -------------------------------------------------------------------------- */
@@ -107,10 +102,7 @@ export async function issueCredential(
   return { tokenId: parsedLog.args.tokenId as bigint, txHash: receipt.hash }
 }
 
-export async function verifyCredential(
-  tokenId: bigint,
-  expectedVcHash: string,
-): Promise<boolean> {
+export async function verifyCredential(tokenId: bigint, expectedVcHash: string): Promise<boolean> {
   return (
     (await credentialNft.getVcHash(tokenId)).toLowerCase() ===
     toBytes32(expectedVcHash).toLowerCase()

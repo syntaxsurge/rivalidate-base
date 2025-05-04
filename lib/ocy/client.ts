@@ -7,7 +7,6 @@ dotenv.config()
 
 import _RivalzClient from 'rivalz-client'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const RivalzClientCtor: any =
   // ESM build – class exported on `.default`
   (_RivalzClient as unknown as { default?: unknown }).default ??
@@ -31,16 +30,13 @@ function createLoggingProxy<T extends object>(client: T): T {
       const original = Reflect.get(target, prop, receiver)
       if (typeof original === 'function') {
         return async (...args: unknown[]) => {
-          // eslint-disable-next-line no-console
           console.log(`[Rivalz API] → ${String(prop)}(`, ...args, ')')
           try {
-            // eslint-disable-next-line @typescript-eslint/return-await
             const result = await (original as (...a: unknown[]) => unknown).apply(target, args)
-            // eslint-disable-next-line no-console
+
             console.log(`[Rivalz API] ← ${String(prop)} OK`, result)
             return result
           } catch (err) {
-            // eslint-disable-next-line no-console
             console.error(`[Rivalz API] ← ${String(prop)} ERROR`, err)
             throw err
           }

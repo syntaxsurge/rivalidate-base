@@ -8,11 +8,12 @@
 
 import 'dotenv/config'
 import { argv, exit } from 'node:process'
+
 import { inArray } from 'drizzle-orm'
 
-import { getOcyClient } from '@/lib/ocy/client'
 import { db } from '@/lib/db/drizzle'
 import { candidates } from '@/lib/db/schema/candidate'
+import { getOcyClient } from '@/lib/ocy/client'
 
 async function main(): Promise<void> {
   /* ------------------------- CLI argument parsing ------------------------ */
@@ -57,7 +58,12 @@ async function main(): Promise<void> {
   const rows = await db
     .select()
     .from(candidates)
-    .where(inArray(candidates.id, topMatches.map((t) => t.id)))
+    .where(
+      inArray(
+        candidates.id,
+        topMatches.map((t) => t.id),
+      ),
+    )
 
   const nameMap = new Map(
     rows.map((r: any) => [r.id, (r.name ?? r.fullName ?? r.displayName ?? 'Unnamed') as string]),

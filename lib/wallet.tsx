@@ -1,22 +1,18 @@
 'use client'
 
-import { ReactNode, useEffect, useRef, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 
-import {
-  getDefaultConfig,
-  RainbowKitProvider,
-  darkTheme,
-  lightTheme,
-} from '@rainbow-me/rainbowkit'
+import { getDefaultConfig, RainbowKitProvider, darkTheme, lightTheme } from '@rainbow-me/rainbowkit'
 import '@rainbow-me/rainbowkit/styles.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useTheme } from 'next-themes'
 import { WagmiProvider, http, useAccount, useChainId } from 'wagmi'
 import { base, baseSepolia } from 'wagmi/chains'
 
-import { WALLETCONNECT_PROJECT_ID } from './config'
 import { getEnv } from '@/lib/utils/env'
+
+import { WALLETCONNECT_PROJECT_ID } from './config'
 
 /* -------------------------------------------------------------------------- */
 /*                             W A G M I   C O N F I G                        */

@@ -53,14 +53,12 @@ export const adminAddress = env.ADMIN_ADDRESS
  *   1. Explicit PLATFORM_ADDRESS env var
  *   2. Fallback to adminAddress to keep scripts operational with minimal config
  */
-export const platformAddress = env.PLATFORM_ADDRESS
-  ? normalise(env.PLATFORM_ADDRESS)
-  : adminAddress;
+export const platformAddress = env.PLATFORM_ADDRESS ? normalise(env.PLATFORM_ADDRESS) : adminAddress;
 
 /* Fail fast if we still have no valid admin address */
 if (!adminAddress) {
   throw new Error(
-    "ADMIN_ADDRESS env var is missing and PRIVATE_KEY is not set – please supply at least one so deployment scripts can assign ADMIN_ROLE",
+    "ADMIN_ADDRESS env var is missing and PRIVATE_KEY is not set – please supply at least one so deployment scripts can assign ADMIN_ROLE"
   );
 }
 

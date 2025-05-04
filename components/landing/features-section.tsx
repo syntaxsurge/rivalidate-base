@@ -7,22 +7,26 @@ const FEATURES = [
   {
     icon: Layers3,
     title: 'Vectorized Résumés',
-    description: 'OCY transforms every résumé into high-dimension embeddings for lightning-fast similarity search.',
+    description:
+      'OCY transforms every résumé into high-dimension embeddings for lightning-fast similarity search.',
   },
   {
     icon: Stamp,
     title: 'Issuer Signatures',
-    description: 'Employers and schools verify once; signed credentials travel everywhere you apply.',
+    description:
+      'Employers and schools verify once; signed credentials travel everywhere you apply.',
   },
   {
     icon: Search,
     title: 'Semantic Talent Search',
-    description: 'Recruiters query skills in natural language and instantly surface proof-backed matches.',
+    description:
+      'Recruiters query skills in natural language and instantly surface proof-backed matches.',
   },
   {
     icon: BadgeCheck,
     title: 'Proof NFTs on Base',
-    description: 'Each verified credential mints a non-fungible proof anchored to Base’s security and liquidity.',
+    description:
+      'Each verified credential mints a non-fungible proof anchored to Base’s security and liquidity.',
   },
 ]
 

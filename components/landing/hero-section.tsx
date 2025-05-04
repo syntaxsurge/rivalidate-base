@@ -4,13 +4,7 @@ import Link from 'next/link'
 import { useMemo } from 'react'
 
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
-import {
-  ArrowRight,
-  Building2,
-  ShieldCheck,
-  Sparkles,
-  ArrowDown,
-} from 'lucide-react'
+import { ArrowRight, Building2, ShieldCheck, Sparkles, ArrowDown } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -75,7 +69,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: 'easeOut' }}
-            className='bg-gradient-to-r from-white via-neutral-200 to-white bg-clip-text text-transparent text-balance text-5xl font-extrabold leading-tight sm:text-6xl lg:text-6xl xl:text-7xl max-w-3xl mx-auto xl:mx-0 break-words'
+            className='mx-auto max-w-3xl bg-gradient-to-r from-white via-neutral-200 to-white bg-clip-text text-5xl leading-tight font-extrabold text-balance break-words text-transparent sm:text-6xl lg:text-6xl xl:mx-0 xl:text-7xl'
           >
             Proof-First&nbsp;Hiring
           </motion.h1>
@@ -86,8 +80,8 @@ export default function HeroSection() {
             transition={{ duration: 0.8, delay: 0.05, ease: 'easeOut' }}
             className='mx-auto mt-6 max-w-xl text-lg/relaxed text-white/90 xl:mx-0'
           >
-            Credentials backed by employers, sealed on-chain, and surfaced by AI for instant
-            trust and precision matching.
+            Credentials backed by employers, sealed on-chain, and surfaced by AI for instant trust
+            and precision matching.
           </motion.p>
 
           {/* Bullets */}
@@ -125,10 +119,10 @@ export default function HeroSection() {
           transition={{ duration: 0.8, ease: 'easeOut' }}
           className='relative mx-auto flex max-w-md justify-center xl:max-w-none'
         >
-          <div className='bg-gradient-to-br from-[#00d2ff] to-[#3a47d5] relative h-80 w-full max-w-sm rounded-[2.5rem] p-1 shadow-2xl xl:h-[26rem] xl:rounded-[3rem]'>
+          <div className='relative h-80 w-full max-w-sm rounded-[2.5rem] bg-gradient-to-br from-[#00d2ff] to-[#3a47d5] p-1 shadow-2xl xl:h-[26rem] xl:rounded-[3rem]'>
             <div className='bg-background flex h-full w-full flex-col items-center justify-center gap-6 rounded-[inherit] p-10 text-center'>
-              <Sparkles className='h-10 w-10 text-primary' />
-              <p className='text-foreground text-xl font-semibold leading-snug'>
+              <Sparkles className='text-primary h-10 w-10' />
+              <p className='text-foreground text-xl leading-snug font-semibold'>
                 Your experience,
                 <br /> tokenized
               </p>
@@ -160,7 +154,7 @@ export default function HeroSection() {
 function GradientBackdrop() {
   return (
     <div className='pointer-events-none absolute inset-0 -z-20'>
-      <div className='bg-[#0f0c29] absolute inset-0 -rotate-6 opacity-70 blur-3xl' />
+      <div className='absolute inset-0 -rotate-6 bg-[#0f0c29] opacity-70 blur-3xl' />
       <div className='absolute inset-0 bg-black/60 mix-blend-multiply' />
     </div>
   )
@@ -248,7 +242,7 @@ function GradientButton({
         {solid && (
           <span
             aria-hidden='true'
-            className='bg-[conic-gradient(from_90deg_at_50%_50%,#14b8a6_0%,#3b82f6_33%,#a855f7_66%,#ec4899_100%)] absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'
+            className='absolute inset-0 bg-[conic-gradient(from_90deg_at_50%_50%,#14b8a6_0%,#3b82f6_33%,#a855f7_66%,#ec4899_100%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100'
           />
         )}
       </Link>

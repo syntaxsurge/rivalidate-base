@@ -1,10 +1,11 @@
-import { NextResponse } from 'next/server'
-
-import { buildResumeData, generateResumePdf } from '@/lib/resume/resume-builder'
-import { getOcyClient } from '@/lib/ocy/client'
 import * as fs from 'fs/promises'
 import * as os from 'os'
 import * as path from 'path'
+
+import { NextResponse } from 'next/server'
+
+import { getOcyClient } from '@/lib/ocy/client'
+import { buildResumeData, generateResumePdf } from '@/lib/resume/resume-builder'
 
 /**
  * GET /api/candidates/[candidateId]/resume

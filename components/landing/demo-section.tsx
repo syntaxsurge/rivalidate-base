@@ -39,7 +39,7 @@ export default function DemoSection() {
       <div className='mx-auto max-w-5xl px-4'>
         <header className='mb-12 text-center'>
           <h2 className='text-foreground text-3xl font-extrabold tracking-tight sm:text-4xl'>
-             See&nbsp;Rivalidate&nbsp;in&nbsp;Action
+            See&nbsp;Rivalidate&nbsp;in&nbsp;Action
           </h2>
           <p className='text-muted-foreground mx-auto mt-4 max-w-2xl text-lg/relaxed'>
             Watch a rapid demo or skim the deck—no signup required.

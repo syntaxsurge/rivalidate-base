@@ -5,13 +5,14 @@ import { Inter } from 'next/font/google'
 
 import type { Metadata, Viewport } from 'next'
 import { Toaster } from 'sonner'
+
 import PublicEnvScript from '@/components/public-env-script'
 import SiteHeader from '@/components/site-header'
+import { ThemeProvider } from '@/components/theme-provider'
 import { UserProvider } from '@/lib/auth'
 import { isDatabaseHealthy } from '@/lib/db/health'
 import { getUser } from '@/lib/db/queries/queries'
 import { Web3Provider } from '@/lib/wallet'
-import { ThemeProvider } from '@/components/theme-provider'
 
 /* -------------------------------------------------------------------------- */
 /*                               M E T A D A T A                              */
@@ -47,8 +48,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             Our database is having a nap 😴
           </h1>
           <p className='text-muted-foreground mt-4 max-w-md'>
-             We’re unable to reach the Rivalidate database right now. Please try again in a few minutes while we reconnect everything behind the scenes.
-            minutes while we reconnect everything behind the scenes.
+            We’re unable to reach the Rivalidate database right now. Please try again in a few
+            minutes while we reconnect everything behind the scenes. minutes while we reconnect
+            everything behind the scenes.
           </p>
         </body>
       </html>

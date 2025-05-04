@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+
 import { db } from '@/lib/db/drizzle'
 import { candidates } from '@/lib/db/schema/candidate'
 import { vectorizeResume } from '@/lib/ocy/vectorize-resume'

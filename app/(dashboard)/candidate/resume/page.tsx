@@ -1,11 +1,12 @@
-import { CheckCircle2, Loader2, RefreshCcw } from 'lucide-react'
 import { redirect } from 'next/navigation'
+
 import { eq } from 'drizzle-orm'
+import { CheckCircle2, Loader2, RefreshCcw } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { db } from '@/lib/db/drizzle'
-import { candidates } from '@/lib/db/schema/candidate'
 import { getUser } from '@/lib/db/queries/queries'
+import { candidates } from '@/lib/db/schema/candidate'
 import { getOcyClient } from '@/lib/ocy/client'
 
 export default async function ResumePage() {
@@ -69,7 +70,7 @@ export default async function ResumePage() {
         )
       default:
         return (
-          <span className='inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground'>
+          <span className='bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium'>
             Not generated
           </span>
         )
