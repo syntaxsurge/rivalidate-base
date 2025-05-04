@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 
 /**
- * Extracts an Ethereum address from a DID (`did:rsk:0x…`) or a raw address (`0x…`).
+ * Extracts an Ethereum address from a DID (`did:rlz:0x…`) or a raw address (`0x…`).
  * Accepts a string, an empty string, or null; returns a checksummed address string or null if invalid.
  *
  * @param value - The input containing a DID, raw address, an empty string, or null.
@@ -13,7 +13,7 @@ export function extractAddressFromDid(value: string | null): `0x${string}` | nul
   const trimmed = value.trim()
   if (trimmed === '') return null
 
-  const didMatch = trimmed.match(/^did:rsk:(0x[0-9a-fA-F]{40})$/)
+  const didMatch = trimmed.match(/^did:rlz:(0x[0-9a-fA-F]{40})$/)
   if (didMatch) return didMatch[1] as `0x${string}`
 
   const rawMatch = trimmed.match(/^0x[0-9a-fA-F]{40}$/)
