@@ -37,7 +37,14 @@ export default async function ResumePage() {
   /* -------------------------------------------------------------------- */
   let status: string | null = null
   try {
-    const kb = await getOcyClient().getKnowledgeBase(`resume_${candidateId}`)
+    const client = getOcyClient()
+    const bases = await client.getKnowledgeBases()
+    const kb =
+      Array.isArray(bases) && bases.length
+        ? (bases as Array<{ name?: string; status?: string }>).find(
+            (b) => b?.name === `resume_${candidateId}`,
+          )
+        : null
     status = kb?.status ?? null
   } catch {
     /* OCY unavailable or KB missing */
