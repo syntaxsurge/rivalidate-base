@@ -81,7 +81,7 @@ If `BASESCAN_API_KEY` is set and you deploy to **Base Mainnet** (`8453`) or **Ba
 
 | Contract / Feature              | Rivalidate Workflow Example                                                                                                            |
 | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| **Deterministic `did:rlz` IDs** | A user signs once ➜ `DIDRegistry` derives **`did:rlz:0x…`** ➜ acts as the anchor for credentials, résumé vectors and wallet auth.      |
+| **Deterministic `did:base` IDs** | A user signs once ➜ `DIDRegistry` derives **`did:base:0x…`** ➜ acts as the anchor for credentials, résumé vectors and wallet auth.      |
 | **Credential NFTs**             | Issuer calls `CredentialNFT.mintCredential()` with VC hash ➜ immutable ERC-721 on Base ➜ recruiters verify instantly via Basescan.     |
 | **ETH-native Subscriptions**    | `SubscriptionManager` settles plan fees in ETH ➜ UI polls on-chain price feed ➜ auto-blocks checkout if quote > 60 min.                |
 | **OCY Résumé Vectors**          | Off-chain but referenced on-chain via Credential NFTs’ `tokenURI` ➜ ensures résumé hash + OCY CID remain tamper-proof.                 |

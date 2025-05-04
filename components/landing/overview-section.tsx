@@ -24,7 +24,7 @@ const FEATURES = [
   {
     icon: Globe,
     title: 'Borderless Trust',
-    desc: 'did:rlz identifiers resolve instantly across any wallet, marketplace or chain.',
+    desc: 'did:base identifiers resolve instantly across any wallet, marketplace or chain.',
   },
 ] as const
 

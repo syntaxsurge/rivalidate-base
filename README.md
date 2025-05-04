@@ -1,6 +1,6 @@
 # **Rivalidate — Verifiable Talent Credentials on Base L2**
 
-_On-chain credentials, deterministic **did:rlz** identities and subscription billing — powered by the **Rivalz World Abstraction Layer**._
+_On-chain credentials, deterministic **did:base** identities and subscription billing — powered by the **Rivalz World Abstraction Layer**._
 
 [![Rivalidate Demo](public/images/homepage.png)](https://youtu.be/xxxxxxx)
 
@@ -8,7 +8,7 @@ _On-chain credentials, deterministic **did:rlz** identities and subscription bil
 
 ## ✨ Why Rivalidate?
 
-- **did:rlz identities** – every Team and Issuer mints a deterministic `did:rlz:0x…` through the on-chain **DID Registry**; that DID becomes the subject for all future credentials and profile claims.
+- **did:base identities** – every Team and Issuer mints a deterministic `did:base:0x…` through the on-chain **DID Registry**; that DID becomes the subject for all future credentials and profile claims.
 - **Credential NFTs** – hashed W3C Verifiable Credentials are permanently anchored as ERC-721 tokens on **Base** via `CredentialNFT.mintCredential()`, giving recruiters and candidates an immutable audit trail.
 - **ETH-native subscription billing** – `SubscriptionManager` settles plan fees directly in ETH; the UI shows live USD quotes and blocks checkout if the quote is older than one hour.
 - **OCY-powered résumé vectorisation** – CVs are ingested through OCY DePIN, chunked and embedded so recruiters get _semantic_ search across millions of profiles in milliseconds.
@@ -21,7 +21,7 @@ _On-chain credentials, deterministic **did:rlz** identities and subscription bil
 | Rivalz Feature                | Rivalidate Implementation                                                     | Benefit                                                                |
 | ----------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | **OCY DePIN – Data Layer**    | Résumé upload ➜ OCY vector store ➜ RAG semantic search in recruiter dashboard | Instant similarity search and AI profile summaries                     |
-| **did:rlz Deterministic IDs** | `DIDRegistry.createDID()` mints one DID per wallet / issuer                   | Portable, privacy-preserving identity that travels between Web2 & Web3 |
+| **did:base Deterministic IDs** | `DIDRegistry.createDID()` mints one DID per wallet / issuer                   | Portable, privacy-preserving identity that travels between Web2 & Web3 |
 
 > **Heads-up 🚧** – Modules such as **ADCS** (AI oracles), **ROME** (Swarm protocol) and **VORD** (AI app layer) are on the roadmap but **not** wired to the live platform yet, so they are intentionally omitted here.
 
@@ -29,7 +29,7 @@ _On-chain credentials, deterministic **did:rlz** identities and subscription bil
 
 ## 🔄 How Rivalz Integrates End-to-End
 
-1. **User on-boards** and signs a single message → `DIDRegistry` deterministically derives and mints `did:rlz:0x…` (gas-sponsored by the platform).
+1. **User on-boards** and signs a single message → `DIDRegistry` deterministically derives and mints `did:base:0x…` (gas-sponsored by the platform).
 2. **Candidate uploads résumé** (PDF, DOCX, plain-text).
 3. A background action pushes the file to **OCY DePIN**; OCY chunks, embeds and stores the vectors.
 4. Recruiters run a **semantic query** → Rivalidate hits OCY’s RAG endpoint → receives the top-k matches (document IDs + cosine score).
@@ -94,7 +94,7 @@ Open <http://localhost:3000> and connect a Base-enabled wallet.
 
 | Role          | Key Steps                                                                                                |
 | ------------- | -------------------------------------------------------------------------------------------------------- |
-| **Candidate** | Wallet sign-in → automatic `did:rlz` mint → credential upload → AI skill quizzes → on-chain verification |
+| **Candidate** | Wallet sign-in → automatic `did:base` mint → credential upload → AI skill quizzes → on-chain verification |
 | **Issuer**    | Self-service profile → admin approval → sign & mint Credential NFTs for pending requests                 |
 | **Recruiter** | Hybrid (keyword + semantic) search, Kanban pipelines, AI fit summaries cached per recruiter×candidate    |
 | **Admin**     | Issuer approvals, plan price updates, credential revocation, platform DID rotation                       |
@@ -106,7 +106,7 @@ Open <http://localhost:3000> and connect a Base-enabled wallet.
 - **Frontend** – Next.js 14, React Server/Client Components, TypeScript.
 - **Backend** – PostgreSQL via Drizzle ORM, server actions, Edge-runtime middleware.
 - **Blockchain** – Hardhat workspace, verified on **Basescan** (chain IDs 8453 / 84532).
-- **Rivalz** – OCY DePIN for vector storage; deterministic `did:rlz` scheme for identity.
+- **Rivalz** – OCY DePIN for vector storage; deterministic `did:base` scheme for identity.
 
 ---
 

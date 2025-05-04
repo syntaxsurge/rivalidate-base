@@ -31,7 +31,7 @@ function resolveSigner({ signer, signerAddress }: SignerArgs = {}): ethers.Signe
 /* -------------------------------------------------------------------------- */
 
 /**
- * Create a deterministic did:rlz:0x… identifier for the caller on Base L2.
+ * Create a deterministic did:base:0x… identifier for the caller on Base L2.
  *
  * @param args.signer   Connected wallet signer (preferred).
  * @param args.docHash  Optional keccak-256 hash of an off-chain DID Document.

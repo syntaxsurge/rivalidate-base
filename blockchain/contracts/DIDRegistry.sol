@@ -6,7 +6,7 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 /// @title Rivalidate DID Registry
-/// @notice Allows each address to mint one `did:rlz:0x…`, update its document pointer,
+/// @notice Allows each address to mint one `did:base:0x…`, update its document pointer,
 ///         and lets admins pre-mint DIDs for any account (useful during deployment).
 contract DIDRegistry is AccessControl {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -34,7 +34,7 @@ contract DIDRegistry is AccessControl {
     /* -------------------------------------------------------------------------- */
 
     function _deriveDID(address owner) private pure returns (string memory) {
-        return string.concat("did:rlz:", Strings.toHexString(uint160(owner), 20));
+        return string.concat("did:base:", Strings.toHexString(uint160(owner), 20));
     }
 
     /* -------------------------------------------------------------------------- */
