@@ -50,7 +50,7 @@ export default async function AdminPlanPricesPage() {
     <PageCard
       icon={Tag}
       title='Subscription Plans'
-      description='Update on-chain FLR prices and marketing features for every tier.'
+      description='Update on-chain prices and marketing features for every tier.'
     >
       <UpdatePlanPricesForm
         defaultBaseWei={baseWei.toString()}

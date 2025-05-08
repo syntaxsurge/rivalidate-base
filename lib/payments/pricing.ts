@@ -32,7 +32,7 @@ async function getFeatures(planKey: 'free' | 'base' | 'plus'): Promise<string[]>
 }
 
 /**
- * Combine on-chain FLR prices with database-driven feature lists.
+ * Combine on-chain Token prices with database-driven feature lists.
  */
 export async function fetchPlanMeta(): Promise<PlanMetaSerialised[]> {
   const [baseWei, plusWei, freeFeat, baseFeat, plusFeat] = await Promise.all([

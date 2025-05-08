@@ -24,7 +24,7 @@ interface Props {
 }
 
 /**
- * Admin form for updating on-chain FLR prices of the Base and Plus plans.
+ * Admin form for updating on-chain prices of the Base and Plus plans.
  * The layout now fills the full card width and shows both fields side-by-side
  * on larger screens for visual consistency with other admin pages.
  */
@@ -45,9 +45,9 @@ export default function UpdatePlanPricesForm({ defaultBaseWei, defaultPlusWei }:
   /* ---------------------------------------------------------------------- */
   /*                               Helpers                                  */
   /* ---------------------------------------------------------------------- */
-  async function updatePlanPrice(planKey: 1 | 2, amountFlr: string) {
+  async function updatePlanPrice(planKey: 1 | 2, amountToken: string) {
     if (!walletClient || !address) throw new Error('Wallet not connected')
-    const wei = ethers.parseUnits(amountFlr, 18)
+    const wei = ethers.parseUnits(amountToken, 18)
 
     await walletClient.writeContract({
       address: SUBSCRIPTION_MANAGER_ADDRESS as `0x${string}`,
@@ -101,7 +101,7 @@ export default function UpdatePlanPricesForm({ defaultBaseWei, defaultPlusWei }:
         {/* Base plan field */}
         <div>
           <label htmlFor='base' className='mb-1 block text-sm font-medium'>
-            Base Plan Price&nbsp;(FLR)
+            Base Plan Price
           </label>
           <Input
             id='base'
@@ -117,7 +117,7 @@ export default function UpdatePlanPricesForm({ defaultBaseWei, defaultPlusWei }:
         {/* Plus plan field */}
         <div>
           <label htmlFor='plus' className='mb-1 block text-sm font-medium'>
-            Plus Plan Price&nbsp;(FLR)
+            Plus Plan Price
           </label>
           <Input
             id='plus'

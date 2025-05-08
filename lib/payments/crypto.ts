@@ -7,7 +7,7 @@ import { paySubscription, checkSubscription } from '@/lib/contracts/rivalidate'
 /* -------------------------------------------------------------------------- */
 
 /**
- * Invokes the SubscriptionManager contract with the correct FLR value for the
+ * Invokes the SubscriptionManager contract with the correct Token value for the
  * chosen plan and waits for confirmation.
  *
  * @param signer   Connected wallet signer (wagmi or ethers.js).

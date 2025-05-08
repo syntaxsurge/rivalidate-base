@@ -23,7 +23,7 @@ function keyToPlanName(key: 1 | 2): 'base' | 'plus' {
  *
  * The caller must send a `planKey` field (string ‘1’ or ‘2’) in the
  * associated `FormData`. A server-side signer relays the payment;
- * this avoids client tampering with the FLR amount,
+ * this avoids client tampering with the Token amount,
  * as the contract itself enforces the exact `planPriceWei`.
  */
 export const cryptoCheckoutAction = withTeam(async (formData, team) => {
