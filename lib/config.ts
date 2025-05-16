@@ -28,7 +28,7 @@ export const BASE_RPC_URL = getEnv('NEXT_PUBLIC_BASE_RPC_URL') as string
 
 export const CHAIN_ID = getEnv('NEXT_PUBLIC_CHAIN_ID', {
   kind: 'number',
-}) as number
+}) as 8453 | 84532
 
 /* --------------------------- Core contract addresses ---------------------- */
 
