@@ -21,7 +21,8 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@/hooks/*": ["lib/hooks/*"]
+      "@/hooks/*": ["lib/hooks/*"],
+      "@/lib/types/agent": ["lib/types/agent.ts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.d.ts", ".next/types/**/*.ts"],

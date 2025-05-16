@@ -20,3 +20,6 @@ export interface Pagination {
   /** Query-string params to persist across navigation */
   initialParams: Record<string, string>
 }
+
+/* ------------------------- AgentKit shared types ------------------------- */
+export * from './agent'
