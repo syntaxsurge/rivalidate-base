@@ -3,8 +3,9 @@ import { base, baseSepolia } from 'wagmi/chains';
 import { coinbaseWallet, injected } from 'wagmi/connectors';
 
 /**
- * getConfig — returns a wagmi configuration pre-wired for Base networks and
- * Coinbase Smart Wallet, exposing cookie-persisted storage for SSR parity.
+ * getConfig — returns a wagmi configuration strictly limited to the Base mainnet
+ * and Base Sepolia testnet and initialises the Coinbase Smart Wallet connector
+ * with `preference: 'smartWalletOnly'`, persisting wagmi state to cookies for SSR parity.
  */
 export function getConfig() {
   return createConfig({
