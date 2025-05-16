@@ -23,11 +23,13 @@ const bodySchema = z.object({
 
 export async function PATCH(req: NextRequest) {
   try {
+    /* ------------------------------ Auth check --------------------------- */
     const user = await requireAuth(['admin'])
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    /* ------------------------------- Input ------------------------------- */
     const json = await req.json()
     const parsed = bodySchema.safeParse(json)
     if (!parsed.success) {
