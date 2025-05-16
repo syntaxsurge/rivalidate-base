@@ -67,7 +67,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   /*                              N O R M A L                               */
   /* ---------------------------------------------------------------------- */
   const userPromise = getUser()
-  const initialState = cookieToInitialState(getConfig(), headers().get('cookie'))
+  const headerList = await headers()
+  const initialState = cookieToInitialState(getConfig(), headerList.get('cookie'))
 
   return (
     <html
