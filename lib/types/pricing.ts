@@ -3,7 +3,6 @@
  * These are imported by both UI components and on-chain helpers.
  */
 
-/** Canonical plan identifiers */
 export type PlanKey = 'free' | 'base' | 'plus'
 
 /**
@@ -21,4 +20,9 @@ export interface PlanMeta {
   highlight?: boolean
   /** Price in wei (0 wei = free tier) */
   priceWei: bigint
+  /**
+   * Coinbase Commerce product identifier used by the OnchainKit <Checkout /> component.
+   * When undefined the stable-coin payment button for the tier will be hidden.
+   */
+  productId?: string
 }

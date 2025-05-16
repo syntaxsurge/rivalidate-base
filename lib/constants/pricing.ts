@@ -1,19 +1,18 @@
 import type { PlanKey, PlanMeta } from '@/lib/types/pricing'
 
 /**
- * Subscription pricing metadata shared by frontend UI and
- * server-side logic.  All amounts are expressed in wei and **must**
- * mirror the on-chain `SubscriptionManager` configuration.
+ * Canonical order of plans as displayed in the pricing grid.
  */
-
 export const PLAN_KEYS: readonly PlanKey[] = ['free', 'base', 'plus'] as const
 
-/** Native RBTC token decimals (18). */
+/** Native ETH decimals (18) on Base. */
 export const RBTC_DECIMALS = 18
 
 /**
  * Immutable price & feature table.
  * ⚠️  Keep this array **sorted** in display order for the pricing grid.
+ * `productId` placeholders are overridden at runtime by
+ * NEXT_PUBLIC_COMMERCE_PRODUCT_* env vars.
  */
 export const PLAN_META: readonly PlanMeta[] = [
   {
@@ -21,6 +20,7 @@ export const PLAN_META: readonly PlanMeta[] = [
     name: 'Free',
     highlight: true,
     priceWei: 0n,
+    productId: 'PRODUCT_ID_FREE',
     features: [
       'Unlimited Credentials',
       'Unlimited Skill Passes',
@@ -32,7 +32,8 @@ export const PLAN_META: readonly PlanMeta[] = [
   {
     key: 'base',
     name: 'Base',
-    priceWei: 5_000_000_000_000_000_000n, // 0.005 RBTC
+    priceWei: 5_000_000_000_000_000_000n, // 0.005 ETH
+    productId: 'PRODUCT_ID_BASE',
     features: [
       'Everything in Free',
       'Up to 5 Recruiter Seats',
@@ -45,7 +46,8 @@ export const PLAN_META: readonly PlanMeta[] = [
   {
     key: 'plus',
     name: 'Plus',
-    priceWei: 10_000_000_000_000_000_000n, // 0.01 RBTC
+    priceWei: 10_000_000_000_000_000_000n, // 0.01 ETH
+    productId: 'PRODUCT_ID_PLUS',
     features: [
       'Everything in Base',
       'Unlimited Recruiter Seats',
@@ -65,6 +67,3 @@ export function getPlanMeta(key: PlanKey): PlanMeta {
   if (!meta) throw new Error(`Unknown plan key: ${key}`)
   return meta
 }
-
-/* Re-export typings for convenience */
-export type { PlanMeta, PlanKey }
