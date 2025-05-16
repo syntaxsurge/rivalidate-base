@@ -8,26 +8,28 @@ import {
   Loader2,
   ChevronDown,
   ChevronUp,
+  Bot,
 } from 'lucide-react'
+import { Avatar } from '@coinbase/onchainkit/identity'
 
 import { cn } from '@/lib/utils'
 import { messageAgent as sendToBackend } from '@/app/hooks/useAgent'
 
 /* -------------------------------------------------------------------------- */
-/*                                 T Y P E S                                  */
+/*                                   TYPES                                    */
 /* -------------------------------------------------------------------------- */
 
 type Sender = 'user' | 'agent'
-type ChatMessage = { text: string; sender: Sender }
+type ChatMessage = { id: string; text: string; sender: Sender }
 type ChatSession = { id: string; title: string; messages: ChatMessage[] }
 
 export interface ChatWindowProps {
-  /** Overlay = floating panel (widget); page = full-page view */
+  /** overlay = floating widget   |   page = full-page component */
   mode?: 'overlay' | 'page'
 }
 
 /* -------------------------------------------------------------------------- */
-/*                            L O C A L S T O R A G E                         */
+/*                             LOCAL-STORAGE HELPERS                          */
 /* -------------------------------------------------------------------------- */
 
 const STORAGE_KEY = 'rv_agent_chats'
@@ -37,8 +39,8 @@ function loadChats(): ChatSession[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return []
-    const parsed = JSON.parse(raw) as ChatSession[]
-    return Array.isArray(parsed) ? parsed : []
+    const data = JSON.parse(raw)
+    return Array.isArray(data) ? (data as ChatSession[]) : []
   } catch {
     return []
   }
@@ -48,52 +50,69 @@ function saveChats(chats: ChatSession[]) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(chats))
   } catch {
-    /* Ignore quota errors */
+    /* ignore quota errors */
   }
 }
 
 /* -------------------------------------------------------------------------- */
-/*                               C O M P O N E N T                            */
+/*                                 AVATARS                                    */
+/* -------------------------------------------------------------------------- */
+
+function AgentAvatar() {
+  return (
+    <div className='flex h-8 w-8 items-center justify-center rounded-full bg-muted'>
+      <Bot className='h-5 w-5 text-primary' />
+    </div>
+  )
+}
+
+/* -------------------------------------------------------------------------- */
+/*                               COMPONENT                                    */
 /* -------------------------------------------------------------------------- */
 
 export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
+  /* ----------------------------- state ---------------------------------- */
   const [collapsed, setCollapsed] = useState(false)
   const [chats, setChats] = useState<ChatSession[]>([])
   const [currentId, setCurrentId] = useState<string | null>(null)
   const [input, setInput] = useState('')
   const [isThinking, setIsThinking] = useState(false)
+
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  /* ------------------------ helpers ------------------------------------ */
-  const currentChat = chats.find((c) => c.id === currentId) || null
+  /* --------------------------- helpers ---------------------------------- */
+  const currentChat = chats.find((c) => c.id === currentId) ?? null
 
-  function persist(next: ChatSession[]) {
-    setChats(next)
-    saveChats(next)
+  /** persist helper using functional update to avoid stale closures */
+  const updateChats = (updater: (prev: ChatSession[]) => ChatSession[]) => {
+    setChats((prev) => {
+      const next = updater(prev)
+      saveChats(next)
+      return next
+    })
   }
 
+  /* -------------------------- CRUD chats -------------------------------- */
   function createChat() {
     const id = crypto.randomUUID()
-    const newChat: ChatSession = { id, title: `Chat ${chats.length + 1}`, messages: [] }
-    const next = [...chats, newChat]
-    persist(next)
+    updateChats((prev) => [...prev, { id, title: `Chat ${prev.length + 1}`, messages: [] }])
     setCurrentId(id)
   }
 
   function deleteChat(id: string) {
-    const next = chats.filter((c) => c.id !== id)
-    persist(next)
-    if (currentId === id) setCurrentId(next[0]?.id ?? null)
+    updateChats((prev) => prev.filter((c) => c.id !== id))
+    setCurrentId((prev) => (prev === id ? chats.filter((c) => c.id !== id)[0]?.id ?? null : prev))
   }
 
-  function appendMessage(chatId: string, msg: ChatMessage) {
-    const next = chats.map((c) =>
-      c.id === chatId ? { ...c, messages: [...c.messages, msg] } : c,
+  function appendMessage(msg: ChatMessage) {
+    updateChats((prev) =>
+      prev.map((c) =>
+        c.id === currentId ? { ...c, messages: [...c.messages, msg] } : c,
+      ),
     )
-    persist(next)
   }
 
-  /* ------------------------ lifecycle ---------------------------------- */
+  /* -------------------------- lifecycle --------------------------------- */
   useEffect(() => {
     const initial = loadChats()
     if (initial.length === 0) {
@@ -106,46 +125,57 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [currentChat?.messages.length])
+  }, [currentChat?.messages.length, isThinking])
 
-  /* ------------------------ actions ------------------------------------ */
+  /* --------------------------- actions ---------------------------------- */
   async function handleSend() {
     if (!currentChat || !input.trim() || isThinking) return
-    const userMsg = input
+    const userText = input.trim()
     setInput('')
-    appendMessage(currentChat.id, { text: userMsg, sender: 'user' })
-    setIsThinking(true)
+    const userMsg: ChatMessage = { id: crypto.randomUUID(), text: userText, sender: 'user' }
+    appendMessage(userMsg)
 
-    const reply = await sendToBackend(userMsg)
-    if (reply) {
-      appendMessage(currentChat.id, { text: reply, sender: 'agent' })
+    setIsThinking(true)
+    const reply = await sendToBackend(userText)
+    const agentMsg: ChatMessage = {
+      id: crypto.randomUUID(),
+      text: reply ?? 'Sorry, something went wrong.',
+      sender: 'agent',
     }
+    appendMessage(agentMsg)
     setIsThinking(false)
   }
 
-  /* ------------------------ layout variants ---------------------------- */
+  /* --------------------------- styling ---------------------------------- */
   const isOverlay = mode === 'overlay'
-  const containerCls = isOverlay
-    ? cn(
-        'fixed bottom-24 right-6 z-50 flex flex-col rounded-xl border bg-background shadow-lg transition-all',
-        collapsed ? 'h-16 w-80' : 'h-[500px] w-96',
-      )
-    : cn(
-        'flex flex-col rounded-lg border bg-background shadow-sm w-full',
-        collapsed && 'h-16',
-      )
+  const containerCls = cn(
+    'flex flex-col rounded-lg border bg-background shadow-lg',
+    isOverlay
+      ? collapsed
+        ? 'fixed bottom-24 right-6 z-50 h-14 w-80'
+        : 'fixed bottom-24 right-6 z-50 h-[540px] w-96'
+      : collapsed
+      ? 'h-14 w-full'
+      : 'w-full',
+  )
 
-  /* ------------------------ render ------------------------------------- */
+  /* --------------------------- render ----------------------------------- */
   return (
     <div className={containerCls}>
-      {/* Header */}
-      <div className='border-b flex items-center justify-between px-4 py-2'>
-        {/* Chat selector */}
-        <div className='relative'>
+      {/* Header ---------------------------------------------------------------- */}
+      <div className='flex items-center justify-between border-b px-4 py-2'>
+        {/* chat heads */}
+        <div className='flex items-center -space-x-2'>
+          <Avatar className='h-8 w-8 border-2 border-background shadow' />
+          <AgentAvatar />
+        </div>
+
+        {/* chat selector */}
+        <div className='relative ml-3'>
           <select
             value={currentId ?? ''}
             onChange={(e) => setCurrentId(e.target.value)}
-            className='pr-8 text-sm font-medium outline-none bg-transparent'
+            className='appearance-none rounded-md bg-muted px-3 py-1 pr-8 text-sm font-medium'
           >
             {chats.map((c) => (
               <option key={c.id} value={c.id}>
@@ -153,10 +183,11 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
               </option>
             ))}
           </select>
-          <ChevronDown className='pointer-events-none absolute right-0 top-1.5 h-4 w-4 text-muted-foreground' />
+          <ChevronDown className='pointer-events-none absolute right-2 top-2 h-4 w-4 text-muted-foreground' />
         </div>
 
-        <div className='flex items-center gap-2'>
+        {/* controls */}
+        <div className='ml-auto flex items-center gap-1'>
           <button
             type='button'
             aria-label='New chat'
@@ -186,58 +217,70 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
         </div>
       </div>
 
-      {/* Body */}
+      {/* Body ------------------------------------------------------------------ */}
       {!collapsed && (
         <>
-          <div className='flex-grow overflow-y-auto p-4'>
+          {/* messages */}
+          <div className='flex flex-grow flex-col gap-4 overflow-y-auto px-4 py-3'>
             {currentChat?.messages.length === 0 && (
-              <p className='text-muted-foreground text-center text-sm'>
+              <p className='text-center text-sm text-muted-foreground'>
                 Start chatting with the on-chain AI&nbsp;Agent…
               </p>
             )}
 
-            {currentChat?.messages.map((m, i) => (
+            {currentChat?.messages.map((m) => (
               <div
-                key={i}
+                key={m.id}
                 className={cn(
-                  'mb-3 max-w-[85%] rounded-2xl px-4 py-2 shadow',
-                  m.sender === 'user'
-                    ? 'bg-primary text-primary-foreground ml-auto'
-                    : 'bg-muted mr-auto',
+                  'flex items-end gap-2',
+                  m.sender === 'user' && 'flex-row-reverse',
                 )}
               >
-                <ReactMarkdown
-                  components={{
-                    a: (props) => (
-                      <a
-                        {...props}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='text-primary underline'
-                      />
-                    ),
-                  }}
+                {m.sender === 'user' ? <Avatar className='h-8 w-8 shrink-0' /> : <AgentAvatar />}
+                <div
+                  className={cn(
+                    'max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow',
+                    m.sender === 'user'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-foreground',
+                  )}
                 >
-                  {m.text}
-                </ReactMarkdown>
+                  <ReactMarkdown
+                    components={{
+                      a: (props) => (
+                        <a
+                          {...props}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='underline underline-offset-2'
+                        />
+                      ),
+                    }}
+                  >
+                    {m.text}
+                  </ReactMarkdown>
+                </div>
               </div>
             ))}
 
             {isThinking && (
-              <p className='text-muted-foreground italic'>
-                <Loader2 className='mr-1 inline h-4 w-4 animate-spin' />
-                thinking…
-              </p>
+              <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+                <AgentAvatar />
+                <span className='flex items-center gap-1 italic'>
+                  <Loader2 className='h-4 w-4 animate-spin' /> thinking…
+                </span>
+              </div>
             )}
+
             <div ref={bottomRef} />
           </div>
 
-          {/* Input */}
-          <div className='border-t flex items-center gap-2 p-3'>
+          {/* input */}
+          <div className='border-t flex items-center gap-2 px-3 py-2'>
             <input
               type='text'
-              className='flex-grow rounded-md border px-3 py-2 text-sm'
               placeholder='Type a message…'
+              className='flex-grow rounded-full border px-4 py-2 text-sm'
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
@@ -246,7 +289,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
             <button
               onClick={handleSend}
               disabled={isThinking}
-              className='bg-primary text-primary-foreground rounded-md px-4 py-2 text-sm shadow transition-opacity disabled:opacity-50'
+              className='rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-opacity disabled:opacity-50'
             >
               Send
             </button>
