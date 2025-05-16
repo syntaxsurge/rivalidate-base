@@ -6,7 +6,6 @@ import {
   Identity,
   Avatar as OKAvatar,
   Name as OKName,
-  formatAddress,
 } from '@coinbase/onchainkit/identity'
 
 import {
@@ -58,7 +57,7 @@ export function UserAvatar({
   /* ---------------------------- Fallback UI ----------------------------- */
   const initials = getAvatarInitials(name, email, initialsLength)
   const fallbackText =
-    initials || name?.trim() || email?.trim() || (address ? formatAddress(address) : '—')
+    initials || name?.trim() || email?.trim() || (address ? (address) : '—')
 
   return (
     <UIAvatar className={cn(className)} {...rest}>
