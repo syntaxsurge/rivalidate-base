@@ -24,7 +24,8 @@
     "paths": {
       "@/*": ["./*"],
       "@/hooks/*": ["lib/hooks/*"],
-      "@/lib/types/agent": ["lib/types/agent.ts"]
+      "@/lib/types/agent": ["lib/types/agent.ts"],
+      "@/wagmi": ["src/wagmi.ts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.d.ts", ".next/types/**/*.ts"],
