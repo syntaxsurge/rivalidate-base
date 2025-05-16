@@ -1,69 +1,91 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-import { inArray, eq } from 'drizzle-orm'
 import { z } from 'zod'
 
 import { requireAuth } from '@/lib/auth/guards'
-import { checkSubscription } from '@/lib/contracts/rivalidate'
-import { db } from '@/lib/db/drizzle'
-import { teams, teamMembers } from '@/lib/db/schema/core'
+import { getTeamForUser } from '@/lib/db/queries/queries'
+import { updateTeamCryptoSubscription } from '@/lib/db/queries/queries'
+import { COMMERCE_API_KEY } from '@/lib/config'
 
 /* -------------------------------------------------------------------------- */
-/*                               V A L I D A T I O N                          */
+/*                                   TYPES                                    */
 /* -------------------------------------------------------------------------- */
 
-const BodySchema = z.object({
-  /** 1 = Base, 2 = Plus */
+const bodySchema = z.object({
   planKey: z.number().int().min(1).max(2),
+  method: z.enum(['eth', 'commerce']),
+  chargeId: z.string().optional(),
 })
 
+type PlanName = 'base' | 'plus'
+
+function keyToPlanName(key: 1 | 2): PlanName {
+  return key === 1 ? 'base' : 'plus'
+}
+
 /* -------------------------------------------------------------------------- */
-/*                                     POST                                   */
+/*                                    POST                                    */
 /* -------------------------------------------------------------------------- */
 
 export async function POST(req: NextRequest) {
   try {
+    /* ------------------------- Auth + Team lookup ------------------------ */
     const user = await requireAuth()
-
-    const body = await req.json()
-    const { planKey } = BodySchema.parse(body)
-    const planName = planKey === 1 ? 'base' : 'plus'
-
-    /* ----------------------- Read on-chain paidUntil ---------------------- */
-    const paidUntil = await checkSubscription(user.walletAddress)
-    if (!paidUntil) {
-      return NextResponse.json({ error: 'Subscription not active on chain' }, { status: 400 })
+    const team = await getTeamForUser(user.id)
+    if (!team) {
+      return NextResponse.json({ error: 'Team not found.' }, { status: 400 })
     }
 
-    /* --------------------------- Resolve team ids ------------------------ */
-    const created = await db
-      .select({ id: teams.id })
-      .from(teams)
-      .where(eq(teams.creatorUserId, user.id))
-
-    const member = await db
-      .select({ teamId: teamMembers.teamId })
-      .from(teamMembers)
-      .where(eq(teamMembers.userId, user.id))
-
-    const ids = Array.from(
-      new Set<number>([...created.map((t) => t.id), ...member.map((m) => m.teamId)]),
-    )
-    if (ids.length === 0) {
-      return NextResponse.json({ error: 'No team found for user' }, { status: 404 })
+    /* ------------------------------- Input ------------------------------- */
+    const parsed = bodySchema.safeParse(await req.json())
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid payload.' }, { status: 400 })
     }
 
-    /* ------------------------- Persist to database ----------------------- */
-    await db
-      .update(teams)
-      .set({
-        planName,
-        subscriptionPaidUntil: paidUntil,
-      })
-      .where(inArray(teams.id, ids))
+    const { planKey, method, chargeId } = parsed.data
+    const planName = keyToPlanName(planKey as 1 | 2)
 
-    return NextResponse.json({ success: true })
+    /* ----------------------------- ETH flow ------------------------------ */
+    if (method === 'eth') {
+      return NextResponse.json({ ok: true })
+    }
+
+    /* ---------------------- Commerce verification ----------------------- */
+    if (!chargeId) {
+      return NextResponse.json({ error: 'Missing chargeId.' }, { status: 400 })
+    }
+    if (!COMMERCE_API_KEY) {
+      return NextResponse.json({ error: 'COMMERCE_API_KEY not configured.' }, { status: 500 })
+    }
+
+    const res = await fetch(`https://api.commerce.coinbase.com/charges/${chargeId}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'X-CC-Api-Key': COMMERCE_API_KEY,
+      },
+      cache: 'no-store',
+    })
+
+    if (!res.ok) {
+      return NextResponse.json({ error: 'Failed to fetch charge.' }, { status: 502 })
+    }
+
+    const { data } = await res.json()
+    const chargeStatus: string = data?.timeline?.at(-1)?.status ?? data?.status
+    const currency: string | undefined = data?.pricing?.local?.currency
+
+    if (chargeStatus !== 'CONFIRMED' || currency !== 'USDC') {
+      return NextResponse.json({ error: 'Charge not confirmed or wrong currency.' }, { status: 400 })
+    }
+
+    /* --------------- Update DB subscription (30-day period) -------------- */
+    const paidUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    await updateTeamCryptoSubscription(team.id, planName, paidUntil)
+
+    return NextResponse.json({ ok: true })
   } catch (err: any) {
-    return NextResponse.json({ error: err?.message ?? 'Internal error' }, { status: 500 })
+    console.error('/api/subscription/sync error:', err)
+    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 })
   }
 }
