@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ChevronDown, Menu, X } from 'lucide-react'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useAccount } from 'wagmi'
 
 import WalletOnboardModal from '@/components/auth/wallet-onboard-modal'
@@ -194,6 +195,18 @@ export default function SiteHeader() {
             {/* Desktop controls */}
             <div className='hidden items-center gap-3 md:flex'>
               <ConnectButton accountStatus='avatar' chainStatus='icon' showBalance={false} />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href='/tools/agent'
+                    aria-label='Open AgentKit Chat'
+                    className='text-foreground/80 hover:text-foreground text-sm font-medium transition-colors'
+                  >
+                    AI&nbsp;Agent
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side='bottom'>Chat with AI Agent</TooltipContent>
+              </Tooltip>
               <ModeToggle />
             </div>
           </div>
