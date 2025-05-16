@@ -7,6 +7,16 @@ import { getEnv } from '@/lib/utils/env'
 export const OPENAI_API_KEY = getEnv('OPENAI_API_KEY') as string
 export const ONCHAINKIT_API_KEY = getEnv('NEXT_PUBLIC_ONCHAINKIT_API_KEY') as string
 
+/* ---------------------------- Coinbase Commerce --------------------------- */
+
+export const COMMERCE_PRODUCT_IDS = {
+  free: getEnv('NEXT_PUBLIC_COMMERCE_PRODUCT_FREE') as string,
+  base: getEnv('NEXT_PUBLIC_COMMERCE_PRODUCT_BASE') as string,
+  plus: getEnv('NEXT_PUBLIC_COMMERCE_PRODUCT_PLUS') as string,
+}
+
+export const COMMERCE_API_KEY = getEnv('COMMERCE_API_KEY') as string
+
 /* ---------------------------- AgentKit keys ------------------------------ */
 export const CDP_API_KEY_NAME = getEnv('CDP_API_KEY_NAME') as string
 export const CDP_API_KEY_PRIVATE_KEY = getEnv('CDP_API_KEY_PRIVATE_KEY') as string
@@ -40,9 +50,10 @@ export const CREDENTIAL_NFT_ADDRESS = getEnv('NEXT_PUBLIC_CREDENTIAL_NFT_ADDRESS
   kind: 'address',
 }) as `0x${string}`
 
-export const SUBSCRIPTION_MANAGER_ADDRESS = getEnv('NEXT_PUBLIC_SUBSCRIPTION_MANAGER_ADDRESS', {
-  kind: 'address',
-}) as `0x${string}`
+export const SUBSCRIPTION_MANAGER_ADDRESS = getEnv(
+  'NEXT_PUBLIC_SUBSCRIPTION_MANAGER_ADDRESS',
+  { kind: 'address' },
+) as `0x${string}`
 
 /* ----------------------------- Platform config ---------------------------- */
 
