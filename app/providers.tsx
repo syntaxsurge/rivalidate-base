@@ -104,7 +104,15 @@ export function Providers({
     <OnchainKitProvider
       apiKey={ONCHAINKIT_API_KEY}
       chain={base as any}
-      config={{ wagmi: { config: getConfig(), initialState } } as any}
+      config={
+        {
+          wagmi: { config: getConfig(), initialState },
+          appearance: {
+            name: 'Rivalidate',
+            logo: '/images/rivalidate-logo.png',
+          },
+        } as any
+      }
     >
       {children}
       <WalletSessionSync />
