@@ -1,9 +1,4 @@
-import {
-  ActionProvider,
-  Network,
-  CreateAction,
-  CdpWalletProvider,
-} from '@coinbase/agentkit'
+import { ActionProvider, Network, CreateAction, CdpWalletProvider } from '@coinbase/agentkit'
 import { z } from 'zod'
 
 import {
@@ -12,6 +7,7 @@ import {
   WETH_ADDRESS,
   USDC_ADDRESS,
 } from '@/lib/config'
+
 import { SwapEthToUsdcSchema } from './schemas'
 
 /* -------------------------------------------------------------------------- */
@@ -93,9 +89,7 @@ export class Uniswapv2ActionProvider extends ActionProvider<CdpWalletProvider> {
   ): Promise<string> {
     const network = walletProvider.getNetwork()
     if (!this.supportsNetwork(network)) {
-      throw new Error(
-        `Swap only supported on Base Sepolia – current network: ${network.networkId}`,
-      )
+      throw new Error(`Swap only supported on Base Sepolia – current network: ${network.networkId}`)
     }
 
     try {

@@ -22,9 +22,7 @@ const wagmiConfig = getDefaultConfig({
   chains: [base, baseSepolia], // Base Mainnet & Base Sepolia
   transports: {
     [base.id]: http(base.rpcUrls.default.http[0]),
-    [baseSepolia.id]: http(
-      BASE_RPC_URL ?? baseSepolia.rpcUrls.default.http[0],
-    ),
+    [baseSepolia.id]: http(BASE_RPC_URL ?? baseSepolia.rpcUrls.default.http[0]),
   },
   ssr: true,
 })
@@ -65,7 +63,7 @@ function WalletConnectionListener() {
     const connectedAndCorrect = isConnected && correctNetwork
 
     if ((prevConnected.current && !connectedAndCorrect) || (isConnected && !correctNetwork)) {
-      ; (async () => {
+      ;(async () => {
         try {
           await fetch('/api/auth/signout', { method: 'POST', credentials: 'include' })
         } catch {
@@ -83,27 +81,27 @@ function WalletConnectionListener() {
   /* First connect → ensure backend session */
   useEffect(() => {
     if (!isConnected || !correctNetwork || !address || sessionAlreadyEnsured()) return
-      ; (async () => {
-        try {
-          const res = await fetch(`/api/auth/wallet-status?address=${address}`, {
-            method: 'GET',
-            cache: 'no-store',
-            credentials: 'include',
-          })
-          const json = await res.json().catch(() => ({}))
+    ;(async () => {
+      try {
+        const res = await fetch(`/api/auth/wallet-status?address=${address}`, {
+          method: 'GET',
+          cache: 'no-store',
+          credentials: 'include',
+        })
+        const json = await res.json().catch(() => ({}))
 
-          if (res.ok && json?.exists) {
-            markSessionEnsured()
-            if (pathname === '/connect-wallet') {
-              router.replace('/dashboard')
-            } else {
-              router.refresh()
-            }
+        if (res.ok && json?.exists) {
+          markSessionEnsured()
+          if (pathname === '/connect-wallet') {
+            router.replace('/dashboard')
+          } else {
+            router.refresh()
           }
-        } catch {
-          /* ignore */
         }
-      })()
+      } catch {
+        /* ignore */
+      }
+    })()
   }, [isConnected, correctNetwork, address])
 
   return null

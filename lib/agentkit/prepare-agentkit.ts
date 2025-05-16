@@ -13,11 +13,7 @@ import {
   WalletProvider,
 } from '@coinbase/agentkit'
 
-import {
-  CDP_API_KEY_NAME,
-  CDP_API_KEY_PRIVATE_KEY,
-  AGENTKIT_NETWORK_ID,
-} from '@/lib/config'
+import { CDP_API_KEY_NAME, CDP_API_KEY_PRIVATE_KEY, AGENTKIT_NETWORK_ID } from '@/lib/config'
 
 import { uniswapv2ActionProvider } from './uniswap-v2-action-provider'
 
