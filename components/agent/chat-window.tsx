@@ -24,12 +24,12 @@ type ChatMessage = { id: string; text: string; sender: Sender }
 type ChatSession = { id: string; title: string; messages: ChatMessage[] }
 
 export interface ChatWindowProps {
-  /** overlay = floating widget   |   page = full-page component */
+  /** overlay = floating widget | page = full-page component */
   mode?: 'overlay' | 'page'
 }
 
 /* -------------------------------------------------------------------------- */
-/*                             LOCAL-STORAGE HELPERS                          */
+/*                           L O C A L   S T O R A G E                        */
 /* -------------------------------------------------------------------------- */
 
 const STORAGE_KEY = 'rv_agent_chats'
@@ -50,7 +50,7 @@ function saveChats(chats: ChatSession[]) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(chats))
   } catch {
-    /* ignore quota errors */
+    /* quota errors → ignore */
   }
 }
 
@@ -84,19 +84,16 @@ function UserChatAvatar({ className }: { className?: string }) {
 /* -------------------------------------------------------------------------- */
 
 export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
-  /* -------------------------------- state -------------------------------- */
-  const [collapsed, setCollapsed] = useState(false)
+  /* ----------------------------- STATE ---------------------------------- */
   const [chats, setChats] = useState<ChatSession[]>([])
   const [currentId, setCurrentId] = useState<string | null>(null)
   const [input, setInput] = useState('')
   const [isThinking, setIsThinking] = useState(false)
+  const [collapsed, setCollapsed] = useState(false)
 
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  /* ------------------------------ helpers -------------------------------- */
-  const currentChat = chats.find((c) => c.id === currentId) ?? null
-
-  /** Persist helper using functional update to avoid stale closures. */
+  /* ----------------------- PERSISTENCE HELPER --------------------------- */
   const updateChats = (updater: (prev: ChatSession[]) => ChatSession[]) => {
     setChats((prev) => {
       const next = updater(prev)
@@ -105,27 +102,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
     })
   }
 
-  /* ---------------------------- CRUD chats ------------------------------- */
-  function createChat() {
-    const id = crypto.randomUUID()
-    updateChats((prev) => [...prev, { id, title: `Chat ${prev.length + 1}`, messages: [] }])
-    setCurrentId(id)
-  }
-
-  function deleteChat(id: string) {
-    updateChats((prev) => prev.filter((c) => c.id !== id))
-    setCurrentId((prev) => (prev === id ? chats.filter((c) => c.id !== id)[0]?.id ?? null : prev))
-  }
-
-  function appendMessage(msg: ChatMessage) {
-    updateChats((prev) =>
-      prev.map((c) =>
-        c.id === currentId ? { ...c, messages: [...c.messages, msg] } : c,
-      ),
-    )
-  }
-
-  /* ---------------------------- lifecycle -------------------------------- */
+  /* --------------------------- INIT LOAD ------------------------------- */
   useEffect(() => {
     const initial = loadChats()
     if (initial.length === 0) {
@@ -136,15 +113,54 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
     setCurrentId(initial[0].id)
   }, [])
 
+  /* ------------------------ SCROLL BOTTOM ------------------------------ */
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [currentChat?.messages.length, isThinking])
+  }, [currentId, chats, isThinking])
 
-  /* ----------------------------- actions --------------------------------- */
+  const currentChat = chats.find((c) => c.id === currentId) ?? null
+
+  /* ------------------------- CHAT CRUD --------------------------------- */
+  function createChat() {
+    updateChats((prev) => {
+      const id = crypto.randomUUID()
+      const title = `Chat ${prev.length + 1}`
+      setCurrentId(id)
+      return [...prev, { id, title, messages: [] }]
+    })
+  }
+
+  function deleteChat(id: string) {
+    updateChats((prev) => {
+      const remaining = prev.filter((c) => c.id !== id)
+
+      /* If nothing left, create a fresh Chat 1 automatically */
+      if (remaining.length === 0) {
+        const newId = crypto.randomUUID()
+        const newChat: ChatSession = { id: newId, title: 'Chat 1', messages: [] }
+        setCurrentId(newId)
+        return [newChat]
+      }
+
+      /* Otherwise, select first remaining chat if current was deleted */
+      if (currentId === id) setCurrentId(remaining[0].id)
+      return remaining
+    })
+  }
+
+  function appendMessage(msg: ChatMessage) {
+    updateChats((prev) =>
+      prev.map((c) => (c.id === currentId ? { ...c, messages: [...c.messages, msg] } : c)),
+    )
+  }
+
+  /* --------------------------- SEND MSG --------------------------------- */
   async function handleSend() {
     if (!currentChat || !input.trim() || isThinking) return
+
     const userText = input.trim()
     setInput('')
+
     const userMsg: ChatMessage = { id: crypto.randomUUID(), text: userText, sender: 'user' }
     appendMessage(userMsg)
 
@@ -159,14 +175,13 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
     setIsThinking(false)
   }
 
-  /* ----------------------------- styling --------------------------------- */
+  /* --------------------------- RENDER ---------------------------------- */
   const isOverlay = mode === 'overlay'
 
-  /* Responsive sizing ----------------------------------------------------- */
   const overlayExpanded = [
     'fixed bottom-24 right-6 z-50',
-    'w-[calc(100vw-3rem)] h-[calc(100dvh-8rem)]', // mobile-first
-    'sm:w-96 sm:h-[540px]', // ≥640 px
+    'w-[calc(100vw-3rem)] h-[calc(100dvh-8rem)]',
+    'sm:w-96 sm:h-[540px]',
   ].join(' ')
 
   const overlayCollapsed = [
@@ -186,18 +201,15 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
         : 'h-full w-full',
   )
 
-  /* ------------------------------ render --------------------------------- */
   return (
     <div className={containerCls}>
-      {/* Header ------------------------------------------------------------- */}
+      {/* ------------------------- HEADER ------------------------- */}
       <div className='flex items-center justify-between border-b px-4 py-2'>
-        {/* chat heads */}
         <div className='flex -space-x-2 items-center'>
           <UserChatAvatar className='h-8 w-8 border-2 border-background shadow' />
           <AgentAvatar />
         </div>
 
-        {/* chat selector */}
         <div className='relative ml-3'>
           <select
             value={currentId ?? ''}
@@ -213,41 +225,41 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
           <ChevronDown className='pointer-events-none absolute right-2 top-2 h-4 w-4 text-muted-foreground' />
         </div>
 
-        {/* controls */}
         <div className='ml-auto flex items-center gap-1'>
           <button
-            type='button'
             aria-label='New chat'
             onClick={createChat}
             className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md'
+            type='button'
           >
             <Plus className='h-4 w-4' />
           </button>
+
           {currentId && (
             <button
-              type='button'
               aria-label='Delete chat'
               onClick={() => deleteChat(currentId)}
               className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md'
+              type='button'
             >
               <Trash2 className='h-4 w-4' />
             </button>
           )}
+
           <button
-            type='button'
             aria-label='Collapse'
             onClick={() => setCollapsed((c) => !c)}
             className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md'
+            type='button'
           >
             {collapsed ? <ChevronUp className='h-4 w-4' /> : <ChevronDown className='h-4 w-4' />}
           </button>
         </div>
       </div>
 
-      {/* Body --------------------------------------------------------------- */}
+      {/* ------------------------- BODY -------------------------- */}
       {!collapsed && (
         <>
-          {/* messages */}
           <div className='flex flex-grow flex-col gap-4 overflow-y-auto overflow-x-hidden px-4 py-3'>
             {currentChat?.messages.length === 0 && (
               <p className='text-center text-sm text-muted-foreground'>
@@ -255,9 +267,9 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
               </p>
             )}
 
-            {currentChat?.messages.map((m, idx) => (
+            {currentChat?.messages.map((m) => (
               <div
-                key={`${m.id}-${idx}`}
+                key={m.id}
                 className={cn(
                   'flex items-end gap-2',
                   m.sender === 'user' && 'flex-row-reverse',
@@ -268,6 +280,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
                 ) : (
                   <AgentAvatar />
                 )}
+
                 <div
                   className={cn(
                     'max-w-[75%] whitespace-pre-wrap break-words rounded-2xl px-4 py-2 text-sm shadow',
@@ -306,7 +319,6 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
             <div ref={bottomRef} />
           </div>
 
-          {/* input */}
           <div className='border-t flex items-center gap-2 px-3 py-2'>
             <input
               type='text'
@@ -321,6 +333,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
               onClick={handleSend}
               disabled={isThinking}
               className='rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-opacity disabled:opacity-50'
+              type='button'
             >
               Send
             </button>
