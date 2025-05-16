@@ -5,6 +5,7 @@ import { getEnv } from '@/lib/utils/env'
 /* -------------------------------------------------------------------------- */
 
 export const OPENAI_API_KEY = getEnv('OPENAI_API_KEY') as string
+export const ONCHAINKIT_API_KEY = getEnv('NEXT_PUBLIC_ONCHAINKIT_API_KEY') as string
 
 /* ---------------------------- AgentKit keys ------------------------------ */
 export const CDP_API_KEY_NAME = getEnv('CDP_API_KEY_NAME') as string
@@ -46,5 +47,3 @@ export const SUBSCRIPTION_MANAGER_ADDRESS = getEnv('NEXT_PUBLIC_SUBSCRIPTION_MAN
 /* ----------------------------- Platform config ---------------------------- */
 
 export const PLATFORM_ISSUER_DID = getEnv('NEXT_PUBLIC_PLATFORM_ISSUER_DID') as string
-
-export const WALLETCONNECT_PROJECT_ID = getEnv('NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID') as string

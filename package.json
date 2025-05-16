@@ -25,6 +25,7 @@
     "@ai-sdk/openai": "^1.2.1",
     "@coinbase/agentkit": "^0.6.0",
     "@coinbase/agentkit-langchain": "^0.3.0",
+    "@coinbase/onchainkit": "^1.0.0",
     "@esbuild-kit/core-utils": "^3.3.2",
     "@esbuild-kit/esm-loader": "^2.6.5",
     "@helia/strings": "^4.0.3",
@@ -47,9 +48,6 @@
     "@radix-ui/react-slot": "^1.2.0",
     "@radix-ui/react-tabs": "^1.1.4",
     "@radix-ui/react-tooltip": "^1.2.4",
-    "@rainbow-me/rainbowkit": "^2.2.4",
-    "@reown/appkit": "^1.7.3",
-    "@reown/appkit-adapter-wagmi": "^1.7.3",
     "@tailwindcss/postcss": "4.1.1",
     "@tanstack/react-query": "^5.74.4",
     "@tanstack/react-table": "^8.21.3",
@@ -89,8 +87,8 @@
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-react-aria-components": "2.0.0",
     "typescript": "^5.8.2",
-    "viem": "2.23.9",
-    "wagmi": "2.14.15",
+    "viem": "2.25.0",
+    "wagmi": "2.17.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
