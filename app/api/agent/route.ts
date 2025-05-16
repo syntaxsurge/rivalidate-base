@@ -31,8 +31,14 @@ export async function POST(
       }
     }
 
-    /* 5. Return final message */
-    return NextResponse.json({ response: agentResponse })
+    /* 5. Trim leading / trailing whitespace and collapse 3+ newlines to 2 */
+    const cleaned = agentResponse
+      .replace(/\n{3,}/g, '\n\n')
+      .replace(/[ \t]+\n/g, '\n')
+      .trim()
+
+    /* 6. Return final message */
+    return NextResponse.json({ response: cleaned })
   } catch (err) {
     console.error('Agent route error:', err)
     return NextResponse.json({ error: 'Failed to process message' })

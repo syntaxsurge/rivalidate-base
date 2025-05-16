@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-
 import ReactMarkdown from 'react-markdown'
 
 import { useAgent } from '@/app/hooks/useAgent'
@@ -36,7 +35,7 @@ export default function AgentChatPage() {
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`mb-3 max-w-[90%] rounded-2xl px-4 py-2 whitespace-pre-wrap shadow ${
+            className={`mb-3 max-w-[90%] rounded-2xl px-4 py-2 shadow ${
               m.sender === 'user'
                 ? 'bg-primary text-primary-foreground ml-auto'
                 : 'bg-muted mr-auto'
