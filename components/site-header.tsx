@@ -3,26 +3,10 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-
-import {
-  Avatar,
-  Name,
-  Address,
-  Identity,
-} from '@coinbase/onchainkit/identity'
-import {
-  Wallet,
-  ConnectWallet,
-  WalletDropdown,
-  WalletDropdownDisconnect,
-  WalletAdvancedWalletActions,
-  WalletAdvancedAddressDetails,
-  WalletAdvancedTransactionActions,
-  WalletAdvancedTokenHoldings,
-} from '@coinbase/onchainkit/wallet'
 import { ChevronDown, Menu, X } from 'lucide-react'
 import { useAccount } from 'wagmi'
 
+import WalletMenu from '@/components/wallet-menu'
 import WalletOnboardModal from '@/components/auth/wallet-onboard-modal'
 import { ModeToggle } from '@/components/theme-toggle'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
@@ -89,36 +73,6 @@ export default function SiteHeader() {
 
   function handleNav() {
     setMobileOpen(false)
-  }
-
-  /* ---------------------------------------------------------------------- */
-  /*                          W A L L E T   M E N U                          */
-  /* ---------------------------------------------------------------------- */
-
-  function WalletMenu() {
-    return (
-      <Wallet>
-        <ConnectWallet disconnectedLabel='Connect'>
-          <Avatar className='h-6 w-6' />
-          <Name />
-        </ConnectWallet>
-
-        <WalletDropdown>
-          <Identity className='px-4 pt-3 pb-2' hasCopyAddressOnClick>
-            <Avatar />
-            <Name />
-            <Address className='text-muted-foreground text-xs' />
-          </Identity>
-
-          <WalletAdvancedWalletActions />
-          <WalletAdvancedAddressDetails />
-          <WalletAdvancedTransactionActions />
-          <WalletAdvancedTokenHoldings />
-
-          <WalletDropdownDisconnect />
-        </WalletDropdown>
-      </Wallet>
-    )
   }
 
   /* ---------------------------------------------------------------------- */

@@ -1,14 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-
-import { Avatar, Name } from '@coinbase/onchainkit/identity'
-import { Wallet, ConnectWallet } from '@coinbase/onchainkit/wallet'
 import { Wallet as WalletIcon } from 'lucide-react'
 import { useAccount, useChainId } from 'wagmi'
 
+import WalletMenu from '@/components/wallet-menu'
+
 /**
- * Connect Wallet — prompts visitors to connect a wallet before using the app.
+ * Connect Wallet — prompts visitors to connect a Smart Wallet before using the app.
  * After the wallet connects, we verify that the backend has established a
  * session (`/api/auth/wallet-status`) before redirecting to the dashboard.
  *
@@ -70,12 +69,7 @@ export default function ConnectWalletPage() {
 
       {/* Connect Wallet button */}
       <div className='flex w-full justify-center'>
-        <Wallet>
-          <ConnectWallet disconnectedLabel='Connect'>
-            <Avatar className='h-6 w-6' />
-            <Name />
-          </ConnectWallet>
-        </Wallet>
+        <WalletMenu />
       </div>
 
       {checking && <p className='text-muted-foreground text-xs'>Verifying wallet session…</p>}
