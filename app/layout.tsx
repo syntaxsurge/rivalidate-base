@@ -68,7 +68,21 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   /* ---------------------------------------------------------------------- */
   const userPromise = getUser()
   const headerList = await headers()
-  const initialState = cookieToInitialState(getConfig(), headerList.get('cookie'))
+
+  /* Decode any percent-encoded cookie values (wagmi.store is URI-encoded). */
+  const rawCookie = headerList.get('cookie') ?? ''
+  const decodedCookie = rawCookie
+    .split('; ')
+    .map((part) => {
+      const eqIndex = part.indexOf('=')
+      if (eqIndex === -1) return part
+      const name = part.slice(0, eqIndex)
+      const value = part.slice(eqIndex + 1)
+      return `${name}=${decodeURIComponent(value)}`
+    })
+    .join('; ')
+
+  const initialState = cookieToInitialState(getConfig(), decodedCookie)
 
   return (
     <html
