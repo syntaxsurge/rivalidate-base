@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 
+import { Identity, Address } from '@coinbase/onchainkit/identity'
 import { Share2, Clipboard, ExternalLink } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -15,8 +16,6 @@ import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/comp
 import { UserAvatar } from '@/components/ui/user-avatar'
 import type { ProfileHeaderProps } from '@/lib/types/components'
 import { copyToClipboard } from '@/lib/utils'
-
-import { Identity, Address } from '@coinbase/onchainkit/identity'
 
 export default function ProfileHeader({
   name,

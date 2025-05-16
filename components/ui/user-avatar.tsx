@@ -2,11 +2,7 @@
 
 import * as React from 'react'
 
-import {
-  Identity,
-  Avatar as OKAvatar,
-  Name as OKName,
-} from '@coinbase/onchainkit/identity'
+import { Identity, Avatar as OKAvatar, Name as OKName } from '@coinbase/onchainkit/identity'
 
 import {
   Avatar as UIAvatar,
@@ -56,8 +52,7 @@ export function UserAvatar({
 
   /* ---------------------------- Fallback UI ----------------------------- */
   const initials = getAvatarInitials(name, email, initialsLength)
-  const fallbackText =
-    initials || name?.trim() || email?.trim() || (address ? (address) : '—')
+  const fallbackText = initials || name?.trim() || email?.trim() || (address ? address : '—')
 
   return (
     <UIAvatar className={cn(className)} {...rest}>
