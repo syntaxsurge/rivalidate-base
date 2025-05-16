@@ -28,16 +28,18 @@ import { cn } from '@/lib/utils'
 /*                               C H A I N  D A T A                           */
 /* -------------------------------------------------------------------------- */
 
+type ChainId = 8453 | 84532
+
 type ChainInfo = {
-  id: number
+  id: ChainId
   name: string
   shortName: string
 }
 
 /** Limited to Base mainnet and Base Sepolia as enforced by wagmi config. */
 const CHAINS: ChainInfo[] = [
-  { id: base.id, name: 'Base', shortName: 'Mainnet' },
-  { id: baseSepolia.id, name: 'Base Sepolia', shortName: 'Sepolia' },
+  { id: base.id as ChainId, name: 'Base', shortName: 'Mainnet' },
+  { id: baseSepolia.id as ChainId, name: 'Base Sepolia', shortName: 'Sepolia' },
 ]
 
 /* Simple Base logo – same SVG for both networks (colour may vary via CSS if desired) */
@@ -71,7 +73,7 @@ function BaseLogo({ className }: { className?: string }) {
 
 function ChainSwitcher() {
   const currentChainId = useChainId()
-  const { switchChain, isPending, pendingChainId } = useSwitchChain()
+  const { switchChain, isPending } = useSwitchChain()
 
   const current = CHAINS.find((c) => c.id === currentChainId) ?? CHAINS[0]
 
@@ -100,9 +102,10 @@ function ChainSwitcher() {
           <DropdownMenuItem
             key={chain.id}
             onSelect={() => {
-              if (chain.id !== currentChainId) switchChain({ chainId: chain.id })
+              if (chain.id !== currentChainId)
+                switchChain({ chainId: chain.id as ChainId })
             }}
-            disabled={isPending && pendingChainId === chain.id}
+            disabled={isPending}
             className='flex items-center gap-2'
           >
             <BaseLogo className='h-4 w-4 flex-shrink-0' />
