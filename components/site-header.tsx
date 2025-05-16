@@ -198,7 +198,7 @@ export default function SiteHeader() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
-                    href='/tools/agent'
+                    href='/agent'
                     aria-label='Open AgentKit Chat'
                     className='text-foreground/80 hover:text-foreground text-sm font-medium transition-colors'
                   >

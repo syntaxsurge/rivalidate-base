@@ -29,9 +29,9 @@ export function SidebarNav({
   const navItems = useMemo((): SidebarNavItem[] => {
     let list = items
     if (title?.toLowerCase() === 'tools') {
-      const exists = items.some((i) => i.href === '/tools/agent')
+      const exists = items.some((i) => i.href === '/agent')
       if (!exists) {
-        list = [...items, { href: '/tools/agent', label: 'AI Agent', icon: Bot } as SidebarNavItem]
+        list = [...items, { href: '/agent', label: 'AI Agent', icon: Bot } as SidebarNavItem]
       }
     }
     return [...list].sort((a, b) => a.label.localeCompare(b.label))

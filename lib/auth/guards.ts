@@ -5,7 +5,7 @@ import { getUser } from '@/lib/db/queries/queries'
 import type { Role } from '@/lib/types'
 
 /* Routes that guests may access without an authenticated wallet */
-const PUBLIC_ROUTES = ['/tools/agent']
+const PUBLIC_ROUTES = ['/agent']
 
 /**
  * Server-side page guard.
