@@ -1,29 +1,60 @@
 import { NextResponse } from 'next/server'
 
-import { type AgentRequest, type AgentResponse } from '@/lib/types/agent'
-
+import type { AgentRequest, AgentResponse } from '@/lib/types/agent'
+import { verifyToken } from '@/lib/auth/session'
 import { createAgent } from './create-agent'
 
+/* -------------------------------------------------------------------------- */
+/*                          A G E N T   P R O X Y                             */
+/* -------------------------------------------------------------------------- */
+
 /**
- * POST /api/agent — proxy a single user message to the AgentKit agent.
+ * POST /api/agent — forward a single user message to the AgentKit agent
+ * while injecting the connected wallet (when present) as a system hint.
  */
 export async function POST(
   req: Request & { json: () => Promise<AgentRequest> },
 ): Promise<NextResponse<AgentResponse>> {
   try {
-    /* 1. Extract the user message */
+    /* --------------------------- Payload -------------------------------- */
     const { userMessage } = await req.json()
 
-    /* 2. Initialise or reuse the agent instance */
+    /* -------------------------- Wallet info ----------------------------- */
+    let walletAddress: string | null = null
+    const cookieHeader = req.headers.get('cookie') || ''
+    const sessionPair = cookieHeader
+      .split(';')
+      .map((c) => c.trim())
+      .find((c) => c.startsWith('session='))
+
+    if (sessionPair) {
+      const sessionValue = decodeURIComponent(sessionPair.slice('session='.length))
+      try {
+        const payload = await verifyToken(sessionValue)
+        walletAddress = payload.wallet ?? null
+      } catch {
+        /* Expired or malformed session — ignore. */
+      }
+    }
+
+    const systemContext = walletAddress
+      ? `The connected user's wallet address is ${walletAddress}.`
+      : `The user is not connected; you do not have their wallet address.`
+
+    /* --------------------------- Agent ---------------------------------- */
     const agent = await createAgent()
 
-    /* 3. Stream the agent’s response */
     const stream = await agent.stream(
-      { messages: [{ role: 'user', content: userMessage }] },
+      {
+        messages: [
+          { role: 'system', content: systemContext },
+          { role: 'user', content: userMessage },
+        ],
+      },
       { configurable: { thread_id: 'AgentKit Discussion' } },
     )
 
-    /* 4. Accumulate streamed chunks */
+    /* ---------------------- Collect response ---------------------------- */
     let agentResponse = ''
     for await (const chunk of stream) {
       if ('agent' in chunk) {
@@ -31,13 +62,12 @@ export async function POST(
       }
     }
 
-    /* 5. Trim leading / trailing whitespace and collapse 3+ newlines to 2 */
+    /* Normalise whitespace */
     const cleaned = agentResponse
       .replace(/\n{3,}/g, '\n\n')
       .replace(/[ \t]+\n/g, '\n')
       .trim()
 
-    /* 6. Return final message */
     return NextResponse.json({ response: cleaned })
   } catch (err) {
     console.error('Agent route error:', err)
