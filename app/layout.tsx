@@ -2,8 +2,8 @@
 /*                     G L O B A L  S T Y L E S  &  F O N T S                 */
 /* -------------------------------------------------------------------------- */
 
-import '@coinbase/onchainkit/styles.css'      // ➜ OnchainKit styles first
-import './globals.css'
+import '@coinbase/onchainkit/styles.css';
+import './globals.css';
 import { Inter } from 'next/font/google'
 
 import type { Metadata, Viewport } from 'next'
