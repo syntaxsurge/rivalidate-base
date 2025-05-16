@@ -1,15 +1,19 @@
-/**
- * Uniswapv2 Action Provider
- *
- * Provides actions for Uniswap V2 operations on Base Sepolia.
- */
-
 import { ActionProvider, Network, CreateAction, CdpWalletProvider } from '@coinbase/agentkit'
 import { z } from 'zod'
 
 import { SwapEthToUsdcSchema } from './schemas'
+import {
+  UNISWAP_ROUTER_ADDRESS,
+  UNISWAP_FACTORY_ADDRESS,
+  WETH_ADDRESS,
+  USDC_ADDRESS,
+} from '@/lib/config'
 
-// Uniswap V2 Router ABI (only the functions we need)
+/* -------------------------------------------------------------------------- */
+/*                                 CONSTANTS                                  */
+/* -------------------------------------------------------------------------- */
+
+/** Minimal Uniswap V2 Router ABI (only the functions we need). */
 const UNISWAP_V2_ROUTER_ABI = [
   {
     inputs: [
@@ -35,36 +39,43 @@ const UNISWAP_V2_ROUTER_ABI = [
   },
 ]
 
-// Uniswap V2 config for Base Sepolia
+/** Uniswap addresses injected from env via `lib/config.ts`. */
 const UNISWAP_CONFIG = {
-  ROUTER_ADDRESS: '0x1689E7B1F10000AE47eBfE339a4f69dECd19F602',
-  FACTORY_ADDRESS: '0x7Ae58f10f7849cA6F5fB71b7f45CB416c9204b1e',
-  WETH_ADDRESS: '0x4200000000000000000000000000000000000006',
-  USDC_ADDRESS: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
+  ROUTER_ADDRESS: UNISWAP_ROUTER_ADDRESS,
+  FACTORY_ADDRESS: UNISWAP_FACTORY_ADDRESS,
+  WETH_ADDRESS,
+  USDC_ADDRESS,
 }
 
-// Base Sepolia Network ID
+/** Network / protocol identifiers. */
 const BASE_SEPOLIA_NETWORK_ID = 'base-sepolia'
-// EVM protocol family identifier
 const EVM_PROTOCOL_FAMILY = 'evm'
 
+/* -------------------------------------------------------------------------- */
+/*                           P R O V I D E R  C L A S S                       */
+/* -------------------------------------------------------------------------- */
+
 /**
- * Uniswapv2ActionProvider enables ETH→USDC swaps on Base Sepolia.
+ * `Uniswapv2ActionProvider` exposes an AgentKit action that swaps ETH for USDC
+ * using the Uniswap V2 router on Base Sepolia.
  */
 export class Uniswapv2ActionProvider extends ActionProvider<CdpWalletProvider> {
   constructor() {
     super('uniswapv2', [])
   }
 
+  /**
+   * Swap a specified amount of ETH for USDC.
+   */
   @CreateAction({
     name: 'swap_eth_to_usdc',
     description: `
       Swap ETH to USDC on Uniswap V2.
-
       Inputs:
-      • ethAmount – amount of ETH to swap (e.g. 0.01)
-      • slippagePercent – max acceptable slippage percentage
-      • deadlineMinutes – optional deadline (defaults 20 min)
+        • ethAmount – amount of ETH to swap (e.g. 0.01)
+        • slippagePercent – max slippage % (default 1)
+        • deadlineMinutes – optional tx deadline (default 20)
+      Output: JSON summary containing the tx hash and ETH amount sent.
     `,
     schema: SwapEthToUsdcSchema,
   })
@@ -72,19 +83,27 @@ export class Uniswapv2ActionProvider extends ActionProvider<CdpWalletProvider> {
     walletProvider: CdpWalletProvider,
     args: z.infer<typeof SwapEthToUsdcSchema>,
   ): Promise<string> {
-    // Ensure Base Sepolia
+    /* Ensure we are on Base Sepolia. */
     const network = walletProvider.getNetwork()
     if (!this.supportsNetwork(network)) {
-      throw new Error(`Action only supported on Base Sepolia (current: ${network.networkId})`)
+      throw new Error(
+        `Swap only supported on Base Sepolia – current network: ${network.networkId}`,
+      )
     }
 
     try {
       const wallet = walletProvider.getWallet()
       const userAddress = (await walletProvider.getAddress()) as `0x${string}`
 
-      const deadline = Math.floor(Date.now() / 1000) + (args.deadlineMinutes ?? 20) * 60
+      /* Deadline (seconds since epoch). */
+      const deadlineSecs = (args.deadlineMinutes ?? 20) * 60
+      const deadline = Math.floor(Date.now() / 1000) + deadlineSecs
+
+      /* Swap path ETH → USDC. */
       const path = [UNISWAP_CONFIG.WETH_ADDRESS, UNISWAP_CONFIG.USDC_ADDRESS]
-      const amountOutMin = 0 // simplify demo
+
+      /* Slippage handling – for demo simplicity we set amountOutMin to 0. */
+      const amountOutMin = 0
 
       const invocation = await wallet.invokeContract({
         contractAddress: UNISWAP_CONFIG.ROUTER_ADDRESS,
@@ -102,15 +121,20 @@ export class Uniswapv2ActionProvider extends ActionProvider<CdpWalletProvider> {
 
       await invocation.wait()
       const txHash = invocation.toString()
-      const formattedEth = args.ethAmount < 0.0001 ? args.ethAmount.toFixed(8) : `${args.ethAmount}`
 
-      return `Swap successful! Tx: ${txHash} • ${formattedEth} ETH → USDC`
+      const ethDisplay =
+        args.ethAmount < 0.0001 ? args.ethAmount.toFixed(8) : args.ethAmount.toString()
+
+      return `Swap successful!\nTx: ${txHash}\nETH sent: ${ethDisplay}`
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err)
-      return `Failed to swap ETH for USDC: ${msg}`
+      return `Failed to swap ETH → USDC: ${msg}`
     }
   }
 
+  /**
+   * Provider/network compatibility checker.
+   */
   supportsNetwork(network: Network): boolean {
     return (
       network.protocolFamily === EVM_PROTOCOL_FAMILY &&
@@ -119,5 +143,5 @@ export class Uniswapv2ActionProvider extends ActionProvider<CdpWalletProvider> {
   }
 }
 
-/** Factory helper */
+/** Factory helper so callers don’t `new` the class directly. */
 export const uniswapv2ActionProvider = () => new Uniswapv2ActionProvider()

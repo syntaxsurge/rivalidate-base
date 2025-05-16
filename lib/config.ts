@@ -12,6 +12,12 @@ export const CDP_API_KEY_NAME = getEnv('CDP_API_KEY_NAME') as string
 export const CDP_API_KEY_PRIVATE_KEY = getEnv('CDP_API_KEY_PRIVATE_KEY') as string
 export const AGENTKIT_NETWORK_ID = getEnv('NETWORK_ID') as string
 
+/* ---------------------------- Uniswap (Base Sepolia) --------------------- */
+export const UNISWAP_ROUTER_ADDRESS = getEnv('UNISWAP_ROUTER_ADDRESS', { kind: 'address' }) as `0x${string}`
+export const UNISWAP_FACTORY_ADDRESS = getEnv('UNISWAP_FACTORY_ADDRESS', { kind: 'address' }) as `0x${string}`
+export const WETH_ADDRESS = getEnv('WETH_ADDRESS', { kind: 'address' }) as `0x${string}`
+export const USDC_ADDRESS = getEnv('USDC_ADDRESS', { kind: 'address' }) as `0x${string}`
+
 /* ------------------------------- Base RPC --------------------------------- */
 
 export const BASE_RPC_URL = getEnv('NEXT_PUBLIC_BASE_RPC_URL') as string
