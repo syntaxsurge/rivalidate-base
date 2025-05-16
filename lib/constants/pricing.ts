@@ -10,7 +10,13 @@ export const RBTC_DECIMALS = 18
 
 /**
  * Immutable price & feature table.
- * ⚠️  Keep this array **sorted** in display order for the pricing grid.
+ *
+ * ⚠️  IMPORTANT: `productId` values **must** stay in sync with the
+ * Coinbase Commerce dashboard. The admin UI (/admin/subscription-plans)
+ * lets admins edit product IDs; those edits update runtime env vars and
+ * should be reflected here (or via env overrides) before the next deploy.
+ *
+ * Keep this array **sorted** in display order for the pricing grid.
  * `productId` placeholders are overridden at runtime by
  * NEXT_PUBLIC_COMMERCE_PRODUCT_* env vars.
  */
