@@ -18,7 +18,7 @@ import { useAccount, useChainId } from 'wagmi'
 export default function ConnectWalletPage() {
   const { isConnected, address } = useAccount()
   const chainId = useChainId()
-  const correctNetwork = chainId === 30 || chainId === 31
+  const correctNetwork = chainId === 8453 || chainId === 84532
   const [checking, setChecking] = useState(false)
 
   /* Once connected, ask the backend to set/confirm the session cookie; only
@@ -63,7 +63,7 @@ export default function ConnectWalletPage() {
         <Wallet className='text-primary h-10 w-10' strokeWidth={1.5} />
         <h1 className='text-3xl font-extrabold tracking-tight'>Connect Your Wallet</h1>
         <p className='text-muted-foreground max-w-xs text-sm'>
-          To continue, please connect an EVM wallet such as MetaMask or WalletConnect.
+          To continue, please connect an EVM wallet on the Base network such as MetaMask or WalletConnect.
         </p>
       </div>
 

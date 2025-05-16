@@ -21,7 +21,7 @@ import { WALLETCONNECT_PROJECT_ID } from './config'
 const wagmiConfig = getDefaultConfig({
   appName: 'Rivalidate',
   projectId: WALLETCONNECT_PROJECT_ID,
-  chains: [base, baseSepolia],
+  chains: [base, baseSepolia], // Base Mainnet & Base Sepolia
   transports: {
     [base.id]: http(base.rpcUrls.default.http[0]),
     [baseSepolia.id]: http(
@@ -41,7 +41,7 @@ const queryClient = new QueryClient()
 function WalletConnectionListener() {
   const { isConnected, address } = useAccount()
   const chainId = useChainId()
-  const correctNetwork = chainId === base.id || chainId === baseSepolia.id
+  const correctNetwork = chainId === 8453 || chainId === 84532
   const router = useRouter()
   const pathname = usePathname()
 
