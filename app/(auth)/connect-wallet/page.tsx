@@ -2,12 +2,9 @@
 
 import { useEffect, useState } from 'react'
 
-import { Wallet as WalletIcon } from 'lucide-react'
-import {
-  Wallet,
-  ConnectWallet,
-} from '@coinbase/onchainkit/wallet'
 import { Avatar, Name } from '@coinbase/onchainkit/identity'
+import { Wallet, ConnectWallet } from '@coinbase/onchainkit/wallet'
+import { Wallet as WalletIcon } from 'lucide-react'
 import { useAccount, useChainId } from 'wagmi'
 
 /**

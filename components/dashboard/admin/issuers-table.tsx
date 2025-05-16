@@ -3,8 +3,8 @@
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
 
-import { Trash2 } from 'lucide-react'
 import { Identity, Name, Address } from '@coinbase/onchainkit/identity'
+import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import {
@@ -218,7 +218,7 @@ export default function AdminIssuersTable({
           v ? (
             <Identity address={v as `0x${string}`}>
               <Name />
-              <Address className='break-all text-xs text-muted-foreground' />
+              <Address className='text-muted-foreground text-xs break-all' />
             </Identity>
           ) : (
             '—'

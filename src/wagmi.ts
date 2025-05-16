@@ -1,6 +1,6 @@
-import { http, cookieStorage, createConfig, createStorage } from 'wagmi';
-import { base, baseSepolia } from 'wagmi/chains';
-import { coinbaseWallet, injected } from 'wagmi/connectors';
+import { http, cookieStorage, createConfig, createStorage } from 'wagmi'
+import { base, baseSepolia } from 'wagmi/chains'
+import { coinbaseWallet, injected } from 'wagmi/connectors'
 
 /**
  * getConfig — returns a wagmi configuration strictly limited to the Base mainnet
@@ -27,7 +27,7 @@ export function getConfig() {
       [base.id]: http(),
       [baseSepolia.id]: http(),
     },
-  });
+  })
 }
 
 /* -------------------------------------------------------------------------- */
@@ -37,6 +37,6 @@ export function getConfig() {
 declare module 'wagmi' {
   // Extend wagmi’s global registry so hooks infer the correct config type.
   interface Register {
-    config: ReturnType<typeof getConfig>;
+    config: ReturnType<typeof getConfig>
   }
 }

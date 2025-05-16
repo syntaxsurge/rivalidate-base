@@ -6,11 +6,7 @@ import * as React from 'react'
 /*                        O N C H A I N K I T  I D E N T I T Y                */
 /* -------------------------------------------------------------------------- */
 
-import {
-  Identity,
-  Avatar as OKAvatar,
-  Name as OKName,
-} from '@coinbase/onchainkit/identity'
+import { Identity, Avatar as OKAvatar, Name as OKName } from '@coinbase/onchainkit/identity'
 
 /* -------------------------------------------------------------------------- */
 /*                       L O C A L   U I   F A L L B A C K                    */
@@ -21,11 +17,10 @@ import {
   AvatarImage as UIAvatarImage,
   AvatarFallback as UIAvatarFallback,
 } from '@/components/ui/avatar'
-
+import type { UserAvatarProps as BaseProps } from '@/lib/types/ui'
 import { cn } from '@/lib/utils'
 import { truncateAddress } from '@/lib/utils/address'
 import { getAvatarInitials } from '@/lib/utils/avatar'
-import type { UserAvatarProps as BaseProps } from '@/lib/types/ui'
 
 /* -------------------------------------------------------------------------- */
 /*                                 P R O P S                                  */
@@ -74,10 +69,7 @@ export function UserAvatar({
   }
 
   /* ---------------------------- Fallback UI ----------------------------- */
-  const fallbackText =
-    name?.trim() ||
-    (email?.trim() ?? truncateAddress(undefined)) ||
-    '—'
+  const fallbackText = name?.trim() || (email?.trim() ?? truncateAddress(undefined)) || '—'
 
   return (
     <UIAvatar className={cn(className)} {...rest}>

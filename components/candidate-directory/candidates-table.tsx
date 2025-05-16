@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import * as React from 'react'
+
 import { Identity, Avatar, Name } from '@coinbase/onchainkit/identity'
 
 import { Button } from '@/components/ui/button'

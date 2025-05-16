@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+
 import * as AvatarPrimitive from '@radix-ui/react-avatar'
 
 import { cn } from '@/lib/utils'
@@ -9,14 +10,12 @@ import { cn } from '@/lib/utils'
 /*                                T Y P E S                                   */
 /* -------------------------------------------------------------------------- */
 
-export interface AvatarProps
-  extends React.ComponentProps<typeof AvatarPrimitive.Root> {
+export interface AvatarProps extends React.ComponentProps<typeof AvatarPrimitive.Root> {
   /** Render a square avatar (rounded-md) instead of the default circle. */
   square?: boolean
 }
 
-export interface AvatarFallbackProps
-  extends React.ComponentProps<typeof AvatarPrimitive.Fallback> {
+export interface AvatarFallbackProps extends React.ComponentProps<typeof AvatarPrimitive.Fallback> {
   /** Match the Avatar square prop for consistent shape. */
   square?: boolean
 }
@@ -39,10 +38,7 @@ function Avatar({ className, square = false, ...props }: AvatarProps) {
   )
 }
 
-function AvatarImage({
-  className,
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
+function AvatarImage({ className, ...props }: React.ComponentProps<typeof AvatarPrimitive.Image>) {
   return (
     <AvatarPrimitive.Image
       data-slot='avatar-image'
@@ -52,11 +48,7 @@ function AvatarImage({
   )
 }
 
-function AvatarFallback({
-  className,
-  square = false,
-  ...props
-}: AvatarFallbackProps) {
+function AvatarFallback({ className, square = false, ...props }: AvatarFallbackProps) {
   return (
     <AvatarPrimitive.Fallback
       data-slot='avatar-fallback'

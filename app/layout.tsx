@@ -2,23 +2,24 @@
 /*                     G L O B A L  S T Y L E S  &  F O N T S                 */
 /* -------------------------------------------------------------------------- */
 
-import '@coinbase/onchainkit/styles.css';
-import './globals.css';
+import '@coinbase/onchainkit/styles.css'
+import './globals.css'
 import { Inter } from 'next/font/google'
+import { headers } from 'next/headers'
 
 import type { Metadata, Viewport } from 'next'
-import { headers } from 'next/headers'
-import { cookieToInitialState } from 'wagmi'
 import { Toaster } from 'sonner'
+import { cookieToInitialState } from 'wagmi'
 
-import { Providers } from './providers'
-import { getConfig } from '@/wagmi'
 import PublicEnvScript from '@/components/public-env-script'
 import SiteHeader from '@/components/site-header'
 import { ThemeProvider } from '@/components/theme-provider'
 import { UserProvider } from '@/lib/auth'
 import { isDatabaseHealthy } from '@/lib/db/health'
 import { getUser } from '@/lib/db/queries/queries'
+import { getConfig } from '@/wagmi'
+
+import { Providers } from './providers'
 
 /* -------------------------------------------------------------------------- */
 /*                               M E T A D A T A                              */
@@ -48,12 +49,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   /* ---------------------------------------------------------------------- */
   if (!dbOk) {
     return (
-      <html lang="en" className={`bg-background text-foreground ${inter.className}`}>
-        <body className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight">
+      <html lang='en' className={`bg-background text-foreground ${inter.className}`}>
+        <body className='flex min-h-screen flex-col items-center justify-center px-4 text-center'>
+          <h1 className='text-4xl font-extrabold tracking-tight'>
             Our database is having a nap 😴
           </h1>
-          <p className="text-muted-foreground mt-4 max-w-md">
+          <p className='text-muted-foreground mt-4 max-w-md'>
             We’re unable to reach the Rivalidate database right now. Please try again in a few
             minutes while we reconnect everything behind the scenes.
           </p>
@@ -70,22 +71,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html
-      lang="en"
+      lang='en'
       className={`bg-background text-foreground ${inter.className}`}
       suppressHydrationWarning
     >
-      <body className="min-h-[100dvh]">
+      <body className='min-h-[100dvh]'>
         <PublicEnvScript />
 
         <Providers initialState={initialState}>
           <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
+            attribute='class'
+            defaultTheme='system'
             enableSystem
             disableTransitionOnChange
           >
             <Toaster
-              position="bottom-right"
+              position='bottom-right'
               toastOptions={{
                 classNames: {
                   toast:

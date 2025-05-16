@@ -4,14 +4,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
+import { Avatar, Name, Address, Identity } from '@coinbase/onchainkit/identity'
 import {
   Wallet,
   ConnectWallet,
   WalletDropdown,
   WalletDropdownDisconnect,
 } from '@coinbase/onchainkit/wallet'
-import { Avatar, Name, Address, Identity } from '@coinbase/onchainkit/identity'
-
 import { ChevronDown, Menu, X } from 'lucide-react'
 import { useAccount } from 'wagmi'
 
@@ -215,7 +214,7 @@ export default function SiteHeader() {
                   <Identity className='px-4 pt-3 pb-2' hasCopyAddressOnClick>
                     <Avatar />
                     <Name />
-                    <Address className='text-xs text-muted-foreground' />
+                    <Address className='text-muted-foreground text-xs' />
                   </Identity>
                   <WalletDropdownDisconnect />
                 </WalletDropdown>

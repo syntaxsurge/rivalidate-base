@@ -1,12 +1,14 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+
 import { OnchainKitProvider } from '@coinbase/onchainkit'
-import { base } from 'wagmi/chains'
+import { base } from 'viem/chains'
 import { useAccount } from 'wagmi'
 
+import { ONCHAINKIT_API_KEY } from '@/lib/config'
 import { getConfig } from '@/wagmi'
 
 /* -------------------------------------------------------------------------- */
@@ -33,7 +35,6 @@ function WalletSessionSync() {
     /* Prevent concurrent sync attempts. */
     if (syncingRef.current) return
     syncingRef.current = true
-
     ;(async () => {
       try {
         /* ----------------------- Wallet connected ----------------------- */
@@ -99,9 +100,9 @@ export function Providers({
 }) {
   return (
     <OnchainKitProvider
-      apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-      chain={base}
-      config={{ wagmi: { config: getConfig(), initialState } }}
+      apiKey={ONCHAINKIT_API_KEY}
+      chain={base as any}
+      config={{ wagmi: { config: getConfig(), initialState } } as any}
     >
       {children}
       <WalletSessionSync />

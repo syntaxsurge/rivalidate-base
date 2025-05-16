@@ -36,10 +36,5 @@ export const SwapEthToUsdcSchema = z.object({
    * Deadline in minutes for the transaction (optional, defaults to 20 minutes).
    * Values between 1 and 60 minutes are accepted.
    */
-  deadlineMinutes: z
-    .number()
-    .min(1)
-    .max(60)
-    .nullable()
-    .default(20),
+  deadlineMinutes: z.number().min(1).max(60).nullable().default(20),
 })
