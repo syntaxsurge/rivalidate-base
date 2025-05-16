@@ -88,7 +88,9 @@ function PricingCard({ meta, priceRbtc, isCurrent, highlight, hideButton }: Pric
           </Suspense>
 
           {/* Stable-coin payment */}
-          {meta.productId && <PlanCheckout planKey={planKey} productId={meta.productId} />}
+          {meta.productId && !meta.productId.startsWith('PRODUCT_ID_') && (
+            <PlanCheckout planKey={planKey} productId={meta.productId} />
+          )}
         </div>
       )
     }

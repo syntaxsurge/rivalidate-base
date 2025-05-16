@@ -40,7 +40,8 @@ export default function WalletOnboardModal({ isConnected, user }: WalletOnboardM
     attemptedAutoRef.current = true
     ;(async () => {
       try {
-        const res = await fetch(`/api/auth/wallet-status?address=${address}`, {
+        const addr = address.toLowerCase()
+        const res = await fetch(`/api/auth/wallet-status?address=${addr}`, {
           method: 'GET',
           cache: 'no-store',
         })
