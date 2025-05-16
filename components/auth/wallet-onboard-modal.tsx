@@ -74,7 +74,7 @@ export default function WalletOnboardModal({ isConnected, user }: WalletOnboardM
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!address) {
-      toast.error('Wallet not connected.')
+      toast.error('Smart Wallet not connected.')
       return
     }
 
