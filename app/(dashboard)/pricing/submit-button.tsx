@@ -10,12 +10,11 @@ import { useAccount, useSwitchChain, useWalletClient, usePublicClient } from 'wa
 import { Button } from '@/components/ui/button'
 import { SUBSCRIPTION_MANAGER_ADDRESS, CHAIN_ID } from '@/lib/config'
 import { SUBSCRIPTION_MANAGER_ABI } from '@/lib/contracts/abis'
-import { syncSubscription } from '@/lib/payments/client'
+import { syncSubscriptionClient } from '@/lib/payments/client'
 import type { SubmitButtonProps } from '@/lib/types/forms'
 
 /**
- * Pay-in-RBTC subscription checkout button.
- * All USD price-feed logic has been removed for simplicity.
+ * Pay-in-ETH subscription checkout button.
  */
 export function SubmitButton({ planKey, priceWei }: SubmitButtonProps) {
   const { address, chain, isConnected } = useAccount()
@@ -27,7 +26,7 @@ export function SubmitButton({ planKey, priceWei }: SubmitButtonProps) {
   const [pending, setPending] = useState(false)
 
   /* ------------------------------------------------------------------ */
-  /*                            H A N D L E R                           */
+  /*                           H A N D L E R                            */
   /* ------------------------------------------------------------------ */
 
   async function handleClick() {
@@ -47,7 +46,7 @@ export function SubmitButton({ planKey, priceWei }: SubmitButtonProps) {
     const toastId = toast.loading('Preparing transaction…')
 
     try {
-      /* Network guard — prompt switch when on the wrong chain */
+      /* Prompt network switch when on the wrong chain */
       if (chain?.id !== CHAIN_ID) {
         toast.loading('Switching network…', { id: toastId })
         await switchChainAsync({ chainId: CHAIN_ID })
@@ -69,7 +68,7 @@ export function SubmitButton({ planKey, priceWei }: SubmitButtonProps) {
       await publicClient?.waitForTransactionReceipt({ hash: txHash })
 
       /* Persist to database */
-      await syncSubscription(planKey)
+      await syncSubscriptionClient(planKey, 'eth')
 
       toast.success('Subscription activated ✅', { id: toastId })
       router.refresh()
@@ -98,7 +97,7 @@ export function SubmitButton({ planKey, priceWei }: SubmitButtonProps) {
           </>
         ) : (
           <>
-            Get Started
+            Pay with ETH
             <ArrowRight className='ml-2 h-4 w-4' />
           </>
         )}
