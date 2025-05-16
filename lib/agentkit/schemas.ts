@@ -28,6 +28,7 @@ export const SwapEthToUsdcSchema = z.object({
     .number()
     .min(0)
     .max(50)
+    .nullable()
     .default(1)
     .describe('Slippage percentage (default 1 %)'),
 
@@ -35,5 +36,10 @@ export const SwapEthToUsdcSchema = z.object({
    * Deadline in minutes for the transaction (optional, defaults to 20 minutes).
    * Values between 1 and 60 minutes are accepted.
    */
-  deadlineMinutes: z.number().min(1).max(60).default(20).optional(),
+  deadlineMinutes: z
+    .number()
+    .min(1)
+    .max(60)
+    .nullable()
+    .default(20),
 })
