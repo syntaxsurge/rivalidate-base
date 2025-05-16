@@ -4,12 +4,21 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-import { Avatar, Name, Address, Identity } from '@coinbase/onchainkit/identity'
+import {
+  Avatar,
+  Name,
+  Address,
+  Identity,
+} from '@coinbase/onchainkit/identity'
 import {
   Wallet,
   ConnectWallet,
   WalletDropdown,
   WalletDropdownDisconnect,
+  WalletAdvancedWalletActions,
+  WalletAdvancedAddressDetails,
+  WalletAdvancedTransactionActions,
+  WalletAdvancedTokenHoldings,
 } from '@coinbase/onchainkit/wallet'
 import { ChevronDown, Menu, X } from 'lucide-react'
 import { useAccount } from 'wagmi'
@@ -46,19 +55,15 @@ const TOOLS_MENU = [
 /* -------------------------------------------------------------------------- */
 
 export default function SiteHeader() {
-  /* Global user promise (resolved server-side) */
   const { userPromise } = useUser()
   const [currentUser, setCurrentUser] = useState<Awaited<typeof userPromise> | null>(null)
 
-  /* Wallet connectivity */
   const { isConnected } = useAccount()
 
-  /* Mobile state */
   const [mobileOpen, setMobileOpen] = useState(false)
   const [learnMobileOpen, setLearnMobileOpen] = useState(false)
   const [toolsMobileOpen, setToolsMobileOpen] = useState(false)
 
-  /* Reset sub-menus whenever the hamburger closes */
   useEffect(() => {
     if (!mobileOpen) {
       setLearnMobileOpen(false)
@@ -66,7 +71,6 @@ export default function SiteHeader() {
     }
   }, [mobileOpen])
 
-  /* Resolve the user promise exactly once per render cycle */
   useEffect(() => {
     let mounted = true
     const maybe = userPromise as unknown
@@ -83,19 +87,52 @@ export default function SiteHeader() {
     }
   }, [userPromise])
 
-  /* Close hamburger after navigation */
   function handleNav() {
     setMobileOpen(false)
   }
+
+  /* ---------------------------------------------------------------------- */
+  /*                          W A L L E T   M E N U                          */
+  /* ---------------------------------------------------------------------- */
+
+  function WalletMenu() {
+    return (
+      <Wallet>
+        <ConnectWallet disconnectedLabel='Connect'>
+          <Avatar className='h-6 w-6' />
+          <Name />
+        </ConnectWallet>
+
+        <WalletDropdown>
+          <Identity className='px-4 pt-3 pb-2' hasCopyAddressOnClick>
+            <Avatar />
+            <Name />
+            <Address className='text-muted-foreground text-xs' />
+          </Identity>
+
+          <WalletAdvancedWalletActions />
+          <WalletAdvancedAddressDetails />
+          <WalletAdvancedTransactionActions />
+          <WalletAdvancedTokenHoldings />
+
+          <WalletDropdownDisconnect />
+        </WalletDropdown>
+      </Wallet>
+    )
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /*                                R E N D E R                              */
+  /* ---------------------------------------------------------------------- */
 
   return (
     <>
       <header className='border-border/60 bg-background/80 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40 w-full border-b shadow-sm backdrop-blur'>
         <div className='mx-auto grid h-16 max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-6 px-4 md:px-6'>
-          {/* Brand ------------------------------------------------------------------ */}
+          {/* Brand */}
           <Link
             href='/'
-            className='text-primary flex items-center gap-2 text-lg font-extrabold tracking-tight whitespace-nowrap'
+            className='text-primary flex items-center gap-2 whitespace-nowrap text-lg font-extrabold tracking-tight'
             onClick={handleNav}
           >
             <Image
@@ -109,7 +146,7 @@ export default function SiteHeader() {
             <span className='hidden md:inline'>Rivalidate</span>
           </Link>
 
-          {/* Desktop nav ------------------------------------------------------------ */}
+          {/* Desktop nav */}
           <nav className='hidden justify-center gap-6 md:flex'>
             <Link
               href='/'
@@ -181,19 +218,14 @@ export default function SiteHeader() {
             </Link>
           </nav>
 
-          {/* Right-aligned controls -------------------------------------------------- */}
+          {/* Right-aligned controls */}
           <div className='flex items-center justify-end gap-3'>
-            {/* Connect button (mobile) */}
+            {/* Connect (mobile) */}
             <div className='md:hidden'>
-              <Wallet>
-                <ConnectWallet disconnectedLabel='Connect'>
-                  <Avatar className='h-6 w-6' />
-                  <Name />
-                </ConnectWallet>
-              </Wallet>
+              <WalletMenu />
             </div>
 
-            {/* Mobile hamburger */}
+            {/* Hamburger */}
             <button
               type='button'
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
@@ -205,20 +237,7 @@ export default function SiteHeader() {
 
             {/* Desktop controls */}
             <div className='hidden items-center gap-3 md:flex'>
-              <Wallet>
-                <ConnectWallet disconnectedLabel='Connect'>
-                  <Avatar className='h-6 w-6' />
-                  <Name />
-                </ConnectWallet>
-                <WalletDropdown>
-                  <Identity className='px-4 pt-3 pb-2' hasCopyAddressOnClick>
-                    <Avatar />
-                    <Name />
-                    <Address className='text-muted-foreground text-xs' />
-                  </Identity>
-                  <WalletDropdownDisconnect />
-                </WalletDropdown>
-              </Wallet>
+              <WalletMenu />
 
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -237,16 +256,15 @@ export default function SiteHeader() {
           </div>
         </div>
 
-        {/* Mobile slide-down menu --------------------------------------------------- */}
+        {/* Mobile slide-down menu */}
         {mobileOpen && (
           <div className='bg-background/95 absolute inset-x-0 top-16 z-40 shadow-lg backdrop-blur md:hidden'>
             <nav className='flex flex-col gap-4 px-4 py-6'>
-              {/* Home */}
               <Link href='/' onClick={handleNav} className='text-sm font-medium'>
                 Home
               </Link>
 
-              {/* Learn (collapsible) */}
+              {/* Learn */}
               <div>
                 <button
                   type='button'
@@ -271,7 +289,7 @@ export default function SiteHeader() {
                 )}
               </div>
 
-              {/* Tools (collapsible) */}
+              {/* Tools */}
               <div>
                 <button
                   type='button'
@@ -296,7 +314,6 @@ export default function SiteHeader() {
                 )}
               </div>
 
-              {/* Static links */}
               <Link href='/pricing' onClick={handleNav} className='text-sm font-medium'>
                 Pricing
               </Link>
@@ -304,14 +321,13 @@ export default function SiteHeader() {
                 Dashboard
               </Link>
 
-              {/* Theme toggle at bottom */}
               <ModeToggle />
             </nav>
           </div>
         )}
       </header>
 
-      {/* Global wallet modal */}
+      {/* Global onboard modal */}
       <WalletOnboardModal isConnected={isConnected} user={currentUser} />
     </>
   )
