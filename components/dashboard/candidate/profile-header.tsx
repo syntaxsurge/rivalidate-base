@@ -15,11 +15,8 @@ import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/comp
 import { UserAvatar } from '@/components/ui/user-avatar'
 import type { ProfileHeaderProps } from '@/lib/types/components'
 import { copyToClipboard } from '@/lib/utils'
-import { truncateAddress } from '@/lib/utils/address'
 
-/* -------------------------------------------------------------------------- */
-/*                                   View                                     */
-/* -------------------------------------------------------------------------- */
+import { Identity, Address } from '@coinbase/onchainkit/identity'
 
 export default function ProfileHeader({
   name,
@@ -60,6 +57,7 @@ export default function ProfileHeader({
             <UserAvatar
               name={name}
               email={email}
+              address={walletAddress as `0x${string}` | undefined}
               className='ring-background -mt-20 size-28 ring-4 sm:-mt-14'
               src={avatarSrc ?? undefined}
             />
@@ -69,9 +67,9 @@ export default function ProfileHeader({
                 {email}
               </Link>
               {walletAddress && (
-                <p className='text-muted-foreground font-mono text-xs'>
-                  {truncateAddress(walletAddress)}
-                </p>
+                <Identity address={walletAddress as `0x${string}`}>
+                  <Address className='text-muted-foreground font-mono text-xs' />
+                </Identity>
               )}
             </div>
           </div>

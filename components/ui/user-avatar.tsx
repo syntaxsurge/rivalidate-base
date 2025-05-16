@@ -2,15 +2,12 @@
 
 import * as React from 'react'
 
-/* -------------------------------------------------------------------------- */
-/*                        O N C H A I N K I T  I D E N T I T Y                */
-/* -------------------------------------------------------------------------- */
-
-import { Identity, Avatar as OKAvatar, Name as OKName } from '@coinbase/onchainkit/identity'
-
-/* -------------------------------------------------------------------------- */
-/*                       L O C A L   U I   F A L L B A C K                    */
-/* -------------------------------------------------------------------------- */
+import {
+  Identity,
+  Avatar as OKAvatar,
+  Name as OKName,
+  formatAddress,
+} from '@coinbase/onchainkit/identity'
 
 import {
   Avatar as UIAvatar,
@@ -19,17 +16,12 @@ import {
 } from '@/components/ui/avatar'
 import type { UserAvatarProps as BaseProps } from '@/lib/types/ui'
 import { cn } from '@/lib/utils'
-import { truncateAddress } from '@/lib/utils/address'
 import { getAvatarInitials } from '@/lib/utils/avatar'
 
 /* -------------------------------------------------------------------------- */
 /*                                 P R O P S                                  */
 /* -------------------------------------------------------------------------- */
 
-/**
- * Extends the existing UI `UserAvatarProps` with optional on-chain address
- * and a flag to toggle Basename rendering.
- */
 export type UserAvatarProps = BaseProps & {
   /** 0x… address to resolve Basename and avatar via OnchainKit Identity. */
   address?: `0x${string}`
@@ -41,11 +33,6 @@ export type UserAvatarProps = BaseProps & {
 /*                               C O M P O N E N T                            */
 /* -------------------------------------------------------------------------- */
 
-/**
- * UserAvatar — displays an on-chain avatar with Basename when `address` is
- * provided; otherwise falls back to initials derived from the supplied name
- * or email.  Fallback label prioritises `name` then a truncated address.
- */
 export function UserAvatar({
   address,
   name,
@@ -69,14 +56,14 @@ export function UserAvatar({
   }
 
   /* ---------------------------- Fallback UI ----------------------------- */
-  const fallbackText = name?.trim() || (email?.trim() ?? truncateAddress(undefined)) || '—'
+  const initials = getAvatarInitials(name, email, initialsLength)
+  const fallbackText =
+    initials || name?.trim() || email?.trim() || (address ? formatAddress(address) : '—')
 
   return (
     <UIAvatar className={cn(className)} {...rest}>
       <UIAvatarImage src={undefined} alt={name ?? email ?? 'User avatar'} />
-      <UIAvatarFallback className='bg-muted text-foreground'>
-        {getAvatarInitials(name, email, initialsLength) || fallbackText}
-      </UIAvatarFallback>
+      <UIAvatarFallback className='bg-muted text-foreground'>{fallbackText}</UIAvatarFallback>
     </UIAvatar>
   )
 }

@@ -22,8 +22,9 @@ import { TableRowActions, type TableRowAction } from '@/components/ui/tables/row
 import { useBulkActions } from '@/lib/hooks/use-bulk-actions'
 import { useTableNavigation } from '@/lib/hooks/use-table-navigation'
 import type { TableProps, MemberRow } from '@/lib/types/tables'
-import { truncateAddress } from '@/lib/utils/address'
 import { relativeTime } from '@/lib/utils/time'
+
+import { Identity, Address } from '@coinbase/onchainkit/identity'
 
 const ROLES = ['member', 'owner'] as const
 
@@ -170,7 +171,14 @@ export default function MembersTable({
         key: 'walletAddress',
         header: 'Wallet',
         sortable: false,
-        render: (v) => <span className='font-mono text-xs'>{truncateAddress(v as string)}</span>,
+        render: (v) =>
+          v ? (
+            <Identity address={v as `0x${string}`}>
+              <Address className='font-mono text-xs' />
+            </Identity>
+          ) : (
+            '—'
+          ),
       },
       {
         key: 'role',
