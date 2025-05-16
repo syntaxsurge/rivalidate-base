@@ -14,7 +14,7 @@ import { TablePagination } from '@/components/ui/tables/table-pagination'
 import { CHAIN_ID, SUBSCRIPTION_MANAGER_ADDRESS } from '@/lib/config'
 import { PLAN_META } from '@/lib/constants/pricing'
 import { SUBSCRIPTION_MANAGER_ABI } from '@/lib/contracts/abis'
-import { syncSubscription } from '@/lib/payments/client'
+import { syncSubscriptionClient } from '@/lib/payments/client'
 import type { SettingsProps } from '@/lib/types/components'
 
 import { InviteTeamMember } from './invite-team'
@@ -71,7 +71,7 @@ function RenewSubscriptionButton({ planName }: { planName: 'base' | 'plus' }) {
       await publicClient?.waitForTransactionReceipt({ hash: txHash })
 
       /* Persist to DB ----------------------------------------------------- */
-      await syncSubscription(planKey)
+      await syncSubscriptionClient(planKey, 'eth')
 
       toast.success('Subscription renewed ✅', { id: toastId })
       location.reload()
