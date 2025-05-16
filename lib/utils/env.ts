@@ -52,18 +52,3 @@ export function getEnv(
       return raw
   }
 }
-
-/* -------------------------------------------------------------------------- */
-/*                             N E T W O R K   F L A G                         */
-/* -------------------------------------------------------------------------- */
-
-/**
- * Convenience boolean indicating if the configured front-end chain ID
- * points to Base (mainnet 8453 or Sepolia 84532).
- */
-export const isBaseNetwork: boolean = (() => {
-  const cid = getEnv('NEXT_PUBLIC_CHAIN_ID', { kind: 'number', optional: true }) as
-    | number
-    | undefined
-  return cid === 8453 || cid === 84532
-})()

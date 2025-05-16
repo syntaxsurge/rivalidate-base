@@ -10,9 +10,7 @@ import { useTheme } from 'next-themes'
 import { WagmiProvider, http, useAccount, useChainId } from 'wagmi'
 import { base, baseSepolia } from 'wagmi/chains'
 
-import { getEnv } from '@/lib/utils/env'
-
-import { WALLETCONNECT_PROJECT_ID } from './config'
+import { BASE_RPC_URL, WALLETCONNECT_PROJECT_ID } from './config'
 
 /* -------------------------------------------------------------------------- */
 /*                             W A G M I   C O N F I G                        */
@@ -25,8 +23,7 @@ const wagmiConfig = getDefaultConfig({
   transports: {
     [base.id]: http(base.rpcUrls.default.http[0]),
     [baseSepolia.id]: http(
-      (getEnv('NEXT_PUBLIC_BASE_RPC_URL', { optional: true }) as string | undefined) ??
-        baseSepolia.rpcUrls.default.http[0],
+      BASE_RPC_URL ?? baseSepolia.rpcUrls.default.http[0],
     ),
   },
   ssr: true,
@@ -68,7 +65,7 @@ function WalletConnectionListener() {
     const connectedAndCorrect = isConnected && correctNetwork
 
     if ((prevConnected.current && !connectedAndCorrect) || (isConnected && !correctNetwork)) {
-      ;(async () => {
+      ; (async () => {
         try {
           await fetch('/api/auth/signout', { method: 'POST', credentials: 'include' })
         } catch {
@@ -86,27 +83,27 @@ function WalletConnectionListener() {
   /* First connect → ensure backend session */
   useEffect(() => {
     if (!isConnected || !correctNetwork || !address || sessionAlreadyEnsured()) return
-    ;(async () => {
-      try {
-        const res = await fetch(`/api/auth/wallet-status?address=${address}`, {
-          method: 'GET',
-          cache: 'no-store',
-          credentials: 'include',
-        })
-        const json = await res.json().catch(() => ({}))
+      ; (async () => {
+        try {
+          const res = await fetch(`/api/auth/wallet-status?address=${address}`, {
+            method: 'GET',
+            cache: 'no-store',
+            credentials: 'include',
+          })
+          const json = await res.json().catch(() => ({}))
 
-        if (res.ok && json?.exists) {
-          markSessionEnsured()
-          if (pathname === '/connect-wallet') {
-            router.replace('/dashboard')
-          } else {
-            router.refresh()
+          if (res.ok && json?.exists) {
+            markSessionEnsured()
+            if (pathname === '/connect-wallet') {
+              router.replace('/dashboard')
+            } else {
+              router.refresh()
+            }
           }
+        } catch {
+          /* ignore */
         }
-      } catch {
-        /* ignore */
-      }
-    })()
+      })()
   }, [isConnected, correctNetwork, address])
 
   return null
