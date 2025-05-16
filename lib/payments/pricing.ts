@@ -1,5 +1,6 @@
 import { eq, asc } from 'drizzle-orm'
 
+import { COMMERCE_PRODUCT_IDS } from '@/lib/config'
 import { PLAN_META } from '@/lib/constants/pricing'
 import { subscriptionManager } from '@/lib/contracts'
 import { db } from '@/lib/db/drizzle'
@@ -46,12 +47,8 @@ export async function fetchPlanMeta(): Promise<PlanMetaSerialised[]> {
     getFeatures('plus'),
   ])
 
-  /* Environment overrides */
-  const ENV_PRODUCTS = {
-    free: process.env.NEXT_PUBLIC_COMMERCE_PRODUCT_FREE,
-    base: process.env.NEXT_PUBLIC_COMMERCE_PRODUCT_BASE,
-    plus: process.env.NEXT_PUBLIC_COMMERCE_PRODUCT_PLUS,
-  }
+  /* Resolved product-ID overrides from config */
+  const PRODUCT_IDS = COMMERCE_PRODUCT_IDS
 
   /* Resolve constant placeholders */
   const constantMap: Record<'free' | 'base' | 'plus', PlanMeta> = {
@@ -67,21 +64,21 @@ export async function fetchPlanMeta(): Promise<PlanMetaSerialised[]> {
       highlight: true,
       priceWei: '0',
       features: freeFeat,
-      productId: ENV_PRODUCTS.free || constantMap.free.productId,
+      productId: PRODUCT_IDS.free || constantMap.free.productId,
     },
     {
       key: 'base',
       name: 'Base',
       priceWei: baseWei.toString(),
       features: baseFeat,
-      productId: ENV_PRODUCTS.base || constantMap.base.productId,
+      productId: PRODUCT_IDS.base || constantMap.base.productId,
     },
     {
       key: 'plus',
       name: 'Plus',
       priceWei: plusWei.toString(),
       features: plusFeat,
-      productId: ENV_PRODUCTS.plus || constantMap.plus.productId,
+      productId: PRODUCT_IDS.plus || constantMap.plus.productId,
     },
   ]
 }

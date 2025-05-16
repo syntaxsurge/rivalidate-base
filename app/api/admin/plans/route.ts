@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+
 import { z } from 'zod'
 
 import { requireAuth } from '@/lib/auth/guards'
+import { COMMERCE_PRODUCT_IDS } from '@/lib/config'
 
 /* -------------------------------------------------------------------------- */
 /*                                V A L I D A T I O N                         */
@@ -46,12 +48,12 @@ export async function PATCH(req: NextRequest) {
     /*  Persistent storage (e.g. DB) can be added later as needed.        */
     /* ------------------------------------------------------------------ */
     if (typeof basePid === 'string' && basePid.length > 0) {
-      // update runtime env override for Base tier
-      process.env.NEXT_PUBLIC_COMMERCE_PRODUCT_BASE = basePid
+      // update runtime override for Base tier
+      COMMERCE_PRODUCT_IDS.base = basePid
     }
     if (typeof plusPid === 'string' && plusPid.length > 0) {
-      // update runtime env override for Plus tier
-      process.env.NEXT_PUBLIC_COMMERCE_PRODUCT_PLUS = plusPid
+      // update runtime override for Plus tier
+      COMMERCE_PRODUCT_IDS.plus = plusPid
     }
 
     return NextResponse.json({ success: true })

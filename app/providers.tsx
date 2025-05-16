@@ -5,8 +5,8 @@ import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
 
 import { OnchainKitProvider } from '@coinbase/onchainkit'
-import { base, baseSepolia } from 'wagmi/chains'
 import { useAccount } from 'wagmi'
+import { base, baseSepolia } from 'wagmi/chains'
 
 import ChatWidget from '@/components/agent/chat-widget'
 import { ONCHAINKIT_API_KEY, CHAIN_ID } from '@/lib/config'
