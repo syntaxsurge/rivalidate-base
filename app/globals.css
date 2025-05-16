@@ -183,14 +183,3 @@
     animation: rivalidate-gradient-pan 1.2s linear infinite;
   }
 }
-
-/* RainbowKit brand overrides */
-[data-rk] {
-  --rk-colors-accent: var(--color-primary);
-  --rk-colors-accentHover: var(--color-primary);
-  --rk-colors-accentActive: var(--color-primary);
-  --rk-colors-connectButtonBackground: var(--color-primary);
-  --rk-colors-connectButtonBackgroundHover: var(--color-primary);
-  --rk-colors-connectButtonText: var(--color-primary-foreground);
-  --rk-radii-connectButton: 0.5rem;
-}
