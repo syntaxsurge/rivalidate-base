@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 
-import type { AgentRequest, AgentResponse } from '@/lib/types/agent'
 import { verifyToken } from '@/lib/auth/session'
+import type { AgentRequest, AgentResponse } from '@/lib/types/agent'
+
 import { createAgent } from './create-agent'
 
 /* -------------------------------------------------------------------------- */

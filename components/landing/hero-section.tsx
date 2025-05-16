@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useMotionValue, useSpring, useTransform } from 'framer-motion'
-import { motion } from 'framer-motion'
-import { ArrowRight, Building2, ShieldCheck, Sparkles, ArrowDown } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
+
+import { useMotionValue, useSpring, useTransform, motion } from 'framer-motion'
+import { ArrowRight, Building2, ShieldCheck, Sparkles, ArrowDown } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -81,7 +81,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: 'easeOut' }}
-            className='mx-auto max-w-3xl bg-gradient-to-r from-white via-neutral-200 to-white bg-clip-text text-balance break-words text-5xl font-extrabold leading-tight text-transparent sm:text-6xl lg:text-6xl xl:mx-0 xl:text-7xl'
+            className='mx-auto max-w-3xl bg-gradient-to-r from-white via-neutral-200 to-white bg-clip-text text-5xl leading-tight font-extrabold text-balance break-words text-transparent sm:text-6xl lg:text-6xl xl:mx-0 xl:text-7xl'
           >
             Proof-First&nbsp;Hiring
           </motion.h1>
@@ -134,7 +134,7 @@ export default function HeroSection() {
           <div className='relative h-80 w-full max-w-sm rounded-[2.5rem] bg-gradient-to-br from-[#00d2ff] to-[#3a47d5] p-1 shadow-2xl xl:h-[26rem] xl:rounded-[3rem]'>
             <div className='bg-background flex h-full w-full flex-col items-center justify-center gap-6 rounded-[inherit] p-10 text-center'>
               <Sparkles className='text-primary h-10 w-10' />
-              <p className='text-foreground text-xl font-semibold leading-snug'>
+              <p className='text-foreground text-xl leading-snug font-semibold'>
                 Your experience,
                 <br /> tokenized
               </p>

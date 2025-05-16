@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useAccount } from 'wagmi'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+
 import { toast } from 'sonner'
+import { useAccount } from 'wagmi'
 
 import ChatWindow from '@/components/agent/chat-window'
 

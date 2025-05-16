@@ -87,13 +87,13 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 221 100% 50%;               /* Base Blue #0052FF */
+    --primary: 221 100% 50%; /* Base Blue #0052FF */
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 171 100% 45%;             /* Base Teal #00E5C4 */
+    --secondary: 171 100% 45%; /* Base Teal #00E5C4 */
     --secondary-foreground: 0 0% 98%;
 
-    --accent: 43 100% 55%;                 /* Brand Amber #FFB400 */
+    --accent: 43 100% 55%; /* Brand Amber #FFB400 */
     --accent-foreground: 0 0% 98%;
 
     --muted-foreground: 215.4 16.3% 46.9%;
@@ -107,7 +107,7 @@
     /* -------- Base-inspired chart palette -------- */
     --chart-1: 221 100% 50%;
     --chart-2: 171 100% 45%;
-    --chart-3: 204 98% 58%;                /* Sky Blue */
+    --chart-3: 204 98% 58%; /* Sky Blue */
     --chart-4: 43 100% 60%;
     --chart-5: 27 95% 60%;
 
@@ -118,7 +118,7 @@
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 221 100% 95%;        /* Light Base Blue */
+    --sidebar-accent: 221 100% 95%; /* Light Base Blue */
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 221 100% 50%;
@@ -144,10 +144,10 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 221 100% 60%;               /* Slightly lighter Base Blue */
-    --primary-foreground: 0 0% 98%;        /* white text for legibility */
+    --primary: 221 100% 60%; /* Slightly lighter Base Blue */
+    --primary-foreground: 0 0% 98%; /* white text for legibility */
 
-    --secondary: 171 100% 55%;             /* Lighter teal for contrast */
+    --secondary: 171 100% 55%; /* Lighter teal for contrast */
     --secondary-foreground: 210 40% 98%;
 
     --accent: 43 100% 60%;

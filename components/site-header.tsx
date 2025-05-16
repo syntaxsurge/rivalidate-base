@@ -3,15 +3,16 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+
 import { ChevronDown, Menu, X } from 'lucide-react'
 import { useAccount } from 'wagmi'
 
-import WalletMenu from '@/components/wallet-menu'
 import WalletOnboardModal from '@/components/auth/wallet-onboard-modal'
 import { ModeToggle } from '@/components/theme-toggle'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
-import { cn } from '@/lib/utils'
+import WalletMenu from '@/components/wallet-menu'
 import { useUser } from '@/lib/auth'
+import { cn } from '@/lib/utils'
 
 /* -------------------------------------------------------------------------- */
 /*                               NAVIGATION DATA                              */
@@ -40,8 +41,7 @@ const TOOLS_MENU = [
 
 export default function SiteHeader() {
   const { userPromise } = useUser()
-  const [currentUser, setCurrentUser] =
-    useState<Awaited<typeof userPromise> | null>(null)
+  const [currentUser, setCurrentUser] = useState<Awaited<typeof userPromise> | null>(null)
 
   const { isConnected } = useAccount()
 
@@ -87,7 +87,7 @@ export default function SiteHeader() {
           {/* Brand */}
           <Link
             href='/'
-            className='text-primary flex items-center gap-2 whitespace-nowrap text-lg font-extrabold tracking-tight'
+            className='text-primary flex items-center gap-2 text-lg font-extrabold tracking-tight whitespace-nowrap'
             onClick={handleNav}
           >
             <Image

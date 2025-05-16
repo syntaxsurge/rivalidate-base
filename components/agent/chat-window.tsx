@@ -1,21 +1,14 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import ReactMarkdown from 'react-markdown'
-import {
-  Plus,
-  Trash2,
-  Loader2,
-  ChevronDown,
-  ChevronUp,
-  Bot,
-  User,
-} from 'lucide-react'
-import { useAccount } from 'wagmi'
-import { toast } from 'sonner'
 
-import { cn } from '@/lib/utils'
+import { Plus, Trash2, Loader2, ChevronDown, ChevronUp, Bot, User } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
+import { toast } from 'sonner'
+import { useAccount } from 'wagmi'
+
 import { messageAgent as sendToBackend } from '@/app/hooks/useAgent'
+import { cn } from '@/lib/utils'
 
 /* -------------------------------------------------------------------------- */
 /*                                   TYPES                                    */
@@ -62,8 +55,8 @@ function saveChats(chats: ChatSession[]) {
 
 function AgentAvatar() {
   return (
-    <div className='flex h-8 w-8 items-center justify-center rounded-full bg-muted'>
-      <Bot className='h-5 w-5 text-primary' />
+    <div className='bg-muted flex h-8 w-8 items-center justify-center rounded-full'>
+      <Bot className='text-primary h-5 w-5' />
     </div>
   )
 }
@@ -72,7 +65,7 @@ function UserChatAvatar({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground',
+        'bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full',
         className,
       )}
     >
@@ -98,7 +91,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
 
   /* ----------------------- PERSISTENCE HELPER --------------------------- */
   const updateChats = (updater: (prev: ChatSession[]) => ChatSession[]) => {
-    setChats(prev => {
+    setChats((prev) => {
       const next = updater(prev)
       saveChats(next)
       return next
@@ -121,11 +114,11 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [currentId, chats, isThinking])
 
-  const currentChat = chats.find(c => c.id === currentId) ?? null
+  const currentChat = chats.find((c) => c.id === currentId) ?? null
 
   /* ------------------------- CHAT CRUD --------------------------------- */
   function createChat() {
-    updateChats(prev => {
+    updateChats((prev) => {
       const id = crypto.randomUUID()
       const title = `Chat ${prev.length + 1}`
       setCurrentId(id)
@@ -134,8 +127,8 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
   }
 
   function deleteChat(id: string) {
-    updateChats(prev => {
-      const remaining = prev.filter(c => c.id !== id)
+    updateChats((prev) => {
+      const remaining = prev.filter((c) => c.id !== id)
 
       /* If nothing left, create a fresh Chat 1 automatically */
       if (remaining.length === 0) {
@@ -152,8 +145,8 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
   }
 
   function appendMessage(msg: ChatMessage) {
-    updateChats(prev =>
-      prev.map(c => (c.id === currentId ? { ...c, messages: [...c.messages, msg] } : c)),
+    updateChats((prev) =>
+      prev.map((c) => (c.id === currentId ? { ...c, messages: [...c.messages, msg] } : c)),
     )
   }
 
@@ -212,24 +205,24 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
     <div className={containerCls}>
       {/* ------------------------- HEADER ------------------------- */}
       <div className='flex items-center justify-between border-b px-4 py-2'>
-        <div className='flex -space-x-2 items-center'>
-          <UserChatAvatar className='h-8 w-8 border-2 border-background shadow' />
+        <div className='flex items-center -space-x-2'>
+          <UserChatAvatar className='border-background h-8 w-8 border-2 shadow' />
           <AgentAvatar />
         </div>
 
         <div className='relative ml-3'>
           <select
             value={currentId ?? ''}
-            onChange={e => setCurrentId(e.target.value)}
-            className='appearance-none rounded-md bg-muted px-3 py-1 pr-8 text-sm font-medium'
+            onChange={(e) => setCurrentId(e.target.value)}
+            className='bg-muted appearance-none rounded-md px-3 py-1 pr-8 text-sm font-medium'
           >
-            {chats.map(c => (
+            {chats.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.title}
               </option>
             ))}
           </select>
-          <ChevronDown className='pointer-events-none absolute right-2 top-2 h-4 w-4 text-muted-foreground' />
+          <ChevronDown className='text-muted-foreground pointer-events-none absolute top-2 right-2 h-4 w-4' />
         </div>
 
         <div className='ml-auto flex items-center gap-1'>
@@ -255,7 +248,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
 
           <button
             aria-label='Collapse'
-            onClick={() => setCollapsed(c => !c)}
+            onClick={() => setCollapsed((c) => !c)}
             className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md'
             type='button'
           >
@@ -267,20 +260,17 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
       {/* ------------------------- BODY -------------------------- */}
       {!collapsed && (
         <>
-          <div className='flex flex-grow flex-col gap-4 overflow-y-auto overflow-x-hidden px-4 py-3'>
+          <div className='flex flex-grow flex-col gap-4 overflow-x-hidden overflow-y-auto px-4 py-3'>
             {currentChat?.messages.length === 0 && (
-              <p className='text-center text-sm text-muted-foreground'>
+              <p className='text-muted-foreground text-center text-sm'>
                 Start chatting with the on-chain AI&nbsp;Agent…
               </p>
             )}
 
-            {currentChat?.messages.map(m => (
+            {currentChat?.messages.map((m) => (
               <div
                 key={m.id}
-                className={cn(
-                  'flex items-end gap-2',
-                  m.sender === 'user' && 'flex-row-reverse',
-                )}
+                className={cn('flex items-end gap-2', m.sender === 'user' && 'flex-row-reverse')}
               >
                 {m.sender === 'user' ? (
                   <UserChatAvatar className='h-8 w-8 shrink-0' />
@@ -290,7 +280,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
 
                 <div
                   className={cn(
-                    'max-w-[75%] whitespace-pre-wrap break-words rounded-2xl px-4 py-2 text-sm shadow',
+                    'max-w-[75%] rounded-2xl px-4 py-2 text-sm break-words whitespace-pre-wrap shadow',
                     m.sender === 'user'
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted text-foreground',
@@ -298,7 +288,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
                 >
                   <ReactMarkdown
                     components={{
-                      a: props => (
+                      a: (props) => (
                         <a
                           {...props}
                           target='_blank'
@@ -315,7 +305,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
             ))}
 
             {isThinking && (
-              <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+              <div className='text-muted-foreground flex items-center gap-2 text-sm'>
                 <AgentAvatar />
                 <span className='flex items-center gap-1 italic'>
                   <Loader2 className='h-4 w-4 animate-spin' /> thinking…
@@ -326,20 +316,20 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
             <div ref={bottomRef} />
           </div>
 
-          <div className='border-t flex items-center gap-2 px-3 py-2'>
+          <div className='flex items-center gap-2 border-t px-3 py-2'>
             <input
               type='text'
               placeholder='Type a message…'
               className='flex-grow rounded-full border px-4 py-2 text-sm'
               value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSend()}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               disabled={isThinking}
             />
             <button
               onClick={handleSend}
               disabled={isThinking}
-              className='rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-opacity disabled:opacity-50'
+              className='bg-primary text-primary-foreground rounded-full px-4 py-2 text-sm font-medium shadow transition-opacity disabled:opacity-50'
               type='button'
             >
               Send

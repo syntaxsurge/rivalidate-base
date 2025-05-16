@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+
 import { Wallet as WalletIcon } from 'lucide-react'
 import { useAccount, useChainId } from 'wagmi'
 

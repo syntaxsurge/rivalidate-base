@@ -1,3 +1,4 @@
+import { Avatar, Name, Address, Identity } from '@coinbase/onchainkit/identity'
 import {
   Wallet,
   ConnectWallet,
@@ -8,8 +9,6 @@ import {
   WalletAdvancedTransactionActions,
   WalletAdvancedTokenHoldings,
 } from '@coinbase/onchainkit/wallet'
-import { Avatar, Name, Address, Identity } from '@coinbase/onchainkit/identity'
-
 import { ChevronDown, Check } from 'lucide-react'
 import { useChainId, useSwitchChain } from 'wagmi'
 import { base, baseSepolia } from 'wagmi/chains'
@@ -51,11 +50,7 @@ function BaseLogo({ className }: { className?: string }) {
       className={className}
     >
       <g fill='none' fillRule='evenodd'>
-        <path
-          fill='#0052FF'
-          fillRule='nonzero'
-          d='M14 28a14 14 0 1 0 0-28 14 14 0 0 0 0 28Z'
-        />
+        <path fill='#0052FF' fillRule='nonzero' d='M14 28a14 14 0 1 0 0-28 14 14 0 0 0 0 28Z' />
         <path
           fill='#FFF'
           d='M13.967 23.86c5.445 0 9.86-4.415 9.86-9.86 0-5.445-4.415-9.86-9.86-9.86-5.166 0-9.403 3.974-9.825 9.03h14.63v1.642H4.142c.413 5.065 4.654 9.047 9.826 9.047Z'
@@ -82,14 +77,14 @@ function ChainSwitcher() {
           type='button'
           className={cn(
             'inline-flex items-center gap-1 rounded-md border px-2 py-1 text-sm font-medium',
-            'bg-background hover:bg-muted transition-colors px-4 py-3',
+            'bg-background hover:bg-muted px-4 py-3 transition-colors',
           )}
           aria-label='Select network'
         >
           <BaseLogo className='h-4 w-4' />
           <span className='hidden sm:inline'>
             {current.name}
-            <span className='ml-1 text-muted-foreground'>({current.shortName})</span>
+            <span className='text-muted-foreground ml-1'>({current.shortName})</span>
           </span>
           <ChevronDown className='h-3 w-3' />
         </button>
@@ -100,8 +95,7 @@ function ChainSwitcher() {
           <DropdownMenuItem
             key={chain.id}
             onSelect={() => {
-              if (chain.id !== currentChainId)
-                switchChain({ chainId: chain.id as ChainId })
+              if (chain.id !== currentChainId) switchChain({ chainId: chain.id as ChainId })
             }}
             disabled={isPending}
             className='flex items-center gap-2'
@@ -110,7 +104,7 @@ function ChainSwitcher() {
             <span className='flex-1'>
               {chain.name} <span className='text-muted-foreground'>({chain.shortName})</span>
             </span>
-            {chain.id === currentChainId && <Check className='h-4 w-4 text-primary' />}
+            {chain.id === currentChainId && <Check className='text-primary h-4 w-4' />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
@@ -136,7 +130,7 @@ export default function WalletMenu() {
       <Wallet>
         <ConnectWallet
           disconnectedLabel='Connect'
-          className='bg-primary font-semibold text-primary-foreground shadow hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'
+          className='bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-ring font-semibold shadow focus:ring-2 focus:ring-offset-2 focus:outline-none'
         >
           <Avatar className='h-6 w-6' />
           <Name />
