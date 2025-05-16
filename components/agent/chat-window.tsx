@@ -168,8 +168,8 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
         ? 'fixed bottom-24 right-6 z-50 h-14 w-80'
         : 'fixed bottom-24 right-6 z-50 h-[540px] w-96'
       : collapsed
-      ? 'h-14 w-full'
-      : 'w-full',
+        ? 'h-14 w-full'
+        : 'h-full w-full', // ⬅️ page mode now fills available height
   )
 
   /* ------------------------------ render --------------------------------- */
