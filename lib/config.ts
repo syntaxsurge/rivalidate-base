@@ -6,6 +6,12 @@ import { getEnv } from '@/lib/utils/env'
 
 export const OPENAI_API_KEY = getEnv('OPENAI_API_KEY') as string
 
+/* ---------------------------- AgentKit keys ------------------------------ */
+
+export const CDP_API_KEY_NAME = getEnv('CDP_API_KEY_NAME') as string
+export const CDP_API_KEY_PRIVATE_KEY = getEnv('CDP_API_KEY_PRIVATE_KEY') as string
+export const AGENTKIT_NETWORK_ID = getEnv('NETWORK_ID') as string
+
 /* ------------------------------- Base RPC --------------------------------- */
 
 export const BASE_RPC_URL = getEnv('NEXT_PUBLIC_BASE_RPC_URL') as string
