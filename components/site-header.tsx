@@ -4,7 +4,14 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-import { ConnectButton } from '@rainbow-me/rainbowkit'
+import {
+  Wallet,
+  ConnectWallet,
+  WalletDropdown,
+  WalletDropdownDisconnect,
+} from '@coinbase/onchainkit/wallet'
+import { Avatar, Name, Address, Identity } from '@coinbase/onchainkit/identity'
+
 import { ChevronDown, Menu, X } from 'lucide-react'
 import { useAccount } from 'wagmi'
 
@@ -179,7 +186,12 @@ export default function SiteHeader() {
           <div className='flex items-center justify-end gap-3'>
             {/* Connect button (mobile) */}
             <div className='md:hidden'>
-              <ConnectButton accountStatus='avatar' chainStatus='icon' showBalance={false} />
+              <Wallet>
+                <ConnectWallet disconnectedLabel='Connect'>
+                  <Avatar className='h-6 w-6' />
+                  <Name />
+                </ConnectWallet>
+              </Wallet>
             </div>
 
             {/* Mobile hamburger */}
@@ -194,7 +206,21 @@ export default function SiteHeader() {
 
             {/* Desktop controls */}
             <div className='hidden items-center gap-3 md:flex'>
-              <ConnectButton accountStatus='avatar' chainStatus='icon' showBalance={false} />
+              <Wallet>
+                <ConnectWallet disconnectedLabel='Connect'>
+                  <Avatar className='h-6 w-6' />
+                  <Name />
+                </ConnectWallet>
+                <WalletDropdown>
+                  <Identity className='px-4 pt-3 pb-2' hasCopyAddressOnClick>
+                    <Avatar />
+                    <Name />
+                    <Address className='text-xs text-muted-foreground' />
+                  </Identity>
+                  <WalletDropdownDisconnect />
+                </WalletDropdown>
+              </Wallet>
+
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link

@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from 'react'
 
-import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { Wallet } from 'lucide-react'
+import { Wallet as WalletIcon } from 'lucide-react'
+import {
+  Wallet,
+  ConnectWallet,
+} from '@coinbase/onchainkit/wallet'
+import { Avatar, Name } from '@coinbase/onchainkit/identity'
 import { useAccount, useChainId } from 'wagmi'
 
 /**
@@ -60,17 +64,21 @@ export default function ConnectWalletPage() {
   return (
     <section className='mx-auto flex min-h-[calc(100dvh-64px)] max-w-md flex-col items-center justify-center gap-6 px-4 text-center'>
       <div className='flex flex-col items-center gap-4'>
-        <Wallet className='text-primary h-10 w-10' strokeWidth={1.5} />
+        <WalletIcon className='text-primary h-10 w-10' strokeWidth={1.5} />
         <h1 className='text-3xl font-extrabold tracking-tight'>Connect Your Wallet</h1>
         <p className='text-muted-foreground max-w-xs text-sm'>
-          To continue, please connect an EVM wallet on the Base network such as MetaMask or
-          WalletConnect.
+          To continue, please connect a Coinbase Smart Wallet on Base.
         </p>
       </div>
 
-      {/* Full-width ConnectButton without invalid className prop */}
+      {/* Connect Wallet button */}
       <div className='flex w-full justify-center'>
-        <ConnectButton accountStatus='avatar' chainStatus='icon' showBalance={false} />
+        <Wallet>
+          <ConnectWallet disconnectedLabel='Connect'>
+            <Avatar className='h-6 w-6' />
+            <Name />
+          </ConnectWallet>
+        </Wallet>
       </div>
 
       {checking && <p className='text-muted-foreground text-xs'>Verifying wallet session…</p>}
