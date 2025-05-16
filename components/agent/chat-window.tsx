@@ -161,15 +161,29 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
 
   /* ----------------------------- styling --------------------------------- */
   const isOverlay = mode === 'overlay'
+
+  /* Responsive sizing ----------------------------------------------------- */
+  const overlayExpanded = [
+    'fixed bottom-24 right-6 z-50',
+    'w-[calc(100vw-3rem)] h-[calc(100dvh-8rem)]', // mobile-first
+    'sm:w-96 sm:h-[540px]', // ≥640 px
+  ].join(' ')
+
+  const overlayCollapsed = [
+    'fixed bottom-24 right-6 z-50 h-14',
+    'w-[calc(100vw-3rem)]',
+    'sm:w-80',
+  ].join(' ')
+
   const containerCls = cn(
     'flex flex-col rounded-lg border bg-background shadow-lg',
     isOverlay
       ? collapsed
-        ? 'fixed bottom-24 right-6 z-50 h-14 w-80'
-        : 'fixed bottom-24 right-6 z-50 h-[540px] w-96'
+        ? overlayCollapsed
+        : overlayExpanded
       : collapsed
         ? 'h-14 w-full'
-        : 'h-full w-full', // ⬅️ page mode now fills available height
+        : 'h-full w-full',
   )
 
   /* ------------------------------ render --------------------------------- */
@@ -178,7 +192,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
       {/* Header ------------------------------------------------------------- */}
       <div className='flex items-center justify-between border-b px-4 py-2'>
         {/* chat heads */}
-        <div className='flex items-center -space-x-2'>
+        <div className='flex -space-x-2 items-center'>
           <UserChatAvatar className='h-8 w-8 border-2 border-background shadow' />
           <AgentAvatar />
         </div>
