@@ -61,7 +61,7 @@ export function UserAvatar({
     return (
       <Identity address={address}>
         <span className={cn('inline-flex items-center gap-2', className)} {...rest}>
-          <OKAvatar square={square} className='h-7 w-7' />
+          <OKAvatar className={cn('h-7 w-7', square ? 'rounded-md' : 'rounded-full')} />
           {showName && <OKName />}
         </span>
       </Identity>
