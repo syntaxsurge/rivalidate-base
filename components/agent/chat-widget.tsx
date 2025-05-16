@@ -2,16 +2,26 @@
 
 import { useState } from 'react'
 import { MessageCircle, X } from 'lucide-react'
+import { useAccount } from 'wagmi'
+import { toast } from 'sonner'
 
 import ChatWindow from './chat-window'
 
 /**
  * ChatWidget — floating chat bubble that toggles the shared ChatWindow overlay.
- * All chat state and UI live inside ChatWindow; this file only handles
- * the open/close toggle and positions the overlay.
+ * Now gated so only connected wallets can open the AI Agent.
  */
 export default function ChatWidget() {
+  const { isConnected } = useAccount()
   const [open, setOpen] = useState(false)
+
+  function handleToggle() {
+    if (!isConnected) {
+      toast.error('Connect your wallet to use the AI Agent.')
+      return
+    }
+    setOpen(o => !o)
+  }
 
   return (
     <>
@@ -19,7 +29,7 @@ export default function ChatWidget() {
       <button
         type='button'
         aria-label={open ? 'Close AI Agent' : 'Open AI Agent'}
-        onClick={() => setOpen((o) => !o)}
+        onClick={handleToggle}
         className='bg-primary text-primary-foreground fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-105 focus:outline-none'
       >
         {open ? <X className='h-6 w-6' /> : <MessageCircle className='h-6 w-6' />}

@@ -11,6 +11,8 @@ import {
   Bot,
   User,
 } from 'lucide-react'
+import { useAccount } from 'wagmi'
+import { toast } from 'sonner'
 
 import { cn } from '@/lib/utils'
 import { messageAgent as sendToBackend } from '@/app/hooks/useAgent'
@@ -85,6 +87,7 @@ function UserChatAvatar({ className }: { className?: string }) {
 
 export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
   /* ----------------------------- STATE ---------------------------------- */
+  const { isConnected } = useAccount()
   const [chats, setChats] = useState<ChatSession[]>([])
   const [currentId, setCurrentId] = useState<string | null>(null)
   const [input, setInput] = useState('')
@@ -95,7 +98,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
 
   /* ----------------------- PERSISTENCE HELPER --------------------------- */
   const updateChats = (updater: (prev: ChatSession[]) => ChatSession[]) => {
-    setChats((prev) => {
+    setChats(prev => {
       const next = updater(prev)
       saveChats(next)
       return next
@@ -118,11 +121,11 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [currentId, chats, isThinking])
 
-  const currentChat = chats.find((c) => c.id === currentId) ?? null
+  const currentChat = chats.find(c => c.id === currentId) ?? null
 
   /* ------------------------- CHAT CRUD --------------------------------- */
   function createChat() {
-    updateChats((prev) => {
+    updateChats(prev => {
       const id = crypto.randomUUID()
       const title = `Chat ${prev.length + 1}`
       setCurrentId(id)
@@ -131,8 +134,8 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
   }
 
   function deleteChat(id: string) {
-    updateChats((prev) => {
-      const remaining = prev.filter((c) => c.id !== id)
+    updateChats(prev => {
+      const remaining = prev.filter(c => c.id !== id)
 
       /* If nothing left, create a fresh Chat 1 automatically */
       if (remaining.length === 0) {
@@ -149,14 +152,18 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
   }
 
   function appendMessage(msg: ChatMessage) {
-    updateChats((prev) =>
-      prev.map((c) => (c.id === currentId ? { ...c, messages: [...c.messages, msg] } : c)),
+    updateChats(prev =>
+      prev.map(c => (c.id === currentId ? { ...c, messages: [...c.messages, msg] } : c)),
     )
   }
 
   /* --------------------------- SEND MSG --------------------------------- */
   async function handleSend() {
     if (!currentChat || !input.trim() || isThinking) return
+    if (!isConnected) {
+      toast.error('Connect your wallet to use the AI Agent.')
+      return
+    }
 
     const userText = input.trim()
     setInput('')
@@ -213,10 +220,10 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
         <div className='relative ml-3'>
           <select
             value={currentId ?? ''}
-            onChange={(e) => setCurrentId(e.target.value)}
+            onChange={e => setCurrentId(e.target.value)}
             className='appearance-none rounded-md bg-muted px-3 py-1 pr-8 text-sm font-medium'
           >
-            {chats.map((c) => (
+            {chats.map(c => (
               <option key={c.id} value={c.id}>
                 {c.title}
               </option>
@@ -248,7 +255,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
 
           <button
             aria-label='Collapse'
-            onClick={() => setCollapsed((c) => !c)}
+            onClick={() => setCollapsed(c => !c)}
             className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md'
             type='button'
           >
@@ -267,7 +274,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
               </p>
             )}
 
-            {currentChat?.messages.map((m) => (
+            {currentChat?.messages.map(m => (
               <div
                 key={m.id}
                 className={cn(
@@ -291,7 +298,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
                 >
                   <ReactMarkdown
                     components={{
-                      a: (props) => (
+                      a: props => (
                         <a
                           {...props}
                           target='_blank'
@@ -325,8 +332,8 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
               placeholder='Type a message…'
               className='flex-grow rounded-full border px-4 py-2 text-sm'
               value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSend()}
               disabled={isThinking}
             />
             <button
