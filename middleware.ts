@@ -40,6 +40,11 @@ const ROLE_PREFIX_MAP: Record<string, string> = {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  /* Allow AI Agent streaming calls to pass through without auth checks */
+  if (pathname.startsWith('/api/agent')) {
+    return NextResponse.next()
+  }
+
   /* Built-in assets and static files are ignored by the matcher config, but
      keep this early check for absolute certainty. */
   if (pathname.startsWith('/_next') || pathname.startsWith('/favicon.ico')) {

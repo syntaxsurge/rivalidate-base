@@ -1,7 +1,11 @@
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 
 import { getUser } from '@/lib/db/queries/queries'
 import type { Role } from '@/lib/types'
+
+/* Routes that guests may access without an authenticated wallet */
+const PUBLIC_ROUTES = ['/tools/agent']
 
 /**
  * Server-side page guard.
@@ -13,7 +17,14 @@ import type { Role } from '@/lib/types'
  */
 export async function requireAuth(allowedRoles: readonly Role[] = []) {
   const user = await getUser()
-  if (!user) redirect('/connect-wallet')
+  if (!user) {
+    const path = headers().get('next-url') || ''
+    if (PUBLIC_ROUTES.some(p => path.startsWith(p))) {
+      /* Permit guests on public pages such as the AI Agent chat */
+      return null as any
+    }
+    redirect('/connect-wallet')
+  }
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role as Role)) {
     redirect('/dashboard')
   }
