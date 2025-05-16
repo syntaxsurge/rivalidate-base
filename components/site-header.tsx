@@ -10,9 +10,8 @@ import WalletMenu from '@/components/wallet-menu'
 import WalletOnboardModal from '@/components/auth/wallet-onboard-modal'
 import { ModeToggle } from '@/components/theme-toggle'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
-import { useUser } from '@/lib/auth'
 import { cn } from '@/lib/utils'
+import { useUser } from '@/lib/auth'
 
 /* -------------------------------------------------------------------------- */
 /*                               NAVIGATION DATA                              */
@@ -31,6 +30,7 @@ const TOOLS_MENU = [
   { href: '/jobs', label: 'Job Openings' },
   { href: '/candidates', label: 'Candidates' },
   { href: '/issuers', label: 'Issuers' },
+  { href: '/agent', label: 'AI Agent' }, // Added link
   { href: '/verify', label: 'Verify' },
 ] as const
 
@@ -40,7 +40,8 @@ const TOOLS_MENU = [
 
 export default function SiteHeader() {
   const { userPromise } = useUser()
-  const [currentUser, setCurrentUser] = useState<Awaited<typeof userPromise> | null>(null)
+  const [currentUser, setCurrentUser] =
+    useState<Awaited<typeof userPromise> | null>(null)
 
   const { isConnected } = useAccount()
 
@@ -192,19 +193,6 @@ export default function SiteHeader() {
             {/* Desktop controls */}
             <div className='hidden items-center gap-3 md:flex'>
               <WalletMenu />
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    href='/agent'
-                    aria-label='Open AgentKit Chat'
-                    className='text-foreground/80 hover:text-foreground text-sm font-medium transition-colors'
-                  >
-                    AI&nbsp;Agent
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent side='bottom'>Chat with AI Agent</TooltipContent>
-              </Tooltip>
               <ModeToggle />
             </div>
           </div>
