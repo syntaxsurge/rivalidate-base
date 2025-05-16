@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo } from 'react'
-
-import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
+import { useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { ArrowRight, Building2, ShieldCheck, Sparkles, ArrowDown } from 'lucide-react'
+import { useEffect, useState, type ReactNode } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -23,8 +23,12 @@ const BULLETS = [
 /*                                COMPONENT                                   */
 /* -------------------------------------------------------------------------- */
 
+type Blob = { x: number; y: number; s: number; d: number }
+
 export default function HeroSection() {
-  /* Parallax */
+  /* ---------------------------------------------------------------------- */
+  /*                           Mouse-parallax logic                         */
+  /* ---------------------------------------------------------------------- */
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
   const rotateX = useTransform(mouseY, [0, 1], [6, -6])
@@ -38,18 +42,26 @@ export default function HeroSection() {
     mouseY.set((e.clientY - top) / height)
   }
 
-  /* Background blobs */
-  const blobs = useMemo(
-    () =>
-      Array.from({ length: 24 }, () => ({
-        x: Math.random() * 120 - 10,
-        y: Math.random() * 120 - 10,
-        s: Math.random() * 5 + 3,
-        d: Math.random() * 18 + 14,
-      })),
-    [],
-  )
+  /* ---------------------------------------------------------------------- */
+  /*                    Background blobs – client-side only                 */
+  /* ---------------------------------------------------------------------- */
+  const [blobs, setBlobs] = useState<Blob[]>([]) // empty on server for deterministic SSR
 
+  useEffect(() => {
+    /* Generate the random blob set once after the component mounts */
+    setBlobs(
+      Array.from({ length: 24 }, () => ({
+        x: Math.random() * 120 - 10, // -10 % → 110 %
+        y: Math.random() * 120 - 10,
+        s: Math.random() * 5 + 3, // 3 px – 8 px
+        d: Math.random() * 18 + 14, // 14 s – 32 s
+      })),
+    )
+  }, [])
+
+  /* ---------------------------------------------------------------------- */
+  /*                                 Render                                 */
+  /* ---------------------------------------------------------------------- */
   return (
     <section
       id='hero'
@@ -60,7 +72,7 @@ export default function HeroSection() {
       <Blobs points={blobs} />
 
       <div className='mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-4 sm:px-6 xl:grid-cols-2 xl:gap-24'>
-        {/* Copy */}
+        {/* ----------------------------- Copy ----------------------------- */}
         <motion.div
           style={{ rotateX: springX, rotateY: springY }}
           className='text-center xl:text-left'
@@ -69,7 +81,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: 'easeOut' }}
-            className='mx-auto max-w-3xl bg-gradient-to-r from-white via-neutral-200 to-white bg-clip-text text-5xl leading-tight font-extrabold text-balance break-words text-transparent sm:text-6xl lg:text-6xl xl:mx-0 xl:text-7xl'
+            className='mx-auto max-w-3xl bg-gradient-to-r from-white via-neutral-200 to-white bg-clip-text text-balance break-words text-5xl font-extrabold leading-tight text-transparent sm:text-6xl lg:text-6xl xl:mx-0 xl:text-7xl'
           >
             Proof-First&nbsp;Hiring
           </motion.h1>
@@ -111,7 +123,7 @@ export default function HeroSection() {
           </div>
         </motion.div>
 
-        {/* Illustration */}
+        {/* ------------------------- Illustration -------------------------- */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -122,7 +134,7 @@ export default function HeroSection() {
           <div className='relative h-80 w-full max-w-sm rounded-[2.5rem] bg-gradient-to-br from-[#00d2ff] to-[#3a47d5] p-1 shadow-2xl xl:h-[26rem] xl:rounded-[3rem]'>
             <div className='bg-background flex h-full w-full flex-col items-center justify-center gap-6 rounded-[inherit] p-10 text-center'>
               <Sparkles className='text-primary h-10 w-10' />
-              <p className='text-foreground text-xl leading-snug font-semibold'>
+              <p className='text-foreground text-xl font-semibold leading-snug'>
                 Your experience,
                 <br /> tokenized
               </p>
@@ -148,7 +160,7 @@ export default function HeroSection() {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                   BACKDROP                                */
+/*                             Helper components                              */
 /* -------------------------------------------------------------------------- */
 
 function GradientBackdrop() {
@@ -160,13 +172,9 @@ function GradientBackdrop() {
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                   BLOBS                                   */
-/* -------------------------------------------------------------------------- */
-
-type Blob = { x: number; y: number; s: number; d: number }
-
 function Blobs({ points }: { points: Blob[] }) {
+  /* Render nothing on the server; client will populate after mount */
+  if (points.length === 0) return null
   return (
     <div className='pointer-events-none absolute inset-0 -z-10'>
       {points.map((b, i) => (
@@ -204,16 +212,13 @@ function Blobs({ points }: { points: Blob[] }) {
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/*                             GRADIENT BUTTON                               */
-/* -------------------------------------------------------------------------- */
+/* GradientButton ----------------------------------------------------------- */
 
-type GradientButtonProps = Omit<
-  React.ComponentPropsWithoutRef<typeof Button>,
-  'variant' | 'asChild'
-> & {
+type GradientButtonProps = {
   href: string
+  children: ReactNode
   tone?: 'solid' | 'outline'
+  className?: string
 }
 
 function GradientButton({
