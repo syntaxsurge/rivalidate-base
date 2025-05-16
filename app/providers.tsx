@@ -5,11 +5,11 @@ import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
 
 import { OnchainKitProvider } from '@coinbase/onchainkit'
-import { base } from 'viem/chains'
+import { base, baseSepolia } from 'wagmi/chains'
 import { useAccount } from 'wagmi'
 
 import ChatWidget from '@/components/agent/chat-widget'
-import { ONCHAINKIT_API_KEY } from '@/lib/config'
+import { ONCHAINKIT_API_KEY, CHAIN_ID } from '@/lib/config'
 import { getConfig } from '@/wagmi'
 
 /* -------------------------------------------------------------------------- */
@@ -84,6 +84,13 @@ function WalletSessionSync() {
 }
 
 /* -------------------------------------------------------------------------- */
+/*                          A C T I V E   C H A I N                           */
+/* -------------------------------------------------------------------------- */
+
+/** Resolve correct Base network for current environment. */
+const ACTIVE_CHAIN = CHAIN_ID === 84532 ? baseSepolia : base
+
+/* -------------------------------------------------------------------------- */
 /*                                 P R O V I D E R S                          */
 /* -------------------------------------------------------------------------- */
 
@@ -103,7 +110,7 @@ export function Providers({
   return (
     <OnchainKitProvider
       apiKey={ONCHAINKIT_API_KEY}
-      chain={base as any}
+      chain={ACTIVE_CHAIN as any}
       config={
         {
           wagmi: { config: getConfig(), initialState },
