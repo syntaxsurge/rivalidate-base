@@ -25,7 +25,7 @@
     "@ai-sdk/openai": "^1.2.1",
     "@coinbase/agentkit": "^0.6.0",
     "@coinbase/agentkit-langchain": "^0.3.0",
-    "@coinbase/onchainkit": "^1.0.0",
+    "@coinbase/onchainkit": "^0.38.13",
     "@esbuild-kit/core-utils": "^3.3.2",
     "@esbuild-kit/esm-loader": "^2.6.5",
     "@helia/strings": "^4.0.3",
@@ -87,8 +87,8 @@
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-react-aria-components": "2.0.0",
     "typescript": "^5.8.2",
-    "viem": "2.25.0",
-    "wagmi": "2.17.0",
+    "viem": "2.29.3",
+    "wagmi": "2.15.3",
     "zod": "^3.24.2"
   },
   "devDependencies": {
