@@ -10,7 +10,6 @@ import {
   ChevronUp,
   Bot,
 } from 'lucide-react'
-import { Avatar } from '@coinbase/onchainkit/identity'
 
 import { cn } from '@/lib/utils'
 import { messageAgent as sendToBackend } from '@/app/hooks/useAgent'
@@ -55,7 +54,7 @@ function saveChats(chats: ChatSession[]) {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                 AVATARS                                    */
+/*                                   AVATARS                                  */
 /* -------------------------------------------------------------------------- */
 
 function AgentAvatar() {
@@ -66,12 +65,25 @@ function AgentAvatar() {
   )
 }
 
+function UserChatAvatar({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        'flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold',
+        className,
+      )}
+    >
+      <span className='text-[10px] leading-none'>YOU</span>
+    </div>
+  )
+}
+
 /* -------------------------------------------------------------------------- */
-/*                               COMPONENT                                    */
+/*                                 COMPONENT                                  */
 /* -------------------------------------------------------------------------- */
 
 export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
-  /* ----------------------------- state ---------------------------------- */
+  /* -------------------------------- state -------------------------------- */
   const [collapsed, setCollapsed] = useState(false)
   const [chats, setChats] = useState<ChatSession[]>([])
   const [currentId, setCurrentId] = useState<string | null>(null)
@@ -80,10 +92,10 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
 
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  /* --------------------------- helpers ---------------------------------- */
+  /* ------------------------------ helpers -------------------------------- */
   const currentChat = chats.find((c) => c.id === currentId) ?? null
 
-  /** persist helper using functional update to avoid stale closures */
+  /** Persist helper using functional update to avoid stale closures. */
   const updateChats = (updater: (prev: ChatSession[]) => ChatSession[]) => {
     setChats((prev) => {
       const next = updater(prev)
@@ -92,7 +104,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
     })
   }
 
-  /* -------------------------- CRUD chats -------------------------------- */
+  /* ---------------------------- CRUD chats ------------------------------- */
   function createChat() {
     const id = crypto.randomUUID()
     updateChats((prev) => [...prev, { id, title: `Chat ${prev.length + 1}`, messages: [] }])
@@ -112,7 +124,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
     )
   }
 
-  /* -------------------------- lifecycle --------------------------------- */
+  /* ---------------------------- lifecycle -------------------------------- */
   useEffect(() => {
     const initial = loadChats()
     if (initial.length === 0) {
@@ -127,7 +139,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [currentChat?.messages.length, isThinking])
 
-  /* --------------------------- actions ---------------------------------- */
+  /* ----------------------------- actions --------------------------------- */
   async function handleSend() {
     if (!currentChat || !input.trim() || isThinking) return
     const userText = input.trim()
@@ -146,7 +158,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
     setIsThinking(false)
   }
 
-  /* --------------------------- styling ---------------------------------- */
+  /* ----------------------------- styling --------------------------------- */
   const isOverlay = mode === 'overlay'
   const containerCls = cn(
     'flex flex-col rounded-lg border bg-background shadow-lg',
@@ -159,14 +171,14 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
       : 'w-full',
   )
 
-  /* --------------------------- render ----------------------------------- */
+  /* ------------------------------ render --------------------------------- */
   return (
     <div className={containerCls}>
-      {/* Header ---------------------------------------------------------------- */}
+      {/* Header ------------------------------------------------------------- */}
       <div className='flex items-center justify-between border-b px-4 py-2'>
         {/* chat heads */}
         <div className='flex items-center -space-x-2'>
-          <Avatar className='h-8 w-8 border-2 border-background shadow' />
+          <UserChatAvatar className='h-8 w-8 border-2 border-background shadow' />
           <AgentAvatar />
         </div>
 
@@ -217,7 +229,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
         </div>
       </div>
 
-      {/* Body ------------------------------------------------------------------ */}
+      {/* Body --------------------------------------------------------------- */}
       {!collapsed && (
         <>
           {/* messages */}
@@ -228,15 +240,19 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
               </p>
             )}
 
-            {currentChat?.messages.map((m) => (
+            {currentChat?.messages.map((m, idx) => (
               <div
-                key={m.id}
+                key={`${m.id}-${idx}`}
                 className={cn(
                   'flex items-end gap-2',
                   m.sender === 'user' && 'flex-row-reverse',
                 )}
               >
-                {m.sender === 'user' ? <Avatar className='h-8 w-8 shrink-0' /> : <AgentAvatar />}
+                {m.sender === 'user' ? (
+                  <UserChatAvatar className='h-8 w-8 shrink-0' />
+                ) : (
+                  <AgentAvatar />
+                )}
                 <div
                   className={cn(
                     'max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow',
