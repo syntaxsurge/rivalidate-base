@@ -40,8 +40,11 @@ const ROLE_PREFIX_MAP: Record<string, string> = {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  /* Allow AI Agent streaming calls to pass through without auth checks */
-  if (pathname.startsWith('/api/agent')) {
+  /* ---------------- Early-exit paths that skip auth ----------------- */
+  if (
+    pathname.startsWith('/api/agent') ||
+    pathname.startsWith('/api/commerce-webhook')
+  ) {
     return NextResponse.next()
   }
 
