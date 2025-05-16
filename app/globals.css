@@ -2,6 +2,7 @@
 /*
   ---break---
 */
+
 @custom-variant dark (&:is(.dark *));
 
 @plugin 'tailwindcss-animate';
@@ -181,5 +182,75 @@
   .animate-rivalidate-gradient {
     background-size: 200% 200%;
     animation: rivalidate-gradient-pan 1.2s linear infinite;
+  }
+}
+
+
+/* -------------------------------------------------------------------------- */
+/*                     O N C H A I N K I T   T O K E N S                      */
+/* -------------------------------------------------------------------------- */
+
+@layer base {
+  @import '@coinbase/onchainkit/styles.css';
+  
+  :root {
+    /* ---- Typography & Radius ------------------------------------------ */
+    --ock-font-family: 'Inter', Arial, Helvetica, sans-serif;
+    --ock-border-radius: var(--radius-md);
+    --ock-border-radius-inner: var(--radius-sm);
+
+    /* ---- Text ---------------------------------------------------------- */
+    --ock-text-foreground: hsl(var(--foreground));
+    --ock-text-foreground-muted: hsl(var(--muted-foreground));
+    --ock-text-inverse: hsl(var(--background));
+    --ock-text-primary: hsl(var(--primary));
+    --ock-text-success: hsl(var(--secondary));
+    --ock-text-warning: hsl(var(--accent));
+    --ock-text-error: hsl(var(--destructive));
+    --ock-text-disabled: hsl(var(--muted-foreground));
+
+    /* ---- Backgrounds --------------------------------------------------- */
+    --ock-bg-default: hsl(var(--background));
+    --ock-bg-default-hover: hsl(var(--muted));
+    --ock-bg-default-active: hsl(var(--muted-foreground));
+
+    --ock-bg-alternate: hsl(var(--card));
+    --ock-bg-alternate-hover: hsl(var(--card));
+    --ock-bg-alternate-active: hsl(var(--card-foreground));
+
+    --ock-bg-inverse: hsl(var(--foreground));
+    --ock-bg-inverse-hover: hsl(var(--foreground));
+    --ock-bg-inverse-active: hsl(var(--foreground));
+
+    --ock-bg-primary: hsl(var(--primary));
+    --ock-bg-primary-hover: hsl(var(--primary));
+    --ock-bg-primary-active: hsl(var(--primary-foreground));
+    --ock-bg-primary-washed: hsl(var(--primary-foreground));
+    --ock-bg-primary-disabled: hsl(var(--muted));
+
+    --ock-bg-secondary: hsl(var(--secondary));
+    --ock-bg-secondary-hover: hsl(var(--secondary));
+    --ock-bg-secondary-active: hsl(var(--secondary-foreground));
+
+    --ock-bg-error: hsl(var(--destructive));
+    --ock-bg-warning: hsl(var(--accent));
+    --ock-bg-success: hsl(var(--secondary));
+
+    --ock-bg-default-reverse: hsl(var(--foreground));
+
+    /* ---- Icons --------------------------------------------------------- */
+    --ock-icon-color-primary: hsl(var(--primary));
+    --ock-icon-color-foreground: hsl(var(--foreground));
+    --ock-icon-color-foreground-muted: hsl(var(--muted-foreground));
+    --ock-icon-color-inverse: hsl(var(--background));
+    --ock-icon-color-error: hsl(var(--destructive));
+    --ock-icon-color-success: hsl(var(--secondary));
+    --ock-icon-color-warning: hsl(var(--accent));
+
+    /* ---- Lines / Borders ---------------------------------------------- */
+    --ock-line-primary: hsl(var(--primary));
+    --ock-line-default: hsl(var(--border));
+    --ock-line-heavy: hsl(var(--foreground));
+    --ock-line-inverse: hsl(var(--background));
   }
 }
