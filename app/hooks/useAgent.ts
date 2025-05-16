@@ -4,11 +4,18 @@ import { useState } from 'react'
 
 import type { AgentRequest, AgentResponse } from '@/lib/types/agent'
 
+/* -------------------------------------------------------------------------- */
+/*                         S H A R E D   A P I   C A L L                      */
+/* -------------------------------------------------------------------------- */
+
 /**
  * Send a user message to the backend /api/agent endpoint and
  * return either the agent’s reply or an error string.
+ *
+ * This helper is exported so other components (e.g. the floating
+ * ChatWidget) can reuse the same logic without duplicating code.
  */
-async function messageAgent(userMessage: string): Promise<string | null> {
+export async function messageAgent(userMessage: string): Promise<string | null> {
   try {
     const res = await fetch('/api/agent', {
       method: 'POST',
@@ -24,9 +31,16 @@ async function messageAgent(userMessage: string): Promise<string | null> {
   }
 }
 
+/* -------------------------------------------------------------------------- */
+/*                   S I M P L E   I N - P A G E   H O O K                    */
+/* -------------------------------------------------------------------------- */
+
 /**
  * useAgent — simple local-state chat helper.
  * Returns the conversation array, a sendMessage() helper and isThinking flag.
+ *
+ * This hook maintains the conversation only in memory (per component
+ * instance).  For persistent multi-chat support, use the ChatWidget.
  */
 export function useAgent() {
   const [messages, setMessages] = useState<{ text: string; sender: 'user' | 'agent' }[]>([])

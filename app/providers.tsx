@@ -8,6 +8,7 @@ import { OnchainKitProvider } from '@coinbase/onchainkit'
 import { base } from 'viem/chains'
 import { useAccount } from 'wagmi'
 
+import ChatWidget from '@/components/agent/chat-widget'
 import { ONCHAINKIT_API_KEY } from '@/lib/config'
 import { getConfig } from '@/wagmi'
 
@@ -87,9 +88,10 @@ function WalletSessionSync() {
 /* -------------------------------------------------------------------------- */
 
 /**
- * Providers — root context wrapper supplying OnchainKit (Smart Wallet + Basenames)
- * and project-specific wagmi configuration.  Pass `initialState` from
- * `cookieToInitialState(getConfig(), cookies)` to hydrate wagmi on the server.
+ * Providers — root context wrapper supplying OnchainKit (Smart Wallet + Basenames),
+ * global ChatWidget and project-specific wagmi configuration.
+ * Pass `initialState` from `cookieToInitialState(getConfig(), cookies)` to
+ * hydrate wagmi on the server.
  */
 export function Providers({
   children,
@@ -106,6 +108,8 @@ export function Providers({
     >
       {children}
       <WalletSessionSync />
+      {/* Floating AI Agent widget (persists across pages) */}
+      <ChatWidget />
     </OnchainKitProvider>
   )
 }
