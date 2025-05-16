@@ -63,7 +63,8 @@ export default function ConnectWalletPage() {
         <Wallet className='text-primary h-10 w-10' strokeWidth={1.5} />
         <h1 className='text-3xl font-extrabold tracking-tight'>Connect Your Wallet</h1>
         <p className='text-muted-foreground max-w-xs text-sm'>
-          To continue, please connect an EVM wallet on the Base network such as MetaMask or WalletConnect.
+          To continue, please connect an EVM wallet on the Base network such as MetaMask or
+          WalletConnect.
         </p>
       </div>
 

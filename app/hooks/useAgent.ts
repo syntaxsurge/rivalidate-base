@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+
 import type { AgentRequest, AgentResponse } from '@/lib/types/agent'
 
 /**
@@ -33,12 +34,12 @@ export function useAgent() {
 
   const sendMessage = async (input: string) => {
     if (!input.trim()) return
-    setMessages(prev => [...prev, { text: input, sender: 'user' }])
+    setMessages((prev) => [...prev, { text: input, sender: 'user' }])
     setIsThinking(true)
 
     const reply = await messageAgent(input)
     if (reply) {
-      setMessages(prev => [...prev, { text: reply, sender: 'agent' }])
+      setMessages((prev) => [...prev, { text: reply, sender: 'agent' }])
     }
     setIsThinking(false)
   }

@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { useAgent } from '@/app/hooks/useAgent'
+
 import ReactMarkdown from 'react-markdown'
+
+import { useAgent } from '@/app/hooks/useAgent'
 
 export default function AgentChatPage() {
   const { messages, sendMessage, isThinking } = useAgent()
@@ -24,23 +26,25 @@ export default function AgentChatPage() {
   return (
     <section className='mx-auto flex h-[calc(100dvh-4rem)] w-full max-w-3xl flex-col px-4 py-8'>
       {/* Chat container */}
-      <div className='flex-grow overflow-y-auto rounded-lg border bg-background p-4 shadow-sm'>
+      <div className='bg-background flex-grow overflow-y-auto rounded-lg border p-4 shadow-sm'>
         {messages.length === 0 && (
-          <p className='text-muted-foreground text-center'>Start chatting with the on-chain AI&nbsp;Agent…</p>
+          <p className='text-muted-foreground text-center'>
+            Start chatting with the on-chain AI&nbsp;Agent…
+          </p>
         )}
 
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`mb-3 max-w-[90%] whitespace-pre-wrap rounded-2xl px-4 py-2 shadow ${
+            className={`mb-3 max-w-[90%] rounded-2xl px-4 py-2 whitespace-pre-wrap shadow ${
               m.sender === 'user'
-                ? 'ml-auto bg-primary text-primary-foreground'
-                : 'mr-auto bg-muted'
+                ? 'bg-primary text-primary-foreground ml-auto'
+                : 'bg-muted mr-auto'
             }`}
           >
             <ReactMarkdown
               components={{
-                a: props => (
+                a: (props) => (
                   <a
                     {...props}
                     target='_blank'
@@ -66,14 +70,14 @@ export default function AgentChatPage() {
           className='flex-grow rounded-md border px-3 py-2'
           placeholder='Type a message…'
           value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && onSend()}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && onSend()}
           disabled={isThinking}
         />
         <button
           onClick={onSend}
           disabled={isThinking}
-          className='rounded-md bg-primary px-5 py-2 text-primary-foreground shadow transition-opacity disabled:opacity-50'
+          className='bg-primary text-primary-foreground rounded-md px-5 py-2 shadow transition-opacity disabled:opacity-50'
         >
           Send
         </button>
