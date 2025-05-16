@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import * as React from 'react'
 
 import { Trash2 } from 'lucide-react'
+import { Identity, Name, Address } from '@coinbase/onchainkit/identity'
 import { toast } from 'sonner'
 
 import {
@@ -213,7 +214,15 @@ export default function AdminIssuersTable({
         header: sortableHeader('Owner', 'owner'),
         sortable: false,
         className: 'truncate',
-        render: (v) => <span className='break-all'>{(v && String(v).trim()) || '—'}</span>,
+        render: (v) =>
+          v ? (
+            <Identity address={v as `0x${string}`}>
+              <Name />
+              <Address className='break-all text-xs text-muted-foreground' />
+            </Identity>
+          ) : (
+            '—'
+          ),
       },
       {
         key: 'category',

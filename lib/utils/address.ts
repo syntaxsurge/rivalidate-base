@@ -35,6 +35,10 @@ export function toBytes32(input: string): string {
   return ethers.isHexString(trimmed, 32) ? trimmed : ethers.keccak256(ethers.toUtf8Bytes(trimmed))
 }
 
+/**
+ * @deprecated Use the <Address/> component from @coinbase/onchainkit/identity
+ * or the `formatAddress()` helper instead. TODO: remove after full migration.
+ */
 export function truncateAddress(addr?: string | null) {
   if (!addr) return '—'
   return addr.length <= 10 ? addr : `${addr.slice(0, 6)}…${addr.slice(-4)}`

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import * as React from 'react'
+import { Identity, Avatar, Name } from '@coinbase/onchainkit/identity'
 
 import { Button } from '@/components/ui/button'
 import { DataTable, type Column } from '@/components/ui/tables/data-table'
@@ -37,12 +38,20 @@ export default function CandidatesTable({
         key: 'name',
         header: sortableHeader('Name', 'name'),
         sortable: false,
-        render: (v, row) => (
-          <div className='flex items-center gap-2'>
-            <UserAvatar name={row.name} email={row.email} className='size-7' />
-            <span className='font-medium'>{v || 'Unnamed'}</span>
-          </div>
-        ),
+        render: (_v, row) =>
+          (row as any).address ? (
+            <Identity address={(row as any).address as `0x${string}`}>
+              <div className='flex items-center gap-2'>
+                <Avatar className='h-6 w-6' />
+                <Name className='font-medium' />
+              </div>
+            </Identity>
+          ) : (
+            <div className='flex items-center gap-2'>
+              <UserAvatar name={row.name} email={row.email} className='size-7' />
+              <span className='font-medium'>{_v || 'Unnamed'}</span>
+            </div>
+          ),
       },
       {
         key: 'email',
