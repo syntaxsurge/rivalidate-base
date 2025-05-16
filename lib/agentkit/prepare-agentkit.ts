@@ -15,7 +15,7 @@ import {
 
 import { getEnv } from '@/lib/utils/env'
 
-import { uniswapv2ActionProvider } from './uniswapV2ActionProvider'
+import { uniswapv2ActionProvider } from './uniswap-v2-action-provider'
 
 const WALLET_DATA_FILE = '.data/agentkit_wallet.json'
 
