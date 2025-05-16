@@ -1,5 +1,3 @@
-'use client'
-
 import {
   Wallet,
   ConnectWallet,
@@ -136,7 +134,10 @@ export default function WalletMenu() {
 
       {/* Wallet connect + dropdown */}
       <Wallet>
-        <ConnectWallet disconnectedLabel='Connect'>
+        <ConnectWallet
+          disconnectedLabel='Connect'
+          className='bg-primary font-semibold text-primary-foreground shadow hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'
+        >
           <Avatar className='h-6 w-6' />
           <Name />
         </ConnectWallet>
