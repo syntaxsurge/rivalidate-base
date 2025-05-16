@@ -7,6 +7,7 @@ import { formatUnits } from 'ethers'
 import { Check } from 'lucide-react'
 
 import { SubmitButton } from '@/app/(dashboard)/pricing/submit-button'
+import { PlanCheckout } from '@/components/payments/plan-checkout'
 import { Button } from '@/components/ui/button'
 import { RBTC_DECIMALS } from '@/lib/constants/pricing'
 import type { PricingGridProps } from '@/lib/types/ui'
@@ -56,6 +57,46 @@ interface PricingCardProps {
 }
 
 function PricingCard({ meta, priceRbtc, isCurrent, highlight, hideButton }: PricingCardProps) {
+  /* -------------------------- Call-to-action node ------------------------- */
+  let cta: React.ReactNode = null
+
+  if (!hideButton) {
+    if (isCurrent) {
+      cta = (
+        <Button
+          variant='secondary'
+          disabled
+          className='w-full cursor-default rounded-full opacity-60'
+        >
+          Current Plan
+        </Button>
+      )
+    } else if (meta.key === 'free') {
+      cta = (
+        <Button asChild variant='secondary' className='w-full rounded-full'>
+          <Link href='/connect-wallet'>Get Started</Link>
+        </Button>
+      )
+    } else {
+      const planKey: 1 | 2 = meta.key === 'base' ? 1 : 2
+
+      cta = (
+        <div className='flex flex-col gap-2'>
+          {/* ETH payment */}
+          <Suspense fallback={<Button className='w-full'>Loading…</Button>}>
+            <SubmitButton planKey={planKey} priceWei={BigInt(meta.priceWei)} />
+          </Suspense>
+
+          {/* Stable-coin payment */}
+          {meta.productId && (
+            <PlanCheckout planKey={planKey} productId={meta.productId} />
+          )}
+        </div>
+      )
+    }
+  }
+
+  /* ------------------------------- Render -------------------------------- */
   return (
     <div
       className={`border-border bg-background/70 rounded-3xl border p-8 shadow-sm backdrop-blur transition-shadow hover:shadow-xl ${
@@ -82,28 +123,7 @@ function PricingCard({ meta, priceRbtc, isCurrent, highlight, hideButton }: Pric
         ))}
       </ul>
 
-      {hideButton ? null : isCurrent ? (
-        <Button
-          variant='secondary'
-          disabled
-          className='w-full cursor-default rounded-full opacity-60'
-        >
-          Current Plan
-        </Button>
-      ) : meta.key === 'free' ? (
-        <Button asChild variant='secondary' className='w-full rounded-full'>
-          <Link href='/connect-wallet'>Get Started</Link>
-        </Button>
-      ) : (
-        (() => {
-          const planKey: 1 | 2 = meta.key === 'base' ? 1 : 2
-          return (
-            <Suspense fallback={<Button className='w-full'>Loading…</Button>}>
-              <SubmitButton planKey={planKey} priceWei={BigInt(meta.priceWei)} />
-            </Suspense>
-          )
-        })()
-      )}
+      {cta}
     </div>
   )
 }
