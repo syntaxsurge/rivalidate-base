@@ -41,10 +41,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   /* ---------------- Early-exit paths that skip auth ----------------- */
-  if (
-    pathname.startsWith('/api/agent') ||
-    pathname.startsWith('/api/commerce-webhook')
-  ) {
+  if (pathname.startsWith('/api/agent') || pathname.startsWith('/api/commerce-webhook')) {
     return NextResponse.next()
   }
 

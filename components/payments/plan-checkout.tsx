@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+
 import { Checkout, CheckoutButton, CheckoutStatus } from '@coinbase/onchainkit/checkout'
 
 /**

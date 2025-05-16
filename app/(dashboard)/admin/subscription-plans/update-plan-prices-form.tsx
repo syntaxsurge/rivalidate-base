@@ -30,19 +30,12 @@ interface Props {
  *  2) PATCH /api/admin/plans with
  *     { base: { priceWei, productId }, plus: { priceWei, productId } }
  */
-export default function UpdatePlanPricesForm({
-  defaultBaseWei,
-  defaultPlusWei,
-}: Props) {
+export default function UpdatePlanPricesForm({ defaultBaseWei, defaultPlusWei }: Props) {
   /* -------------------------------------------------------------------- */
   /*                               State                                  */
   /* -------------------------------------------------------------------- */
-  const [base, setBase] = React.useState<string>(
-    ethers.formatUnits(BigInt(defaultBaseWei), 18),
-  )
-  const [plus, setPlus] = React.useState<string>(
-    ethers.formatUnits(BigInt(defaultPlusWei), 18),
-  )
+  const [base, setBase] = React.useState<string>(ethers.formatUnits(BigInt(defaultBaseWei), 18))
+  const [plus, setPlus] = React.useState<string>(ethers.formatUnits(BigInt(defaultPlusWei), 18))
   const [baseProductId, setBaseProductId] = React.useState<string>('') // optional default
   const [plusProductId, setPlusProductId] = React.useState<string>('') // optional default
   const [pending, setPending] = React.useState<boolean>(false)
@@ -57,8 +50,7 @@ export default function UpdatePlanPricesForm({
   /*                              Helpers                                 */
   /* -------------------------------------------------------------------- */
   async function updatePlanPrice(planKey: 1 | 2, amountToken: string) {
-    if (!walletClient || !address)
-      throw new Error('Wallet not connected.')
+    if (!walletClient || !address) throw new Error('Wallet not connected.')
     const wei = ethers.parseUnits(amountToken, 18)
 
     await walletClient.writeContract({
@@ -129,9 +121,7 @@ export default function UpdatePlanPricesForm({
       toast.success('Plan settings updated.')
     } catch (err: any) {
       toast.error(
-        err?.shortMessage ??
-          err?.message ??
-          'Update failed. Check your wallet and network.',
+        err?.shortMessage ?? err?.message ?? 'Update failed. Check your wallet and network.',
       )
     } finally {
       setPending(false)
@@ -145,22 +135,19 @@ export default function UpdatePlanPricesForm({
     'w-full rounded-md border px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary text-sm'
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid gap-6 sm:grid-cols-2">
+    <form onSubmit={handleSubmit} className='space-y-6'>
+      <div className='grid gap-6 sm:grid-cols-2'>
         {/* ----------------- Base plan ----------------- */}
-        <div className="space-y-4">
+        <div className='space-y-4'>
           <div>
-            <label
-              htmlFor="base"
-              className="mb-1 block text-sm font-medium"
-            >
+            <label htmlFor='base' className='mb-1 block text-sm font-medium'>
               Base Plan Price&nbsp;(ETH)
             </label>
             <Input
-              id="base"
-              type="number"
-              min="0"
-              step="0.000000000000000001"
+              id='base'
+              type='number'
+              min='0'
+              step='0.000000000000000001'
               value={base}
               onChange={(e) => setBase(e.target.value)}
               required
@@ -169,16 +156,13 @@ export default function UpdatePlanPricesForm({
           </div>
 
           <div>
-            <label
-              htmlFor="baseProductId"
-              className="mb-1 block text-sm font-medium"
-            >
+            <label htmlFor='baseProductId' className='mb-1 block text-sm font-medium'>
               Base Plan Product&nbsp;ID
             </label>
             <Input
-              id="baseProductId"
+              id='baseProductId'
               value={baseProductId}
-              placeholder="PRODUCT_ID_BASE"
+              placeholder='PRODUCT_ID_BASE'
               onChange={(e) => setBaseProductId(e.target.value)}
               className={inputCls}
             />
@@ -186,19 +170,16 @@ export default function UpdatePlanPricesForm({
         </div>
 
         {/* ----------------- Plus plan ---------------- */}
-        <div className="space-y-4">
+        <div className='space-y-4'>
           <div>
-            <label
-              htmlFor="plus"
-              className="mb-1 block text-sm font-medium"
-            >
+            <label htmlFor='plus' className='mb-1 block text-sm font-medium'>
               Plus Plan Price&nbsp;(ETH)
             </label>
             <Input
-              id="plus"
-              type="number"
-              min="0"
-              step="0.000000000000000001"
+              id='plus'
+              type='number'
+              min='0'
+              step='0.000000000000000001'
               value={plus}
               onChange={(e) => setPlus(e.target.value)}
               required
@@ -207,16 +188,13 @@ export default function UpdatePlanPricesForm({
           </div>
 
           <div>
-            <label
-              htmlFor="plusProductId"
-              className="mb-1 block text-sm font-medium"
-            >
+            <label htmlFor='plusProductId' className='mb-1 block text-sm font-medium'>
               Plus Plan Product&nbsp;ID
             </label>
             <Input
-              id="plusProductId"
+              id='plusProductId'
               value={plusProductId}
-              placeholder="PRODUCT_ID_PLUS"
+              placeholder='PRODUCT_ID_PLUS'
               onChange={(e) => setPlusProductId(e.target.value)}
               className={inputCls}
             />
@@ -225,10 +203,10 @@ export default function UpdatePlanPricesForm({
       </div>
 
       {/* Submit */}
-      <Button type="submit" className="w-full sm:w-auto" disabled={pending}>
+      <Button type='submit' className='w-full sm:w-auto' disabled={pending}>
         {pending ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className='mr-2 h-4 w-4 animate-spin' />
             Updating…
           </>
         ) : (

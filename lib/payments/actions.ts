@@ -1,9 +1,9 @@
 'use server'
 
 import { withTeam } from '@/lib/auth/middleware'
+import { COMMERCE_API_KEY } from '@/lib/config'
 import { paySubscription } from '@/lib/contracts/rivalidate'
 import { updateTeamCryptoSubscription } from '@/lib/db/queries/queries'
-import { COMMERCE_API_KEY } from '@/lib/config'
 
 /* -------------------------------------------------------------------------- */
 /*                                   HELPERS                                  */

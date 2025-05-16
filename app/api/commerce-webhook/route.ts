@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
 import { createHmac, timingSafeEqual } from 'crypto'
+
+import { NextRequest, NextResponse } from 'next/server'
+
 import { COMMERCE_API_KEY } from '@/lib/config'
 import { updateTeamCryptoSubscription } from '@/lib/db/queries/queries'
 
@@ -42,8 +44,7 @@ export async function POST(req: NextRequest) {
 
     const event = JSON.parse(raw)
     const charge = event?.data
-    const status: string =
-      charge?.timeline?.at(-1)?.status ?? charge?.status ?? 'unresolved'
+    const status: string = charge?.timeline?.at(-1)?.status ?? charge?.status ?? 'unresolved'
     const currency: string | undefined = charge?.pricing?.local?.currency
 
     if (status !== 'CONFIRMED' || currency !== 'USDC') {

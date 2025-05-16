@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+
 import { z } from 'zod'
 
 import { requireAuth } from '@/lib/auth/guards'
-import { getTeamForUser } from '@/lib/db/queries/queries'
-import { updateTeamCryptoSubscription } from '@/lib/db/queries/queries'
 import { COMMERCE_API_KEY } from '@/lib/config'
+import { getTeamForUser, updateTeamCryptoSubscription } from '@/lib/db/queries/queries'
 
 /* -------------------------------------------------------------------------- */
 /*                                   TYPES                                    */
@@ -76,7 +76,10 @@ export async function POST(req: NextRequest) {
     const currency: string | undefined = data?.pricing?.local?.currency
 
     if (chargeStatus !== 'CONFIRMED' || currency !== 'USDC') {
-      return NextResponse.json({ error: 'Charge not confirmed or wrong currency.' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Charge not confirmed or wrong currency.' },
+        { status: 400 },
+      )
     }
 
     /* --------------- Update DB subscription (30-day period) -------------- */
