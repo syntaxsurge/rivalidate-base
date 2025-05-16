@@ -34,7 +34,7 @@ export async function seedUserTeam() {
       name: 'Test Candidate',
       email: 'candidate@test.com',
       role: 'candidate' as const,
-      walletAddress: '0xE16Fc31e9496A2Fe3F4fAf33042b783B87B9B574',
+      walletAddress: '0x141Decc9Dabd2E41B9164c13E203fEDC95070F86',
     },
     {
       name: 'Test Issuer',
