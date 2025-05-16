@@ -9,6 +9,7 @@ import {
   ChevronDown,
   ChevronUp,
   Bot,
+  User,
 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
@@ -69,11 +70,11 @@ function UserChatAvatar({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold',
+        'flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground',
         className,
       )}
     >
-      <span className='text-[10px] leading-none'>YOU</span>
+      <User className='h-5 w-5' />
     </div>
   )
 }
@@ -233,7 +234,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
       {!collapsed && (
         <>
           {/* messages */}
-          <div className='flex flex-grow flex-col gap-4 overflow-y-auto px-4 py-3'>
+          <div className='flex flex-grow flex-col gap-4 overflow-y-auto overflow-x-hidden px-4 py-3'>
             {currentChat?.messages.length === 0 && (
               <p className='text-center text-sm text-muted-foreground'>
                 Start chatting with the on-chain AI&nbsp;Agent…
@@ -255,7 +256,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
                 )}
                 <div
                   className={cn(
-                    'max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow',
+                    'max-w-[75%] whitespace-pre-wrap break-words rounded-2xl px-4 py-2 text-sm shadow',
                     m.sender === 'user'
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted text-foreground',
