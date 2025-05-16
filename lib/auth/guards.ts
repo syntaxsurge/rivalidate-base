@@ -18,7 +18,7 @@ const PUBLIC_ROUTES = ['/tools/agent']
 export async function requireAuth(allowedRoles: readonly Role[] = []) {
   const user = await getUser()
   if (!user) {
-    const path = headers().get('next-url') || ''
+    const path = (await headers()).get('next-url') || ''
     if (PUBLIC_ROUTES.some((p) => path.startsWith(p))) {
       /* Permit guests on public pages such as the AI Agent chat */
       return null as any
