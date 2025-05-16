@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-
 import { z } from 'zod'
 
 import { requireAuth } from '@/lib/auth/guards'
 
 /* -------------------------------------------------------------------------- */
-/*                                Validation                                  */
+/*                                V A L I D A T I O N                         */
 /* -------------------------------------------------------------------------- */
 
 const planSchema = z.object({
@@ -19,7 +18,7 @@ const bodySchema = z.object({
 })
 
 /* -------------------------------------------------------------------------- */
-/*                                 Handler                                    */
+/*                                   H A N D L E R                            */
 /* -------------------------------------------------------------------------- */
 
 export async function PATCH(req: NextRequest) {
@@ -41,13 +40,15 @@ export async function PATCH(req: NextRequest) {
     } = parsed.data
 
     /* ------------------------------------------------------------------ */
-    /*  Mutate runtime env so that subsequent requests use new IDs.        */
-    /*  Persistent storage (e.g. DB) can be added later as needed.         */
+    /*  Mutate runtime env so that subsequent requests use new IDs.       */
+    /*  Persistent storage (e.g. DB) can be added later as needed.        */
     /* ------------------------------------------------------------------ */
     if (typeof basePid === 'string' && basePid.length > 0) {
+      // update runtime env override for Base tier
       process.env.NEXT_PUBLIC_COMMERCE_PRODUCT_BASE = basePid
     }
     if (typeof plusPid === 'string' && plusPid.length > 0) {
+      // update runtime env override for Plus tier
       process.env.NEXT_PUBLIC_COMMERCE_PRODUCT_PLUS = plusPid
     }
 
