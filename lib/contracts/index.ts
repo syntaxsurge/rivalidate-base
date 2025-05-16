@@ -2,7 +2,7 @@ import { ethers } from 'ethers'
 import type { InterfaceAbi } from 'ethers'
 
 import {
-  RSK_RPC_URL,
+  BASE_RPC_URL,
   CHAIN_ID,
   DID_REGISTRY_ADDRESS,
   CREDENTIAL_NFT_ADDRESS,
@@ -18,7 +18,7 @@ import {
 /*                               R P C  P R O V I D E R                       */
 /* -------------------------------------------------------------------------- */
 
-export const provider = new ethers.JsonRpcProvider(RSK_RPC_URL, {
+export const provider = new ethers.JsonRpcProvider(BASE_RPC_URL, {
   name: 'base',
   chainId: CHAIN_ID,
 })

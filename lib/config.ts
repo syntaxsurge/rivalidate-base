@@ -16,9 +16,6 @@ export const AGENTKIT_NETWORK_ID = getEnv('NETWORK_ID') as string
 
 export const BASE_RPC_URL = getEnv('NEXT_PUBLIC_BASE_RPC_URL') as string
 
-/** @deprecated Use BASE_RPC_URL instead (retained temporarily for backward compatibility). */
-export const RSK_RPC_URL = BASE_RPC_URL
-
 export const CHAIN_ID = getEnv('NEXT_PUBLIC_CHAIN_ID', {
   kind: 'number',
 }) as number
