@@ -2,7 +2,7 @@
 
 Rivalidate is a **Next.js 15 + TypeScript** platform for verifiable credentials and AI-powered recruiting. Candidates and issuers interact through smart wallets while recruiters manage talent pipelines with built‑in AI assistance.
 
-[![Rivalidate Demo](public/images/rivalidate-demo.png)](https://youtu.be/3jSGbr54D1M)
+[![Rivalidate Demo](public/images/rivalidate-demo.png)](https://www.youtube.com/watch?v=M5uMfI2lVjM)
 
 ---
 
@@ -160,6 +160,4 @@ Together these solutions allowed Rivalidate to deliver a seamless, fraud-resista
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | Live Demo         | https://rivalidate-base.vercel.app |
 | Demo Video        | https://rivalidate-base.vercel.app/demo-video |
-| Demo Video (Mirror) | https://youtu.be/3jSGbr54D1M |
-| Presentation Deck | https://rivalidate-base.vercel.app/pitch-deck |
-| Presentation Deck (Mirror) | https://www.canva.com/design/DAGma8Zzkiw/L6sLnrb9L8qyjxhDGsnSyg/view?utm_content=DAGma8Zzkiw&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h570be312c9 |
+| Demo Video (Mirror) | https://www.youtube.com/watch?v=M5uMfI2lVjM |
