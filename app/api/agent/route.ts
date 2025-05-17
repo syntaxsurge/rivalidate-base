@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { verifyToken } from '@/lib/auth/session'
 import type { AgentRequest, AgentResponse } from '@/lib/types/agent'
 
-import { createAgent } from './create-agent'
+import { createAgent, getAgentWalletAddress } from './create-agent'
 
 /* -------------------------------------------------------------------------- */
 /*                          A G E N T   P R O X Y                             */
@@ -42,13 +42,19 @@ export async function POST(
       ? `The connected user's wallet address is ${walletAddress}.`
       : `The user is not connected; you do not have their wallet address.`
 
+    /* Agent self-identification context */
+    const agentWalletAddress = await getAgentWalletAddress().catch(() => null)
+    const agentContext = agentWalletAddress
+      ? ` Your own agent wallet address is ${agentWalletAddress}.`
+      : 'You are currently unable to retrieve your own wallet address.'
+
     /* --------------------------- Agent ---------------------------------- */
     const agent = await createAgent()
 
     const stream = await agent.stream(
       {
         messages: [
-          { role: 'system', content: systemContext },
+          { role: 'system', content: systemContext + agentContext },
           { role: 'user', content: userMessage },
         ],
       },

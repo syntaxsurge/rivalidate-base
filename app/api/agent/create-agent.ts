@@ -1,1 +1,1 @@
-export { createAgent } from '@/lib/agentkit/create-agent'
+export { createAgent, getAgentWalletAddress } from '@/lib/agentkit/create-agent'
