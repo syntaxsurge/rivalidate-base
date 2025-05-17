@@ -79,6 +79,7 @@ function roleNav(role?: string, counts?: PendingCounts): SidebarNavItem[] {
           label: 'Issuers',
           badgeCount: counts?.adminPendingIssuers,
         },
+        { href: '/admin/roles', icon: Shield, label: 'Role Manager' },
         { href: '/admin/platform-did', icon: Key, label: 'Platform DID' },
         { href: '/admin/subscription-plans', icon: Tag, label: 'Subscription Plans' },
       ]
