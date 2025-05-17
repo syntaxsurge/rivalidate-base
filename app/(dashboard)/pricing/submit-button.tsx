@@ -5,16 +5,42 @@ import { useState } from 'react'
 
 import { ArrowRight, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useAccount, useSwitchChain, useWalletClient, usePublicClient } from 'wagmi'
+import {
+  useAccount,
+  useSwitchChain,
+  useWalletClient,
+  usePublicClient,
+  type WalletClient,
+} from 'wagmi'
+import { base, baseSepolia } from 'wagmi/chains'
 
 import { Button } from '@/components/ui/button'
-import { SUBSCRIPTION_MANAGER_ADDRESS, CHAIN_ID } from '@/lib/config'
+import {
+  SUBSCRIPTION_MANAGER_ADDRESS,
+  CHAIN_ID, // 84532 in test env
+} from '@/lib/config'
 import { SUBSCRIPTION_MANAGER_ABI } from '@/lib/contracts/abis'
 import { syncSubscriptionClient } from '@/lib/payments/client'
 import type { SubmitButtonProps } from '@/lib/types/forms'
 
+/* -------------------------------------------------------------------------- */
+/*                       R E S O L V E   T A R G E T   C H A I N              */
+/* -------------------------------------------------------------------------- */
+
 /**
- * Pay-in-ETH subscription checkout button.
+ * All on-platform ETH payments are settled on Base Sepolia (id 84532) in
+ * non-production environments.  We derive the full wagmi chain object so we
+ * can  (a) switch the wallet if needed and (b) pass it explicitly to Viem.
+ */
+const TARGET_CHAIN = CHAIN_ID === 84532 ? baseSepolia : base
+
+/* -------------------------------------------------------------------------- */
+/*                                C O M P O N E N T                           */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Pay-in-ETH subscription checkout button that auto-switches to
+ * Base Sepolia and submits the transaction.
  */
 export function SubmitButton({ planKey, priceWei }: SubmitButtonProps) {
   const { address, chain, isConnected } = useAccount()
@@ -47,19 +73,21 @@ export function SubmitButton({ planKey, priceWei }: SubmitButtonProps) {
 
     try {
       /* Prompt network switch when on the wrong chain */
-      if (chain?.id !== CHAIN_ID) {
-        toast.loading('Switching network…', { id: toastId })
-        await switchChainAsync({ chainId: CHAIN_ID })
+      if (chain?.id !== TARGET_CHAIN.id) {
+        toast.loading(`Switching to ${TARGET_CHAIN.name}…`, { id: toastId })
+        await switchChainAsync({ chainId: TARGET_CHAIN.id })
       }
 
-      /* Write contract */
+      /* Write contract — always specify the chain to avoid mismatch */
       toast.loading('Awaiting wallet signature…', { id: toastId })
-      const txHash = await walletClient.writeContract({
+
+      const txHash = await (walletClient as WalletClient).writeContract({
         address: SUBSCRIPTION_MANAGER_ADDRESS,
         abi: SUBSCRIPTION_MANAGER_ABI,
         functionName: 'paySubscription',
         args: [address, planKey],
         value: priceWei,
+        chain: TARGET_CHAIN, // critical: ensures Viem targets the same chain
       })
 
       toast.loading(`Tx sent: ${txHash.slice(0, 10)}…`, { id: toastId })
