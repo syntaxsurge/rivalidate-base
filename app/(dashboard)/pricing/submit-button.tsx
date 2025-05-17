@@ -5,20 +5,12 @@ import { useState } from 'react'
 
 import { ArrowRight, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-import {
-  useAccount,
-  useSwitchChain,
-  useWalletClient,
-  usePublicClient,
-} from 'wagmi'
 import type { WalletClient } from 'viem'
+import { useAccount, useSwitchChain, useWalletClient, usePublicClient } from 'wagmi'
 import { base, baseSepolia } from 'wagmi/chains'
 
 import { Button } from '@/components/ui/button'
-import {
-  SUBSCRIPTION_MANAGER_ADDRESS,
-  CHAIN_ID,
-} from '@/lib/config'
+import { SUBSCRIPTION_MANAGER_ADDRESS, CHAIN_ID } from '@/lib/config'
 import { SUBSCRIPTION_MANAGER_ABI } from '@/lib/contracts/abis'
 import { syncSubscriptionClient } from '@/lib/payments/client'
 import type { SubmitButtonProps } from '@/lib/types/forms'
@@ -88,7 +80,7 @@ export function SubmitButton({ planKey, priceWei }: SubmitButtonProps) {
         functionName: 'paySubscription',
         args: [address as `0x${string}`, planKey],
         value: priceWei,
-        chain: TARGET_CHAIN
+        chain: TARGET_CHAIN,
       })
 
       toast.loading(`Tx sent: ${txHash.slice(0, 10)}…`, { id: toastId })

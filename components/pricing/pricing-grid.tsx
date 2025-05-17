@@ -5,6 +5,7 @@ import { Suspense } from 'react'
 
 import { formatUnits } from 'ethers'
 import { Check } from 'lucide-react'
+import { useChainId } from 'wagmi'
 
 import { SubmitButton } from '@/app/(dashboard)/pricing/submit-button'
 import { PlanCheckout } from '@/components/payments/plan-checkout'
@@ -57,6 +58,8 @@ interface PricingCardProps {
 }
 
 function PricingCard({ meta, priceRbtc, isCurrent, highlight, hideButton }: PricingCardProps) {
+  const chainId = useChainId()
+  const isMainnet = chainId === 8453
   /* -------------------------- Call-to-action node ------------------------- */
   let cta: React.ReactNode = null
 
@@ -88,7 +91,7 @@ function PricingCard({ meta, priceRbtc, isCurrent, highlight, hideButton }: Pric
           </Suspense>
 
           {/* Stable-coin payment */}
-          {meta.productId && !meta.productId.startsWith('PRODUCT_ID_') && (
+          {isMainnet && meta.productId && !meta.productId.startsWith('PRODUCT_ID_') && (
             <PlanCheckout planKey={planKey} productId={meta.productId} />
           )}
         </div>
