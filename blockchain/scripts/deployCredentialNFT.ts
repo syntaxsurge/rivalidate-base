@@ -12,6 +12,8 @@ import { keccak256, toUtf8Bytes } from "ethers";
 import { adminAddress, issuerAddresses, platformAddress } from "./config";
 import { updateEnvLog } from "./utils/logEnv";
 import { shouldVerifyNetwork } from "./utils/verify";
+import { highFeeOverrides } from "./utils/gas";
+import { withRetries } from "./utils/retry";
 import type { CredentialNFTInstance } from "../typechain-types";
 
 const CredentialNFT = artifacts.require("CredentialNFT");
@@ -46,17 +48,31 @@ async function main(): Promise<void> {
   const PLATFORM_ROLE = keccak256(toUtf8Bytes("PLATFORM_ROLE"));
 
   for (const issuer of issuerAddresses) {
-    await nft.grantRole(ISSUER_ROLE, issuer);
-    console.log(`🔑  ISSUER_ROLE granted → ${issuer}`);
+    try {
+      await withRetries(
+        async () => nft.grantRole(ISSUER_ROLE, issuer, await highFeeOverrides(adminAddress)),
+        5_000,
+      );
+      console.log(`🔑  ISSUER_ROLE granted → ${issuer}`);
+    } catch (err) {
+      console.warn(`⚠️   Failed to grant ISSUER_ROLE to ${issuer}:`, (err as Error).message);
+    }
   }
 
-  await nft.grantRole(PLATFORM_ROLE, platformAddress);
-  console.log(`🔑  PLATFORM_ROLE granted → ${platformAddress}`);
+  try {
+    await withRetries(
+      async () => nft.grantRole(PLATFORM_ROLE, platformAddress, await highFeeOverrides(adminAddress)),
+      5_000,
+    );
+    console.log(`🔑  PLATFORM_ROLE granted → ${platformAddress}`);
+  } catch (err) {
+    console.warn("⚠️   Failed to grant PLATFORM_ROLE:", (err as Error).message);
+  }
 }
 
 main()
   .then(() => process.exit(0))
   .catch(err => {
-    console.error(err);
+    console.error("❌  Deployment failed:", (err as Error).message);
     process.exit(1);
   });

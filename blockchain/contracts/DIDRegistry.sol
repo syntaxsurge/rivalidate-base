@@ -25,10 +25,30 @@ contract DIDRegistry is AccessControlEnumerable {
     event DIDCreated(address indexed owner, string did, bytes32 docHash);
     event DIDDocumentUpdated(string indexed did, string uri, bytes32 docHash);
 
+    /**
+     * @param admin   The primary administrator that must always hold DEFAULT_ADMIN_ROLE
+     *                and ADMIN_ROLE for off-chain integrations.
+     *
+     * NOTE: The constructor now also assigns both roles to the deploying account (`msg.sender`)
+     *       so that post-deployment scripts executed by the deployer can immediately exercise
+     *       privileged functions such as `adminCreateDID` even when the deployer address
+     *       differs from `admin`.
+     */
     constructor(address admin) {
+        address deployer = msg.sender;
+
+        // Core administrator supplied via constructor
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         _grantRole(ADMIN_ROLE, admin);
-        _setRoleAdmin(AGENT_ROLE, ADMIN_ROLE); // admins manage agents
+
+        // Ensure the deploying account is not locked out of admin functions
+        if (deployer != admin) {
+            _grantRole(DEFAULT_ADMIN_ROLE, deployer);
+            _grantRole(ADMIN_ROLE, deployer);
+        }
+
+        // Admins manage the AGENT_ROLE
+        _setRoleAdmin(AGENT_ROLE, ADMIN_ROLE);
     }
 
     /* -------------------------------------------------------------------------- */

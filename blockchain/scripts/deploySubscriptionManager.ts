@@ -4,6 +4,8 @@ import { keccak256, toUtf8Bytes } from "ethers";
 import { adminAddress, platformAddress } from "./config";
 import { updateEnvLog } from "./utils/logEnv";
 import { shouldVerifyNetwork } from "./utils/verify";
+import { highFeeOverrides } from "./utils/gas";
+import { withRetries } from "./utils/retry";
 
 const SubscriptionManager = artifacts.require("SubscriptionManager");
 
@@ -18,7 +20,7 @@ async function main(): Promise<void> {
 
   if (!basePriceEnv || !plusPriceEnv) {
     throw new Error(
-      "Missing SUBSCRIPTION_PRICE_WEI_BASE or SUBSCRIPTION_PRICE_WEI_PLUS environment variables"
+      "Missing SUBSCRIPTION_PRICE_WEI_BASE or SUBSCRIPTION_PRICE_WEI_PLUS environment variables",
     );
   }
 
@@ -49,13 +51,20 @@ async function main(): Promise<void> {
 
   /* ------------------------- Grant ADMIN_ROLE ------------------------------- */
   const ADMIN_ROLE = keccak256(toUtf8Bytes("ADMIN_ROLE"));
-  await mgr.grantRole(ADMIN_ROLE, platformAddress);
-  console.log(`🔑  ADMIN_ROLE granted → ${platformAddress}`);
+  try {
+    await withRetries(
+      async () => mgr.grantRole(ADMIN_ROLE, platformAddress, await highFeeOverrides(adminAddress)),
+      5_000,
+    );
+    console.log(`🔑  ADMIN_ROLE granted → ${platformAddress}`);
+  } catch (err) {
+    console.warn("⚠️   Failed to grant ADMIN_ROLE:", (err as Error).message);
+  }
 }
 
 main()
   .then(() => process.exit(0))
   .catch(err => {
-    console.error(err);
+    console.error("❌  Deployment failed:", (err as Error).message);
     process.exit(1);
   });
