@@ -15,6 +15,7 @@ import {
 
 import { CDP_API_KEY_NAME, CDP_API_KEY_PRIVATE_KEY, AGENTKIT_NETWORK_ID } from '@/lib/config'
 
+import { didRegistryActionProvider } from './did-registry-action-provider'
 import { uniswapv2ActionProvider } from './uniswap-v2-action-provider'
 
 /* -------------------------------------------------------------------------- */
@@ -74,6 +75,7 @@ export async function prepareAgentkitAndWalletProvider(): Promise<{
         erc20ActionProvider(),
         cdpApiActionProvider({ apiKeyName, apiKeyPrivateKey }),
         cdpWalletActionProvider({ apiKeyName, apiKeyPrivateKey }),
+        didRegistryActionProvider(),
         uniswapv2ActionProvider(),
       ],
     })

@@ -3,8 +3,8 @@ import { redirect } from 'next/navigation'
 import { eq } from 'drizzle-orm'
 import { FileText } from 'lucide-react'
 
-import PageCard from '@/components/ui/page-card'
 import { Button } from '@/components/ui/button'
+import PageCard from '@/components/ui/page-card'
 import { db } from '@/lib/db/drizzle'
 import { getUser } from '@/lib/db/queries/queries'
 import { candidates } from '@/lib/db/schema/candidate'
@@ -48,8 +48,8 @@ export default async function ResumePage() {
       <div className='space-y-6'>
         <p className='text-muted-foreground text-sm'>
           <strong className='font-semibold'>Vectorisation Coming Soon:</strong> We’re building
-          semantic search capabilities, but résumé embeddings are not yet available. Check back in
-          a future update!
+          semantic search capabilities, but résumé embeddings are not yet available. Check back in a
+          future update!
         </p>
 
         <Button asChild>
