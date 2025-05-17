@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url'
  * • Creates the target directory on first run.
  * • Logs each copied relative path for developer feedback.
  *
- * Run with:  pnpm contracts:copy-abis
+ * Run with:  pnpm contracts:sync-abis
  */
 async function main(): Promise<void> {
   /* ------------------------------------------------------------------ */
