@@ -6,18 +6,6 @@ Rivalidate is a **Next.js 15 + TypeScript** platform for verifiable credentials 
 
 ---
 
-## ✨ Core Features
-
-| Domain     | Capability |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Candidates | • Responsive dashboard for profile, credentials, highlights and résumé<br>• **Auto-generated PDF résumé** with one-click download |
-| Recruiters | • Applicant tracking with pipelines & boards<br>• AI fit scoring and credential drill-down |
-| Admin      | • User / issuer / pricing management<br>• Platform DID controls |
-| API        | • RESTful routes under `/api` with strict auth guards |
-| DevEx      | • Monorepo-level typed SQL via Drizzle ORM |
-
----
-
 ## 🖥 User-Journey Snapshot
 
 **Candidate**
@@ -102,7 +90,6 @@ pnpm start
 - **Next.js 15 App Router** with Partial Prerendering
 - **Tailwind 4** + shadcn/ui + Framer Motion
 - **Drizzle ORM** for typed PostgreSQL access
-- **Wagmi** & **RainbowKit** for smart wallet onboarding
 - **AgentKit** for on-chain AI actions
 - **OnchainKit** components for Coinbase Commerce payments
 - **Vercel Edge** API routes
@@ -127,16 +114,34 @@ Rivalidate is a complete recruiting platform for candidates and recruiters. User
 
 ## The Problem It Solves
 
-Credential fraud slows down hiring and reduces trust in candidate résumés. Rivalidate issues verifiable credentials onchain and links them directly to résumé data, allowing recruiters to instantly verify authenticity while candidates retain control over their profile.
+Hiring marketplaces struggle with credential fraud and slow verification processes. **Rivalidate** anchors credentials directly on **Base**, giving recruiters cryptographic proof that a candidate truly earned their certificates.  
+Crucially, **issuers** — universities, bootcamps, licensing bodies, etc. — sign and publish those credentials, providing the authoritative link between a candidate and their achievements; without the issuer’s signature, a credential cannot be verified on-chain.  
+Smart-wallet onboarding lowers the barrier for non-crypto users, and an integrated AI agent assists with on-chain actions such as DID creation, token swaps, and payments. The result is a trust layer for professional credentials combined with efficient, AI-powered recruiting tools.
+
+Traditional hiring relies on screenshots, PDFs, or phone calls to validate a résumé. Each manual check slows time-to-hire and still leaves room for fraud:
+
+| Pain Point | Impact | Rivalidate’s Fix |
+|------------|--------|------------------|
+| **Fake or inflated credentials** | Recruiters waste hours verifying each claim and still miss sophisticated forgeries. | Issuers publish cryptographically signed credentials to Base; recruiters get an instant green-check or red-flag. |
+| **Fragmented data silos** | Résumé data lives in dozens of HR tools; verification results aren’t portable. | Credentials are anchored on-chain and referenced by DID, so any HR system can fetch the same immutable proof. |
+| **High Web3 friction** | Candidates and employers unfamiliar with wallets avoid on-chain solutions. | Coinbase Smart Wallet onboarding works with email, social, or passkeys — no seed phrases required. |
+| **Trust gaps in remote hiring** | Global teams struggle to judge overseas certifications. | A global, public Base chain provides a universal source of truth, independent of geography. |
+
+By turning each claim into a verifiable credential minted (and, if revoked, transparently burned) on Base, Rivalidate removes the “trust but verify” loop and lets recruiters focus on candidate fit rather than detective work.
 
 ---
 
 ## Challenges I Ran Into
 
-- Coordinating smart contracts with off-chain Next.js logic
-- Handling wallet onboarding flows for both web2 and crypto‑native users
-- Integrating AgentKit actions with custom contracts and Uniswap
-- Mirroring Coinbase Commerce charges onchain and storing proofs
+| Challenge | Why It Was Hard | Approach & Solution |
+|-----------|-----------------|---------------------|
+| **On-chain ↔️ Off-chain orchestration** | Smart-contract calls must stay in strict sync with Next.js server state (e.g., account creation → NFT anchor). | Introduced an action queue in Drizzle + contract event listeners that update Postgres only after tx confirmation; retries handle L2 reorgs. |
+| **Wallet onboarding for mixed audiences** | Web2 users fear seed phrases; crypto-native users expect hardcore self-custody. | Integrated Coinbase Smart Wallet with “smartWalletOnly” preference, then exposed optional export for hardware-wallet users. |
+| **Extending AgentKit with custom actions** | Native AgentKit only covers generic ERC-20 flows. | Wrote a uniswapv2ActionProvider and a credential-mint action that wrap our contracts; added Zod schemas so the agent can validate parameters before calling. |
+| **Mirroring Coinbase Commerce payments on-chain** | Fiat checkout happens off-chain, but recruiters want on-chain proofs for audits. | Created a webhook that mints a zero-value “PaymentReceipt” NFT when a charge is marked CONFIRMED; the token links to the Commerce charge ID so auditors can cross-check. |
+| **Ensuring issuer accountability** | If an issuer’s private key is compromised, fake credentials could be minted. | Added a revocation registry and an optional multisig flow for high-value issuers; the AI agent can trigger “freeze” actions if anomaly detection flags unusual minting. |
+
+Together these solutions allowed Rivalidate to deliver a seamless, fraud-resistant credential layer while remaining usable by HR teams that have never touched a blockchain.
 
 ---
 
