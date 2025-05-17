@@ -1,15 +1,18 @@
 /**
- * Deploys the CredentialNFT contract, verifies it, and assigns initial roles.
+ * Deploys the CredentialNFT contract, verifies it when possible,
+ * and assigns initial roles.
  *
  * Usage:
  *   pnpm hardhat run blockchain/scripts/deployCredentialNFT.ts --network base|baseSepolia
  */
 
-import { network, run } from "hardhat";
+import hre, { network, run } from "hardhat";
+import { keccak256, toUtf8Bytes } from "ethers";
 
 import { adminAddress, issuerAddresses, platformAddress } from "./config";
-import type { CredentialNFTInstance } from "../typechain-types";
 import { updateEnvLog } from "./utils/logEnv";
+import { shouldVerifyNetwork } from "./utils/verify";
+import type { CredentialNFTInstance } from "../typechain-types";
 
 const CredentialNFT = artifacts.require("CredentialNFT");
 
@@ -20,13 +23,11 @@ async function main(): Promise<void> {
   const nft: CredentialNFTInstance = await CredentialNFT.new(...args);
   console.log(`✅  CredentialNFT deployed at ${nft.address}`);
 
-  /* Persist address for env -------------------------------------------- */
+  /* Persist address for env -------------------------------------------------- */
   updateEnvLog("NEXT_PUBLIC_CREDENTIAL_NFT_ADDRESS", nft.address);
 
-  /* ------------------------------------------------------------------ */
-  /*                       Optional Etherscan verify                     */
-  /* ------------------------------------------------------------------ */
-  if (!["hardhat", "localhost"].includes(network.name)) {
+  /* -------------------------- Optional verification ------------------------- */
+  if (shouldVerifyNetwork(network.name)) {
     try {
       await run("verify:verify", {
         address: nft.address,
@@ -34,15 +35,15 @@ async function main(): Promise<void> {
       });
       console.log("🔎  Verified on block-explorer");
     } catch (err) {
-      console.warn("⚠️   Verification skipped / failed:", (err as Error).message);
+      console.warn("⚠️   Verification failed:", (err as Error).message);
     }
+  } else {
+    console.log("ℹ️  Verification skipped – no explorer API key configured.");
   }
 
-  /* ------------------------------------------------------------------ */
-  /*                      Seed initial on-chain roles                    */
-  /* ------------------------------------------------------------------ */
-  const ISSUER_ROLE = await nft.ISSUER_ROLE();
-  const PLATFORM_ROLE = await nft.PLATFORM_ROLE();
+  /* -------------------------- Seed initial roles --------------------------- */
+  const ISSUER_ROLE   = keccak256(toUtf8Bytes("ISSUER_ROLE"));
+  const PLATFORM_ROLE = keccak256(toUtf8Bytes("PLATFORM_ROLE"));
 
   for (const issuer of issuerAddresses) {
     await nft.grantRole(ISSUER_ROLE, issuer);
