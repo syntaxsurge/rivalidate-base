@@ -94,7 +94,7 @@ const nextConfig: NextConfig = {
       {
         source: '/pitch-deck',
         destination:
-          'https://www.canva.com/design/xxxxxxx/xxxxxxx/view?utm_content=DAGma8Zzkiw&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h570be312c9',
+          'https://www.canva.com/design/DAGma8Zzkiw/L6sLnrb9L8qyjxhDGsnSyg/view?utm_content=DAGma8Zzkiw&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h570be312c9',
         permanent: false,
       },
       // add any future redirects here

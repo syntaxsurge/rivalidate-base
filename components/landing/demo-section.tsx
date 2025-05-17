@@ -26,7 +26,7 @@ const EMBEDS: Embed[] = [
   {
     key: 'deck',
     title: 'Investor Deck',
-    src: 'https://www.canva.com/design/xxxxxxx/xxxxxxx/view?embed',
+    src: 'https://www.canva.com/design/DAGma8Zzkiw/L6sLnrb9L8qyjxhDGsnSyg/view?embed',
     link: '/pitch-deck',
   },
 ]
