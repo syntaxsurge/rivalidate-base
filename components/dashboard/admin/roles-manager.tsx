@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 import { Loader2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
@@ -8,7 +8,6 @@ import {
   getAddress,
   isAddress,
   keccak256,
-  hexlify,
   toBytes,
   Address,
   Hex,
@@ -82,21 +81,28 @@ export default function RolesManager() {
   const [agentInput, setAgentInput] = useState('')
   const [txPending, setTxPending] = useState(false)
 
+  /** Retry counter so we can silently retry once or twice before surfacing an error. */
+  const attemptsRef = useRef(0)
+
   /* ------------------------------------------------------------------ */
   /*                         F E T C H   R O L E S                      */
   /* ------------------------------------------------------------------ */
   useEffect(() => {
+    let cancelled = false
+
     async function fetchRoles() {
       if (
         !publicClient ||
         !DID_REGISTRY_ADDRESS ||
         !isAddress(DID_REGISTRY_ADDRESS as string)
       ) {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
         return
       }
 
-      setLoading(true)
+      if (!cancelled) setLoading(true)
+      attemptsRef.current += 1
+
       try {
         /* Resolve role identifiers with on-chain lookup + fallback */
         const ADMIN_ROLE = await fetchRoleHash(
@@ -113,40 +119,61 @@ export default function RolesManager() {
         )
 
         async function readMembers(role: Hex, label: RoleLabel) {
-          const count = (await publicClient.readContract({
-            address: DID_REGISTRY_ADDRESS as Address,
-            abi: DID_REGISTRY_ABI,
-            functionName: 'getRoleMemberCount',
-            args: [role],
-          })) as bigint
-
-          const outs: RoleEntry[] = []
-          for (let i = 0n; i < count; i++) {
-            const addr = (await publicClient.readContract({
+          try {
+            const count = (await publicClient.readContract({
               address: DID_REGISTRY_ADDRESS as Address,
               abi: DID_REGISTRY_ABI,
-              functionName: 'getRoleMember',
-              args: [role, i],
-            })) as Address
-            outs.push({ role: label, addr })
+              functionName: 'getRoleMemberCount',
+              args: [role],
+            })) as bigint
+
+            const outs: RoleEntry[] = []
+            for (let i = 0n; i < count; i++) {
+              const addr = (await publicClient.readContract({
+                address: DID_REGISTRY_ADDRESS as Address,
+                abi: DID_REGISTRY_ABI,
+                functionName: 'getRoleMember',
+                args: [role, i],
+              })) as Address
+              outs.push({ role: label, addr })
+            }
+            return outs
+          } catch {
+            /* Return empty on first failures to avoid noisy errors; retry later. */
+            return []
           }
-          return outs
         }
 
         const [admins, agents] = await Promise.all([
           readMembers(ADMIN_ROLE, 'ADMIN'),
           readMembers(AGENT_ROLE, 'AGENT'),
         ])
-        setEntries([...admins, ...agents])
+
+        const combined = [...admins, ...agents]
+        if (!cancelled) setEntries(combined)
+
+        /* If nothing retrieved and we have only attempted once so far, retry after a short delay. */
+        if (combined.length === 0 && attemptsRef.current < 3 && !cancelled) {
+          setTimeout(fetchRoles, 1500)
+          return
+        }
       } catch (err) {
-        console.error(err)
-        toast.error('Failed to fetch role members.')
+        /* Only surface an error after the second failed attempt to avoid scary console noise. */
+        if (attemptsRef.current >= 2 && !cancelled) {
+          console.error(err)
+          toast.error('Failed to fetch role members.')
+        }
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
     }
 
     fetchRoles()
+
+    /* Cleanup so any in-flight retries stop after unmount */
+    return () => {
+      cancelled = true
+    }
   }, [publicClient])
 
   /* ------------------------------------------------------------------ */
