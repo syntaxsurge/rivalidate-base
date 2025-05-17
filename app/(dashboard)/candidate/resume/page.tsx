@@ -1,18 +1,22 @@
 import { redirect } from 'next/navigation'
 
 import { eq } from 'drizzle-orm'
-import { CheckCircle2, Loader2, RefreshCcw } from 'lucide-react'
+import { FileText } from 'lucide-react'
 
+import PageCard from '@/components/ui/page-card'
 import { Button } from '@/components/ui/button'
 import { db } from '@/lib/db/drizzle'
 import { getUser } from '@/lib/db/queries/queries'
 import { candidates } from '@/lib/db/schema/candidate'
-import { getOcyClient } from '@/lib/ocy/client'
 
+export const revalidate = 0
+
+/**
+ * Candidate Résumé page.
+ * Users can download their PDF while vectorisation support is under development.
+ */
 export default async function ResumePage() {
-  /* -------------------------------------------------------------------- */
-  /*                           A U T H  &  D A T A                        */
-  /* -------------------------------------------------------------------- */
+  /* --------------------------- Auth & candidate -------------------------- */
   const user = await getUser()
   if (!user) redirect('/')
 
@@ -24,101 +28,40 @@ export default async function ResumePage() {
 
   if (!cand) {
     return (
-      <div className='prose mx-auto max-w-2xl p-6'>
-        <h1 className='mb-2 text-xl font-semibold'>Résumé</h1>
-        <p>You need to create your candidate profile before generating a résumé.</p>
-      </div>
+      <PageCard icon={FileText} title='Résumé'>
+        <p className='text-muted-foreground'>
+          You need to create your candidate profile before generating a résumé.
+        </p>
+      </PageCard>
     )
   }
 
   const candidateId = cand.id
 
-  /* -------------------------------------------------------------------- */
-  /*                     O C Y   K N O W L E D G E   B A S E              */
-  /* -------------------------------------------------------------------- */
-  let status: string | null = null
-  try {
-    const client = getOcyClient()
-    const bases = await client.getKnowledgeBases(1, 100)
-    const kb =
-      Array.isArray(bases) && bases.length
-        ? (bases as Array<{ name?: string; status?: string }>).find(
-            (b) => b?.name === `resume_${candidateId}`,
-          )
-        : null
-    status = kb?.status ?? null
-  } catch {
-    /* OCY unavailable or KB missing */
-  }
-
-  /* -------------------------------------------------------------------- */
-  /*                          S T A T U S   B A D G E                     */
-  /* -------------------------------------------------------------------- */
-  function Status() {
-    switch (status) {
-      case 'ready':
-        return (
-          <span className='inline-flex items-center gap-1 rounded-md bg-emerald-600/15 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-400/20 dark:text-emerald-200'>
-            <CheckCircle2 className='size-3 shrink-0' /> Ready
-          </span>
-        )
-      case 'processing':
-        return (
-          <span className='inline-flex items-center gap-1 rounded-md bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-900 dark:bg-amber-400/20 dark:text-amber-200'>
-            <Loader2 className='size-3 shrink-0 animate-spin' /> Processing
-          </span>
-        )
-      default:
-        return (
-          <span className='bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium'>
-            Not generated
-          </span>
-        )
-    }
-  }
-
-  /* -------------------------------------------------------------------- */
-  /*                               M A R K U P                            */
-  /* -------------------------------------------------------------------- */
+  /* ----------------------------- View ------------------------------------ */
   return (
-    <div className='mx-auto max-w-xl space-y-6 p-6'>
-      <header>
-        <h1 className='text-2xl font-bold'>Résumé</h1>
-        <p className='text-muted-foreground mt-1 text-sm'>
-          Download your automatically generated résumé PDF, check its vectorization status, or
-          regenerate the document.
+    <PageCard
+      icon={FileText}
+      title='Résumé'
+      description='Download your automatically generated résumé PDF. Semantic vectorisation will be supported soon.'
+    >
+      <div className='space-y-6'>
+        <p className='text-muted-foreground text-sm'>
+          <strong className='font-semibold'>Vectorisation Coming Soon:</strong> We’re building
+          semantic search capabilities, but résumé embeddings are not yet available. Check back in
+          a future update!
         </p>
-      </header>
 
-      <div className='flex items-center gap-4'>
-        <div className='flex items-center gap-2'>
-          <span className='text-sm font-medium'>Vectorization status:</span>
-          <Status />
-        </div>
-
-        {status === 'processing' && (
-          <span className='text-muted-foreground text-xs'>(This may take a few minutes)</span>
-        )}
-      </div>
-
-      <div className='flex gap-3'>
         <Button asChild>
-          <a href={`/api/candidates/${candidateId}/resume`} target='_blank' rel='noopener'>
+          <a
+            href={`/api/candidates/${candidateId}/resume`}
+            target='_blank'
+            rel='noopener noreferrer'
+          >
             Download PDF
           </a>
         </Button>
-
-        <form
-          action={`/api/candidates/${candidateId}/resume/vectorize`}
-          method='post'
-          className='inline'
-        >
-          <Button variant='secondary' type='submit'>
-            <RefreshCcw className='mr-2 size-4' />
-            Regenerate & Vectorize
-          </Button>
-        </form>
       </div>
-    </div>
+    </PageCard>
   )
 }
