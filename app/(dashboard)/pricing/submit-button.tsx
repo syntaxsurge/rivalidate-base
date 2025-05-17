@@ -10,8 +10,8 @@ import {
   useSwitchChain,
   useWalletClient,
   usePublicClient,
-  type WalletClient,
 } from 'wagmi'
+import type { WalletClient } from 'viem'
 import { base, baseSepolia } from 'wagmi/chains'
 
 import { Button } from '@/components/ui/button'
