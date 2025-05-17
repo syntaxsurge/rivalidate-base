@@ -164,8 +164,10 @@ Together these solutions allowed Rivalidate to deliver a seamless, fraud-resista
 
 ## Final Output
 
-| Item                | Location                                      |
-| ------------------- | --------------------------------------------- |
-| Live Demo           | https://rivalidate-base.vercel.app            |
-| Demo Video          | https://rivalidate-base.vercel.app/demo-video |
-| Demo Video (Mirror) | https://www.youtube.com/watch?v=M5uMfI2lVjM   |
+| Item                       | Location                                                                                                                                                                        |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Live Demo                  | https://rivalidate-base.vercel.app                                                                                                                                              |
+| Demo Video                 | https://rivalidate-base.vercel.app/demo-video                                                                                                                                   |
+| Demo Video (Mirror)        | https://www.youtube.com/watch?v=M5uMfI2lVjM                                                                                                                                     |
+| Presentation Deck          | https://rivalidate-base.vercel.app/pitch-deck                                                                                                                                   |
+| Presentation Deck (Mirror) | https://www.canva.com/design/DAGma8Zzkiw/L6sLnrb9L8qyjxhDGsnSyg/view?utm_content=DAGma8Zzkiw&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h570be312c9 |
