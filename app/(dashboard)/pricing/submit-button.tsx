@@ -17,7 +17,7 @@ import { base, baseSepolia } from 'wagmi/chains'
 import { Button } from '@/components/ui/button'
 import {
   SUBSCRIPTION_MANAGER_ADDRESS,
-  CHAIN_ID, // 84532 in test env
+  CHAIN_ID,
 } from '@/lib/config'
 import { SUBSCRIPTION_MANAGER_ABI } from '@/lib/contracts/abis'
 import { syncSubscriptionClient } from '@/lib/payments/client'
@@ -82,12 +82,13 @@ export function SubmitButton({ planKey, priceWei }: SubmitButtonProps) {
       toast.loading('Awaiting wallet signature…', { id: toastId })
 
       const txHash = await (walletClient as WalletClient).writeContract({
+        account: address as `0x${string}`,
         address: SUBSCRIPTION_MANAGER_ADDRESS,
         abi: SUBSCRIPTION_MANAGER_ABI,
         functionName: 'paySubscription',
-        args: [address, planKey],
+        args: [address as `0x${string}`, planKey],
         value: priceWei,
-        chain: TARGET_CHAIN, // critical: ensures Viem targets the same chain
+        chain: TARGET_CHAIN
       })
 
       toast.loading(`Tx sent: ${txHash.slice(0, 10)}…`, { id: toastId })
