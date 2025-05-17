@@ -32,6 +32,7 @@
     "@hello-pangea/dnd": "^18.0.1",
     "@langchain/langgraph": "^0.2.21",
     "@langchain/openai": "^0.3.14",
+    "@next/eslint-plugin-next": "^15.3.2",
     "@octokit/rest": "^21.1.1",
     "@radix-ui/react-alert-dialog": "^1.1.10",
     "@radix-ui/react-avatar": "^1.1.3",
