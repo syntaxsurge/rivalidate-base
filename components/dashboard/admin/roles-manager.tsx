@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react'
 
 import { Loader2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
-import { useAccount, usePublicClient, useWalletClient, useSwitchChain } from 'wagmi'
 import { getAddress, isAddress } from 'viem'
+import { useAccount, usePublicClient, useWalletClient, useSwitchChain } from 'wagmi'
 
 import { Button } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { DID_REGISTRY_ADDRESS, CHAIN_ID } from '@/lib/config'
 import { DID_REGISTRY_ABI } from '@/lib/contracts/abis'
 
@@ -104,10 +104,7 @@ export default function RolesManager() {
     const toastId = toast.loading('Sending transaction…')
 
     try {
-      const roleSelector =
-        label === 'ADMIN'
-          ? 'ADMIN_ROLE'
-          : 'AGENT_ROLE'
+      const roleSelector = label === 'ADMIN' ? 'ADMIN_ROLE' : 'AGENT_ROLE'
 
       const roleBytes: `0x${string}` = await publicClient!.readContract({
         address: DID_REGISTRY_ADDRESS,
@@ -193,7 +190,11 @@ export default function RolesManager() {
             onClick={() => grantRole(adminInput.trim(), 'ADMIN')}
             className='flex items-center gap-1'
           >
-            {txPending ? <Loader2 className='h-4 w-4 animate-spin' /> : <Plus className='h-4 w-4' />}
+            {txPending ? (
+              <Loader2 className='h-4 w-4 animate-spin' />
+            ) : (
+              <Plus className='h-4 w-4' />
+            )}
             Add Admin
           </Button>
         </CardContent>
@@ -219,7 +220,11 @@ export default function RolesManager() {
             onClick={() => grantRole(agentInput.trim(), 'AGENT')}
             className='flex items-center gap-1'
           >
-            {txPending ? <Loader2 className='h-4 w-4 animate-spin' /> : <Plus className='h-4 w-4' />}
+            {txPending ? (
+              <Loader2 className='h-4 w-4 animate-spin' />
+            ) : (
+              <Plus className='h-4 w-4' />
+            )}
             Add Agent
           </Button>
         </CardContent>
