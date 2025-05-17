@@ -4,14 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 
 import { Loader2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
-import {
-  getAddress,
-  isAddress,
-  keccak256,
-  toBytes,
-  Address,
-  Hex,
-} from 'viem'
+import { getAddress, isAddress, keccak256, toBytes, Address, Hex } from 'viem'
 import { useAccount, usePublicClient, useWalletClient, useSwitchChain } from 'wagmi'
 
 import { Button } from '@/components/ui/button'
@@ -91,11 +84,7 @@ export default function RolesManager() {
     let cancelled = false
 
     async function fetchRoles() {
-      if (
-        !publicClient ||
-        !DID_REGISTRY_ADDRESS ||
-        !isAddress(DID_REGISTRY_ADDRESS as string)
-      ) {
+      if (!publicClient || !DID_REGISTRY_ADDRESS || !isAddress(DID_REGISTRY_ADDRESS as string)) {
         if (!cancelled) setLoading(false)
         return
       }

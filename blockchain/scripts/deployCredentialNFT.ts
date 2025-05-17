@@ -6,15 +6,15 @@
  *   pnpm hardhat run blockchain/scripts/deployCredentialNFT.ts --network base|baseSepolia
  */
 
-import hre, { network, run } from "hardhat";
 import { keccak256, toUtf8Bytes } from "ethers";
+import { network, run } from "hardhat";
 
 import { adminAddress, issuerAddresses, platformAddress } from "./config";
-import { updateEnvLog } from "./utils/logEnv";
-import { shouldVerifyNetwork } from "./utils/verify";
-import { highFeeOverrides } from "./utils/gas";
-import { withRetries } from "./utils/retry";
 import type { CredentialNFTInstance } from "../typechain-types";
+import { highFeeOverrides } from "./utils/gas";
+import { updateEnvLog } from "./utils/logEnv";
+import { withRetries } from "./utils/retry";
+import { shouldVerifyNetwork } from "./utils/verify";
 
 const CredentialNFT = artifacts.require("CredentialNFT");
 
@@ -44,15 +44,12 @@ async function main(): Promise<void> {
   }
 
   /* -------------------------- Seed initial roles --------------------------- */
-  const ISSUER_ROLE   = keccak256(toUtf8Bytes("ISSUER_ROLE"));
+  const ISSUER_ROLE = keccak256(toUtf8Bytes("ISSUER_ROLE"));
   const PLATFORM_ROLE = keccak256(toUtf8Bytes("PLATFORM_ROLE"));
 
   for (const issuer of issuerAddresses) {
     try {
-      await withRetries(
-        async () => nft.grantRole(ISSUER_ROLE, issuer, await highFeeOverrides(adminAddress)),
-        5_000,
-      );
+      await withRetries(async () => nft.grantRole(ISSUER_ROLE, issuer, await highFeeOverrides(adminAddress)), 5_000);
       console.log(`🔑  ISSUER_ROLE granted → ${issuer}`);
     } catch (err) {
       console.warn(`⚠️   Failed to grant ISSUER_ROLE to ${issuer}:`, (err as Error).message);
@@ -62,7 +59,7 @@ async function main(): Promise<void> {
   try {
     await withRetries(
       async () => nft.grantRole(PLATFORM_ROLE, platformAddress, await highFeeOverrides(adminAddress)),
-      5_000,
+      5_000
     );
     console.log(`🔑  PLATFORM_ROLE granted → ${platformAddress}`);
   } catch (err) {

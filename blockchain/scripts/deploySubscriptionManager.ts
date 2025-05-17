@@ -1,11 +1,11 @@
-import hre, { network, run } from "hardhat";
 import { keccak256, toUtf8Bytes } from "ethers";
+import { network, run } from "hardhat";
 
 import { adminAddress, platformAddress } from "./config";
-import { updateEnvLog } from "./utils/logEnv";
-import { shouldVerifyNetwork } from "./utils/verify";
 import { highFeeOverrides } from "./utils/gas";
+import { updateEnvLog } from "./utils/logEnv";
 import { withRetries } from "./utils/retry";
+import { shouldVerifyNetwork } from "./utils/verify";
 
 const SubscriptionManager = artifacts.require("SubscriptionManager");
 
@@ -19,9 +19,7 @@ async function main(): Promise<void> {
   const plusPriceEnv = process.env.SUBSCRIPTION_PRICE_WEI_PLUS;
 
   if (!basePriceEnv || !plusPriceEnv) {
-    throw new Error(
-      "Missing SUBSCRIPTION_PRICE_WEI_BASE or SUBSCRIPTION_PRICE_WEI_PLUS environment variables",
-    );
+    throw new Error("Missing SUBSCRIPTION_PRICE_WEI_BASE or SUBSCRIPTION_PRICE_WEI_PLUS environment variables");
   }
 
   const basePrice = BigInt(basePriceEnv);
@@ -54,7 +52,7 @@ async function main(): Promise<void> {
   try {
     await withRetries(
       async () => mgr.grantRole(ADMIN_ROLE, platformAddress, await highFeeOverrides(adminAddress)),
-      5_000,
+      5_000
     );
     console.log(`🔑  ADMIN_ROLE granted → ${platformAddress}`);
   } catch (err) {

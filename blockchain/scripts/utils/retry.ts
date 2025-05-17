@@ -6,11 +6,7 @@
  * @param maxMs    Maximum total time to keep retrying (default 5000 ms).
  * @param delayMs  Delay between retries in milliseconds (default 1000 ms).
  */
-export async function withRetries<T>(
-  fn: () => Promise<T>,
-  maxMs = 5000,
-  delayMs = 1000,
-): Promise<T> {
+export async function withRetries<T>(fn: () => Promise<T>, maxMs = 5000, delayMs = 1000): Promise<T> {
   const deadline = Date.now() + maxMs;
   let lastError: unknown;
 

@@ -5,15 +5,15 @@
  *   pnpm hardhat run blockchain/scripts/deployDIDRegistry.ts --network base|baseSepolia
  */
 
-import hre, { network, run } from "hardhat";
 import { ZeroHash } from "ethers";
+import { network, run } from "hardhat";
 
 import { adminAddress, platformAddress } from "./config";
-import { updateEnvLog } from "./utils/logEnv";
-import { shouldVerifyNetwork } from "./utils/verify";
-import { highFeeOverrides } from "./utils/gas";
-import { withRetries } from "./utils/retry";
 import type { DIDRegistryInstance } from "../typechain-types";
+import { highFeeOverrides } from "./utils/gas";
+import { updateEnvLog } from "./utils/logEnv";
+import { withRetries } from "./utils/retry";
+import { shouldVerifyNetwork } from "./utils/verify";
 
 const DIDRegistry = artifacts.require("DIDRegistry");
 
@@ -32,13 +32,8 @@ async function main(): Promise<void> {
     try {
       /* Send the mint transaction (with retries + high fee overrides) */
       await withRetries(
-        async () =>
-          registry.adminCreateDID(
-            platformAddress,
-            ZeroHash,
-            await highFeeOverrides(adminAddress),
-          ),
-        10_000,
+        async () => registry.adminCreateDID(platformAddress, ZeroHash, await highFeeOverrides(adminAddress)),
+        10_000
       );
 
       /* Poll didOf until the chain reflects the newly minted DID */
@@ -49,7 +44,7 @@ async function main(): Promise<void> {
           return out;
         },
         10_000,
-        1_500,
+        1_500
       );
 
       console.log(`🎉  Platform DID created → ${did}`);
