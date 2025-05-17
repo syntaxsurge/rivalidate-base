@@ -4,7 +4,15 @@ import { useEffect, useState } from 'react'
 
 import { Loader2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
-import { getAddress, isAddress } from 'viem'
+import {
+  getAddress,
+  isAddress,
+  keccak256,
+  hexlify,
+  toBytes,
+  Address,
+  Hex,
+} from 'viem'
 import { useAccount, usePublicClient, useWalletClient, useSwitchChain } from 'wagmi'
 
 import { Button } from '@/components/ui/button'
@@ -14,7 +22,52 @@ import { Label } from '@/components/ui/label'
 import { DID_REGISTRY_ADDRESS, CHAIN_ID } from '@/lib/config'
 import { DID_REGISTRY_ABI } from '@/lib/contracts/abis'
 
-type RoleEntry = { role: 'ADMIN' | 'AGENT'; addr: string }
+/* -------------------------------------------------------------------------- */
+/*                                    UTIL                                    */
+/* -------------------------------------------------------------------------- */
+
+/** Map role label → solidity constant string */
+const ROLE_LABEL_MAP = {
+  ADMIN: 'ADMIN_ROLE',
+  AGENT: 'AGENT_ROLE',
+} as const
+
+type RoleLabel = keyof typeof ROLE_LABEL_MAP
+
+/** Derive keccak256 hash for a role label (e.g. ADMIN -> keccak256('ADMIN_ROLE')). */
+function deriveRoleHash(label: RoleLabel): Hex {
+  return keccak256(toBytes(ROLE_LABEL_MAP[label])) as Hex
+}
+
+/**
+ * Attempt to read `ADMIN_ROLE` / `AGENT_ROLE` from chain; fall back to
+ * deterministic keccak256 hash when the call reverts or address is invalid.
+ */
+async function fetchRoleHash(
+  client: ReturnType<typeof usePublicClient>['data'],
+  contractAddr: Address,
+  fnName: 'ADMIN_ROLE' | 'AGENT_ROLE',
+  fallback: Hex,
+): Promise<Hex> {
+  if (!client) return fallback
+  try {
+    const onchain = (await client.readContract({
+      address: contractAddr,
+      abi: DID_REGISTRY_ABI,
+      functionName: fnName,
+    })) as Hex
+    /* Empty response implies wrong byte-code / no function. */
+    return onchain && onchain !== '0x' ? (onchain as Hex) : fallback
+  } catch {
+    return fallback
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                           C O M P O N E N T                                */
+/* -------------------------------------------------------------------------- */
+
+type RoleEntry = { role: RoleLabel; addr: string }
 
 export default function RolesManager() {
   const { chain, isConnected } = useAccount()
@@ -34,24 +87,34 @@ export default function RolesManager() {
   /* ------------------------------------------------------------------ */
   useEffect(() => {
     async function fetchRoles() {
-      if (!publicClient || !DID_REGISTRY_ADDRESS) return
+      if (
+        !publicClient ||
+        !DID_REGISTRY_ADDRESS ||
+        !isAddress(DID_REGISTRY_ADDRESS as string)
+      ) {
+        setLoading(false)
+        return
+      }
+
       setLoading(true)
-
       try {
-        const ADMIN_ROLE: `0x${string}` = await publicClient.readContract({
-          address: DID_REGISTRY_ADDRESS,
-          abi: DID_REGISTRY_ABI,
-          functionName: 'ADMIN_ROLE',
-        })
-        const AGENT_ROLE: `0x${string}` = await publicClient.readContract({
-          address: DID_REGISTRY_ADDRESS,
-          abi: DID_REGISTRY_ABI,
-          functionName: 'AGENT_ROLE',
-        })
+        /* Resolve role identifiers with on-chain lookup + fallback */
+        const ADMIN_ROLE = await fetchRoleHash(
+          publicClient,
+          DID_REGISTRY_ADDRESS as Address,
+          'ADMIN_ROLE',
+          deriveRoleHash('ADMIN'),
+        )
+        const AGENT_ROLE = await fetchRoleHash(
+          publicClient,
+          DID_REGISTRY_ADDRESS as Address,
+          'AGENT_ROLE',
+          deriveRoleHash('AGENT'),
+        )
 
-        async function readMembers(role: `0x${string}`, label: 'ADMIN' | 'AGENT') {
+        async function readMembers(role: Hex, label: RoleLabel) {
           const count = (await publicClient.readContract({
-            address: DID_REGISTRY_ADDRESS,
+            address: DID_REGISTRY_ADDRESS as Address,
             abi: DID_REGISTRY_ABI,
             functionName: 'getRoleMemberCount',
             args: [role],
@@ -59,19 +122,21 @@ export default function RolesManager() {
 
           const outs: RoleEntry[] = []
           for (let i = 0n; i < count; i++) {
-            const addr = await publicClient.readContract({
-              address: DID_REGISTRY_ADDRESS,
+            const addr = (await publicClient.readContract({
+              address: DID_REGISTRY_ADDRESS as Address,
               abi: DID_REGISTRY_ABI,
               functionName: 'getRoleMember',
               args: [role, i],
-            })
-            outs.push({ role: label, addr: addr as string })
+            })) as Address
+            outs.push({ role: label, addr })
           }
           return outs
         }
 
-        const admins = await readMembers(ADMIN_ROLE, 'ADMIN')
-        const agents = await readMembers(AGENT_ROLE, 'AGENT')
+        const [admins, agents] = await Promise.all([
+          readMembers(ADMIN_ROLE, 'ADMIN'),
+          readMembers(AGENT_ROLE, 'AGENT'),
+        ])
         setEntries([...admins, ...agents])
       } catch (err) {
         console.error(err)
@@ -85,9 +150,9 @@ export default function RolesManager() {
   }, [publicClient])
 
   /* ------------------------------------------------------------------ */
-  /*                       H E L P E R   ( G R A N T )                   */
+  /*                       H E L P E R   ( G R A N T )                  */
   /* ------------------------------------------------------------------ */
-  async function grantRole(to: string, label: 'ADMIN' | 'AGENT') {
+  async function grantRole(to: string, label: RoleLabel) {
     if (!isConnected || !walletClient) {
       toast.error('Connect your wallet first.')
       return
@@ -100,26 +165,32 @@ export default function RolesManager() {
       await switchChainAsync({ chainId: CHAIN_ID })
     }
 
+    if (!publicClient || !DID_REGISTRY_ADDRESS) {
+      toast.error('Registry contract address not configured.')
+      return
+    }
+
     setTxPending(true)
     const toastId = toast.loading('Sending transaction…')
 
     try {
-      const roleSelector = label === 'ADMIN' ? 'ADMIN_ROLE' : 'AGENT_ROLE'
-
-      const roleBytes: `0x${string}` = await publicClient!.readContract({
-        address: DID_REGISTRY_ADDRESS,
-        abi: DID_REGISTRY_ABI,
-        functionName: roleSelector,
-      })
+      const fallbackHash = deriveRoleHash(label)
+      const roleBytes = await fetchRoleHash(
+        publicClient,
+        DID_REGISTRY_ADDRESS as Address,
+        ROLE_LABEL_MAP[label],
+        fallbackHash,
+      )
 
       const hash = await walletClient.writeContract({
-        address: DID_REGISTRY_ADDRESS,
+        address: DID_REGISTRY_ADDRESS as Address,
         abi: DID_REGISTRY_ABI,
         functionName: 'grantRole',
         args: [roleBytes, getAddress(to)],
       })
+
       toast.loading(`Tx sent: ${hash.slice(0, 10)}…`, { id: toastId })
-      await publicClient!.waitForTransactionReceipt({ hash })
+      await publicClient.waitForTransactionReceipt({ hash })
       toast.success('Role granted.', { id: toastId })
       setEntries((prev) => [...prev, { role: label, addr: getAddress(to) }])
     } catch (err: any) {
