@@ -165,7 +165,7 @@ export default function ChatWindow({ mode = 'overlay' }: ChatWindowProps) {
     appendMessage(userMsg)
 
     setIsThinking(true)
-    const reply = await sendToBackend(userText)
+    const reply = await sendToBackend(userText, currentId)
     const agentMsg: ChatMessage = {
       id: crypto.randomUUID(),
       text: reply ?? 'Sorry, something went wrong.',

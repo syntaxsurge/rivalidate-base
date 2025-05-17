@@ -18,7 +18,7 @@ export async function POST(
 ): Promise<NextResponse<AgentResponse>> {
   try {
     /* --------------------------- Payload -------------------------------- */
-    const { userMessage } = await req.json()
+    const { userMessage, threadId } = await req.json()
 
     /* -------------------------- Wallet info ----------------------------- */
     let walletAddress: string | null = null
@@ -58,7 +58,7 @@ export async function POST(
           { role: 'user', content: userMessage },
         ],
       },
-      { configurable: { thread_id: 'AgentKit Discussion' } },
+      { configurable: { thread_id: threadId || 'AgentKit Discussion' } },
     )
 
     /* ---------------------- Collect response ---------------------------- */
