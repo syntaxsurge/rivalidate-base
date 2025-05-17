@@ -19,7 +19,7 @@ type Embed = {
 const EMBEDS: Embed[] = [
   {
     key: 'video',
-    title: '2-Minute Product Tour',
+    title: 'Product Tour',
     src: 'https://www.youtube.com/embed/M5uMfI2lVjM',
     link: '/demo-video',
   },
