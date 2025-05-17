@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {AccessControlEnumerable} from "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 /// @title Rivalidate DID Registry
 /// @notice Allows each address to mint one `did:base:0x…`, update its document pointer,
-///         and lets admins pre-mint DIDs for any account (useful during deployment).
-contract DIDRegistry is AccessControl {
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+///         and lets admins (or agents delegated by admins) pre-mint DIDs for any account.
+contract DIDRegistry is AccessControlEnumerable {
+    bytes32 public constant ADMIN_ROLE  = keccak256("ADMIN_ROLE");
+    bytes32 public constant AGENT_ROLE  = keccak256("AGENT_ROLE");
 
     struct DIDDocument {
         string uri;
@@ -27,6 +28,7 @@ contract DIDRegistry is AccessControl {
     constructor(address admin) {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         _grantRole(ADMIN_ROLE, admin);
+        _setRoleAdmin(AGENT_ROLE, ADMIN_ROLE); // admins manage agents
     }
 
     /* -------------------------------------------------------------------------- */
@@ -53,8 +55,12 @@ contract DIDRegistry is AccessControl {
         emit DIDCreated(msg.sender, did, docHash);
     }
 
-    /// @notice Admin helper to mint a DID for `owner` without their signature.
-    function adminCreateDID(address owner, bytes32 docHash) external onlyRole(ADMIN_ROLE) {
+    /// @notice Admin or Agent helper to mint a DID for `owner` without their signature.
+    function adminCreateDID(address owner, bytes32 docHash) external {
+        require(
+            hasRole(ADMIN_ROLE, msg.sender) || hasRole(AGENT_ROLE, msg.sender),
+            "Not authorised"
+        );
         require(owner != address(0), "Owner is zero");
         require(bytes(didOf[owner]).length == 0, "DID already exists");
 
@@ -78,12 +84,16 @@ contract DIDRegistry is AccessControl {
         emit DIDDocumentUpdated(did, uri, hash);
     }
 
-    /// @notice Admin override for emergencies.
+    /// @notice Admin or Agent override for emergencies.
     function adminSetDocument(
         address owner,
         string calldata uri,
         bytes32 hash
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external {
+        require(
+            hasRole(ADMIN_ROLE, msg.sender) || hasRole(AGENT_ROLE, msg.sender),
+            "Not authorised"
+        );
         string memory did = didOf[owner];
         require(bytes(did).length != 0, "Owner has no DID");
 
