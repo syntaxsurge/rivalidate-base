@@ -59,7 +59,8 @@ export interface Pagination {
  * with sensible fall-backs.
  */
 export function parsePagination(params: Query, defaultSize: PageSize = 10): Pagination {
-  const page = Math.max(1, Number(getParam(params, 'page') ?? '1'))
+  const rawPage = Number(getParam(params, 'page') ?? '1')
+  const page = Math.max(1, Number.isNaN(rawPage) ? 1 : rawPage)
 
   const sizeRaw = Number(getParam(params, 'size') ?? String(defaultSize))
   const pageSize = (PAGE_SIZES as readonly number[]).includes(sizeRaw)
@@ -140,7 +141,8 @@ export function getSectionParams(
   allowedSort: readonly string[],
   defaultSort: string,
 ): SectionParams {
-  const page = Math.max(1, Number(getParam(params, `${prefix}Page`) ?? '1'))
+  const rawPage = Number(getParam(params, `${prefix}Page`) ?? '1')
+  const page = Math.max(1, Number.isNaN(rawPage) ? 1 : rawPage)
 
   const sizeRaw = Number(getParam(params, `${prefix}Size`) ?? '10')
   const pageSize = (PAGE_SIZES as readonly number[]).includes(sizeRaw) ? (sizeRaw as PageSize) : 10
